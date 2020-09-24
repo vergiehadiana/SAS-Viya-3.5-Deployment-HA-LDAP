@@ -1,0 +1,206 @@
+---
+# file: mt-preinstall.yml
+
+# This validates user input values before onboarding a given tenant
+
+- hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - name: Set orchestration_root
+    set_fact:
+      orchestration_root: '{{ playbook_dir }}/..'
+
+# Make sure system is multi tenant enabled
+- hosts: CommandLine
+  any_errors_fatal: true
+  tasks:
+    - name: Get the sas.multi.tenancy.enabled value
+      shell: |
+        . '{{ SASROOT }}/viya/config/consul.conf' ;
+        export CONSUL_TOKEN=$(cat "{{ SASROOT }}/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token")
+        '{{ SASROOT }}/viya/home/bin/sas-bootstrap-config' kv read config/application/sas.multi.tenancy.enabled
+      become: yes
+      become_user: '{{ INSTALL_USER }}'
+      register: multi_tenancy_enabled
+      changed_when: False
+      run_once: yes
+
+    - name: Check that multi_tenancy_enabled.stdout is true
+      fail:
+        msg: "multi-tenancy.yml requires sas.multi.tenancy.enabled to be true."
+      when: multi_tenancy_enabled.stdout != 'true'
+
+- name: "Preinstall validation for tenant"
+  hosts: localhost
+  gather_facts: false
+  become: false
+  any_errors_fatal: true
+
+  vars:
+    DEPLOYMENT_ID: '{{ sas_tenant }}'
+    required_vars:
+      - sas_tenant
+      - tenant_admin
+      - tenant_admin_group
+      - tenant_users_group
+      - provider_admin
+      - provider_admin_pwd
+    reserved_tenant_ids:
+      - viya
+      - spre
+      - default
+      - provider
+      - shared
+      - sharedservices
+      - uaa
+
+  tasks:
+    - name: Add tenant_provider_pwd to required_vars when authorize_provider_admin is true
+      set_fact:
+        required_vars: "{{ required_vars + ['tenant_provider_pwd'] }}"
+      when: authorize_provider_admin | default('true')  | bool
+
+    - name: Dump required vars for troubleshooting, omit those ending with _pwd
+      debug:
+        msg: "{{ item }}={{ vars[item] }}"
+      when: ( item is not search("^.*_pwd$") ) and ( vars[item] is defined )
+      loop: "{{ required_vars }}"
+
+    - name: Make sure required vars are defined as non-empty strings
+      fail:
+        msg: "{{ item }} must be a string that contains at least one nonblank character."
+      when: ( vars[item] is not defined ) or ( vars[item] is not string ) or ( vars[item] | trim | length < 1 )
+      loop: "{{ required_vars }}"
+
+    - name: Make sure sas_tenant is not a reserved value
+      fail:
+        msg: "The value specified for sas_tenant ({{ sas_tenant }}) is a reserved value. Specify another value for sas_tenant."
+      when: ( sas_tenant|lower in reserved_tenant_ids ) or ( sas_tenant|lower is match("sas.*") )
+
+    - name: Make sure sas_tenant is not more than 16 characters
+      fail:
+        msg: "The value specified for sas_tenant ({{ sas_tenant }}) cannot be longer than 16 characters."
+      when: sas_tenant | length > 16
+
+    - name: Make sure sas_tenant is lowercase letters or numbers
+      fail:
+        msg: "The value specified for sas_tenant ({{ sas_tenant }}) must be lowercase letters or numbers and must start with a lowercase letter."
+      when: sas_tenant is not search("^[a-z][a-z0-9]*$")
+
+    - name: Make sure the value specified for tenant_admin is not all numeric
+      fail:
+        msg: "The value specified for tenant_admin ({{ tenant_admin }}) cannot be all numeric. It should be a user name, not a user ID (UID)."
+      when: tenant_admin is search("^[ 0-9]")
+
+    - name: Make sure the value specified for tenant_admin_group does not start with a dash
+      fail:
+        msg: "The value specified for tenant_admin_group ({{ tenant_admin_group }}) must not start with a dash character."
+      when: tenant_admin_group is search("^[-]")
+
+    - name: Make sure the value specified for tenant_admin_group is letters or numbers
+      fail:
+         msg: "The value specified for tenant_admin_group ({{ tenant_admin_group }}) must consist of letters, numbers, dashes, or underscores."
+      when: tenant_admin_group is not search("^[-a-zA-Z0-9_]*$")
+
+    - name: Make sure the value specified for tenant_users_group does not start with a dash
+      fail:
+        msg: "The value specified for tenant_users_group ({{ tenant_users_group }}) must not start with a dash character."
+      when: tenant_users_group is search("^[-]")
+
+    - name: Make sure the value specified for tenant_users_group is letters, numbers, dashes, or underscores
+      fail:
+        msg: "The value specified for tenant_users_group ({{ tenant_users_group }}) must consist of letters, numbers, dashes, or underscores."
+      when: tenant_users_group is not search("^[-a-zA-Z0-9_]*$")
+
+- name: Validate tenant_admin is in tenant_admin_group on all tenant specific cas servers
+  any_errors_fatal: true
+  hosts: sas_casserver_*
+  pre_tasks:
+  - include: '{{ orchestration_root }}/tasks/create_cas_cluster_defs.yml'
+  tasks:
+  - name: Initialize results array to empty on cas servers
+    set_fact:
+      check_tenant_admin_results: []
+    when: check_tenant_admin_results is not defined
+
+  - include: '{{ orchestration_root }}/tasks/check_tenant_admin.yml'
+    when: (( item.value.primary_host is defined and inventory_hostname == item.value.primary_host ) or
+           ( item.value.primary_host is not defined and inventory_hostname == groups['sas_casserver_primary'] | default([]) | first )) or
+          (( item.value.secondary_host is defined and inventory_hostname == item.value.secondary_host) or
+           ( item.value.secondary_host is not defined and inventory_hostname == groups['sas_casserver_secondary'] | default([]) | first )) or
+          (( item.value.worker_hosts is defined and item.value.worker_hosts and inventory_hostname in item.value.worker_hosts.split(',')) or
+           ( item.value.worker_hosts is not defined and inventory_hostname in groups['sas_casserver_worker'] | default([]) ))
+    with_dict: '{{ CLUSTER_DEFINITIONS_cas | default({}) }}'
+
+- name: Validate tenant_admin is in tenant_admin_group and tenant_users_group exists on ComputeServer and programming servers
+  any_errors_fatal: true
+  hosts: ComputeServer:programming
+  pre_tasks:
+  - include: '{{ orchestration_root }}/tasks/create_cas_cluster_defs.yml'
+  tasks:
+  - name: Initialize results array to empty on SPRE machines
+    set_fact:
+      check_tenant_admin_results: []
+    when: check_tenant_admin_results is not defined
+  - include: '{{ orchestration_root }}/tasks/check_tenant_admin.yml'
+
+- name: Summarize tenant admin_user check failures, if any
+  any_errors_fatal: true
+  hosts: sas_casserver_*:ComputeServer:programming
+  tasks:
+  - name: Identify any tenant_admin check failures
+    when: check_tenant_admin_results is defined
+    fail:
+      msg: "Required users or groups are not set up correctly on {{ inventory_hostname }}: {{ ''
+        ''.join(check_tenant_admin_results) }}"
+    failed_when: check_tenant_admin_results | length > 0
+
+- hosts: CommandLine
+  any_errors_fatal: true
+  vars:
+    tenant_test_context: SASLogon/login
+
+  tasks:
+    - block:
+      - name: Get tenant endpoint URL
+        shell: |
+          . '{{ SASROOT }}/viya/config/consul.conf' ;
+          export CONSUL_TOKEN=$(cat "{{ SASROOT }}/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token")
+          export SASTENANTID="{{ sas_tenant }}"
+          '{{ SASROOT }}/viya/home/bin/sas-bootstrap-config' catalog serviceurl --wait --tick-seconds 10 --timeout-seconds 300 httpd
+        become: yes
+        become_user: '{{ INSTALL_USER }}'
+        register: get_tenant_endpoint_url
+        changed_when: False
+
+      - name: Check for failure to get tenant endpoint URL
+        fail:
+          msg: "ERROR: Unable to get the httpd URL which is needed for the tenant endpoint (rc={{ get_tenant_endpoint_url.rc }})"
+        when: get_tenant_endpoint_url.rc != 0
+
+      - name: Dump tenant endpoint URL for troubleshooting
+        debug:
+          msg: "tenant endpoint URL={{ get_tenant_endpoint_url.stdout }}"
+
+      - name: Test tenant endpoint URL
+        shell: |
+          . '{{ SASROOT }}/viya/config/consul.conf' ;
+          curl -I --silent --output /dev/null --write-out "%{http_code}"  "{{ get_tenant_endpoint_url.stdout }}{{ tenant_test_context }}"
+        become: yes
+        become_user: '{{ INSTALL_USER }}'
+        register: test_tenant_endpoint_url
+        changed_when: False
+
+      - name: Check for test tenant endpoint URL failure
+        fail:
+          msg: |
+            ERROR: Bad return code testing tenant endpoint URL
+            ({{ get_tenant_endpoint_url.stdout }}{{ tenant_test_context }}). (rc={{ test_tenant_endpoint_url.stdout }}).
+            Check your DNS setup for this tenant.
+        when: test_tenant_endpoint_url.stdout != "200"
+
+      run_once: yes
+      when: validate_subdomain is undefined or
+            (validate_subdomain is string and
+            (validate_subdomain|lower != 'false'))
+...

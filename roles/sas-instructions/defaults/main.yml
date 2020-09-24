@@ -1,0 +1,9 @@
+---
+# defaults file for sas-instructions
+
+sasenv_snapshot_dir: "{{ orchestration_root }}/snapshot"
+sas_studio_port: "{{ STUDIO_CONFIGURATION.init['sasstudio.appserver.port'] | default(7080) }}"
+sas_studio_ssl_port: "{{ STUDIO_CONFIGURATION.init['sasstudio.appserver.https.port'] | default(7443) }}"
+sas_spawner_port: "{{ SPAWNER_CONFIGURATION.sasPort | default(8591) }}"
+sas_connect_port: "{{ sasenv_connect_port | default(17551) }}"
+...

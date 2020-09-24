@@ -1,0 +1,8 @@
+---
+# defaults file for foundation-service
+
+foundation_service_action: restarted
+foundation_service_name: "sas-not-provided-default"
+foundation_service_group: "none"
+foundation_service_enabled: no
+...

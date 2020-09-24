@@ -1,0 +1,9 @@
+---
+SERVICE_APP_NAME: sasstudio
+SERVICE_FACET: sasstudio
+SERVICE_INSTANCES_COUNT: '{{ play_hosts | length }}'
+SERVICE_NAME: '{{ SERVICE_NAME_DEFAULT }}'
+SERVICE_PRODUCT_NAME: sasstudio
+SERVICE_SYSCONFIG_PATH: /etc/sysconfig/sas/{{ SERVICE_NAME }}
+SERVICE_YUM_PACKAGE: sas-sasstudio
+consumer_items: {}

@@ -1,0 +1,16 @@
+sasviya02 | CHANGED | rc=0 >>
+https://sasviya02.race.sas.com/SASBackupManager/
+https://sasviya02.race.sas.com/SASCodeDebugger/
+https://sasviya02.race.sas.com/SASDataExplorer/
+https://sasviya02.race.sas.com/SASDataStudio/
+https://sasviya02.race.sas.com/SASDrive/
+https://sasviya02.race.sas.com/SASEnvironmentManager/
+https://sasviya02.race.sas.com/SASGraphBuilder/
+https://sasviya02.race.sas.com/SASJobExecution/
+https://sasviya02.race.sas.com/SASLineage/
+https://sasviya02.race.sas.com/SASLogon/
+https://sasviya02.race.sas.com/SASReportViewer/
+https://sasviya02.race.sas.com/SASStudio/
+https://sasviya02.race.sas.com/SASStudioV/
+https://sasviya02.race.sas.com/SASThemeDesigner/
+https://sasviya02.race.sas.com/SASVisualAnalytics/

@@ -1,0 +1,33 @@
+{% if groups['programming'] | length > 0 %}
+{#
+# additional_httpd_configuration:
+#   <name>:
+#     context: SASStudio
+#     host: host.company.com
+#     port: 7080
+#}
+RewriteEngine on
+RewriteRule ^/SASStudio$ /SASStudio/ [R]
+
+ProxyPreserveHost On
+
+ProxyPass /SASStudio http://{{ hostvars[groups['programming'][0]]['sas_vars']['hostname_fqdn'] }}:{{ sas_studio_port }}/SASStudio
+ProxyPassReverse  /SASStudio http://{{ hostvars[groups['programming'][0]]['sas_vars']['hostname_fqdn'] }}:{{ sas_studio_port }}/SASStudio
+{% endif %}
+{% if CLUSTER_DEFINITIONS.cas is defined %}
+{%   for key,value in CLUSTER_DEFINITIONS.cas.items() %}
+{%     if value.cas is defined and value.cas %}
+ProxyPass /cas-{% if value.tenant is defined and value.tenant %}{{value.tenant | default('shared') }}{% else %}shared{% endif %}-{{ key }}-http http://{% if value.primary_host is defined and value.primary_host %}{{ hostvars[value.primary_host]['sas_vars']['hostname_fqdn'] }}{% else %}{{ hostvars[groups['sas_casserver_primary'][0]]['sas_vars']['hostname_fqdn'] }}{% endif %}:{% if value.cas.httpport is defined and value.cas.httpport %}{{ value.cas.httpport | default(8777) }}{% else %}8777{% endif %}/cas-{% if value.tenant is defined and value.tenant %}{{value.tenant | default('shared') }}{% else %}shared{% endif %}-{{ key }}-http
+ProxyPassReverse  /cas-{% if value.tenant is defined and value.tenant %}{{value.tenant | default('shared') }}{% else %}shared{% endif %}-{{ key }}-http http://{% if value.primary_host is defined and value.primary_host %}{{ hostvars[value.primary_host]['sas_vars']['hostname_fqdn'] }}{% else %}{{ hostvars[groups['sas_casserver_primary'][0]]['sas_vars']['hostname_fqdn'] }}{% endif %}:{% if value.cas.httpport is defined and value.cas.httpport %}{{ value.cas.httpport | default(8777) }}{% else %}8777{% endif %}/cas-{% if value.tenant is defined and value.tenant %}{{value.tenant | default('shared') }}{% else %}shared{% endif %}-{{ key }}-http
+{%     else %}
+ProxyPass /cas-{% if value.tenant is defined and value.tenant %}{{value.tenant | default('shared') }}{% else %}shared{% endif %}-{{ key }}-http http://{% if value.primary_host is defined and value.primary_host %}{{ hostvars[value.primary_host]['sas_vars']['hostname_fqdn'] }}{% else %}{{ hostvars[groups['sas_casserver_primary'][0]]['sas_vars']['hostname_fqdn'] }}{% endif %}:8777/cas-{% if value.tenant is defined and value.tenant %}{{value.tenant | default('shared') }}{% else %}shared{% endif %}-{{ key }}-http
+ProxyPassReverse  /cas-{% if value.tenant is defined and value.tenant %}{{value.tenant | default('shared') }}{% else %}shared{% endif %}-{{ key }}-http http://{% if value.primary_host is defined and value.primary_host %}{{ hostvars[value.primary_host]['sas_vars']['hostname_fqdn'] }}{% else %}{{ hostvars[groups['sas_casserver_primary'][0]]['sas_vars']['hostname_fqdn'] }}{% endif %}:8777/cas-{% if value.tenant is defined and value.tenant %}{{value.tenant | default('shared') }}{% else %}shared{% endif %}-{{ key }}-http
+{%     endif %}
+{%   endfor %}
+{% endif %}
+{% for key, value in additional_httpd_configuration.items() %}
+{%   if key != 'empty' %}
+ProxyPass /{{ value.context | trim }}/ http://{{ value.host | trim }}:{{ value.port | string | trim }}/
+ProxyPassReverse  /{{ value.context | trim }}/ http://{{ value.host | trim }}:{{ value.port | string | trim }}/
+{%   endif %}
+{% endfor %}

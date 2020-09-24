@@ -1,0 +1,27 @@
+---
+# tasks file for foundation-ensure-port-availability
+
+####################################################################################
+## Validate SASFoundation ports
+####################################################################################
+
+- name: Verify that SAS Object Spawner port is available
+  wait_for:
+    port: "{{ sas_spawner_port }}"
+    state: stopped
+    timeout: 5
+
+- name: Verify that SAS/CONNECT port is available
+  wait_for:
+    port: "{{ sas_connect_port }}"
+    state: stopped
+    timeout: 5
+  when: "'SAS/CONNECT' in sasenv_soe_groupinstall or sasenv_soe_groupinstall == ''"
+
+- name: Verify that SAS/CONNECT management port is available
+  wait_for:
+    port: "{{ sas_connect_mgmt_port }}"
+    state: stopped
+    timeout: 5
+  when: "'SAS/CONNECT' in sasenv_soe_groupinstall or sasenv_soe_groupinstall == ''"
+...

@@ -1,0 +1,41 @@
+- name: Setup repositories
+  hosts: sas_all
+  any_errors_fatal: true
+  become_user: "{{ INSTALL_USER }}"
+
+  vars_files:
+    - ../vars.yml
+
+  pre_tasks:
+  - include_vars: "{{ item }}"
+    with_first_found:
+      - "{{ orchestration_root }}/soe.yml"
+      - "{{ orchestration_root }}/internal/soe_defaults.yml"
+
+  tasks:
+  - include_role:
+     name: repo-setup
+    when: REPOSITORY_WAREHOUSE is defined and REPOSITORY_WAREHOUSE != "none"
+
+  # The following tasks install sas-cleanutils immediately after sas repository setup
+  # in order to facilitate the deploy cleanup process.
+  - name: Install sas-cleanutils
+    yum:
+      name: sas-cleanutils
+      state: latest
+    become: yes
+    become_user: root
+    when:
+      - inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([]) or
+        inventory_hostname in groups['sas-hosts-ppc64le_redhat_linux_7-yum'] | default([])
+
+  - name: Install sas-cleanutils
+    zypper:
+      name: sas-cleanutils
+      state: latest
+      disable_gpg_check: yes
+    become: yes
+    become_user: root
+    when:
+      - inventory_hostname in groups['sas-hosts-x64_suse_linux_12-yum'] | default([]) or
+        inventory_hostname in groups['sas-hosts-ppc64le_suse_linux_12-yum'] | default([])

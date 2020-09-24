@@ -1,0 +1,138 @@
+---
+# The values for the variables in this file have been optimized to produce a working deployment.
+# Do not alter the values in this file without the guidance of SAS Technical Support, a SAS consultant, or any other SAS representative.
+
+# The root location where all things sas are placed.
+SASROOT: /opt/sas
+
+# The root of the Viya deployment.
+SAS_DEPLOYMENT_ROOT: "{{ SASROOT }}/{{ DEPLOYMENT_ID }}"
+
+# The root of the SPRE deployment.
+SPRE_DEPLOYMENT_ROOT: "{{ SASROOT }}/{{ SPRE_DEPLOYMENT_ID }}"
+
+# The location where Viya applications are installed.
+SASHOME: "{{ SAS_DEPLOYMENT_ROOT }}/home"
+
+# The location where SPRE applications are installed.
+SPREHOME: "{{ SPRE_DEPLOYMENT_ROOT }}/home"
+
+# The location where Viya configuration(s) are installed.
+SAS_CONFIG_ROOT: "{{ SAS_DEPLOYMENT_ROOT }}/config"
+
+# The location where SPRE configuration(s) are installed.
+SPRE_CONFIG_ROOT: "{{ SPRE_DEPLOYMENT_ROOT }}/config"
+
+# SAS user and group used by the playbook for creating directories and writing files on the target host.
+INSTALL_USER: sas
+INSTALL_GROUP: sas
+
+# The DEPLOYMENT_ID value below aligns with the default Viya product directory.
+DEPLOYMENT_ID: viya
+
+# The DEPLOYMENT_ID value below aligns with the default SPRE product directory.
+SPRE_DEPLOYMENT_ID: spre
+
+# The INSTANCE_ID value below aligns with the default configuration.
+INSTANCE_ID: default
+
+# The SERVICE_NAME defines the format of the service's name to be started.
+SERVICE_NAME_DEFAULT: sas-{{ DEPLOYMENT_ID }}-{{ SERVICE_PRODUCT_NAME }}-{{ INSTANCE_ID }}
+
+# The SAS Security Certificate Framework path under the configuration root.
+CERTFRAME_REL_CONFIG_PATH: etc/SASSecurityCertificateFramework
+
+# Location on target machines to put cacerts for TLS-enabled repositories.
+SSL_CAPATH: /etc/pki/sas/certs/
+
+# The following variables contain address information for the remote hosts.
+# In the case you're doing a remote deployment, the templates below resolve
+# the host addresses defined in the 'hosts' file.  In the case you're doing
+# a local deployment, the templates resolve the host addresses to 'localhost'
+CONSUL_EXTERNAL_ADDRESS: "{{ '' if (groups['consul'] is not defined or not groups['consul']) else 'localhost' if hostvars[groups['consul'][0]]['ansible_connection'] | default('') == 'local' else hostvars[groups['consul'][0]].sas_vars.hostname_fqdn }}"
+CONSUL_EXTERNAL_ADDRESS_PORT: 8500
+
+# For systemd hosts, the minimum version required.
+SYSTEMD_MAJOR_MIN: 219
+SYSTEMD_MINOR_MIN: 30
+
+# Hadoop info
+hdp_home: "{% if CAS_SETTINGS is defined and CAS_SETTINGS %}{% for key, value in CAS_SETTINGS.items() %}{% if value is search('^\\s*HADOOP_HOME\\s*=') %}{{ value }}{% endif %}{% endfor %}{% else %}{% endif %}"
+hdp_namenode: "{% if CAS_SETTINGS is defined and CAS_SETTINGS %}{% for key, value in CAS_SETTINGS.items() %}{% if value is search('^\\s*HADOOP_NAMENODE\\s*=') %}{{ value }}{% endif %}{% endfor %}{% else %}{% endif %}"
+
+# Hadoop Configuration info
+# The parent directory of the two folders where Hadoop JAR and configuration files will be copied to.
+hadoop_conf_home: /opt/sas/viya/config/data/hadoop
+# The name of the folder for the Hadoop JAR files (lib is the default).
+lib_folder_name: lib
+# The name of the folder for the Hadoop configuration files (conf is the default).
+conf_folder_name: conf
+
+# The maximum number of items to ask yum to install at a single time.
+# For RedHat family OSes at 6.x, too many items on a single Ansible
+# yum call will fail, reporting:
+# ValueError: filedescriptor out of range in select()
+YUM_INSTALL_BATCH_SIZE: "{% if ansible_os_family == 'RedHat' and ansible_distribution_major_version == '6' %} 100 {% else %} 9999 {% endif %}"
+
+# This will drive if the Consul product is installed on the CAS hosts.
+# A value of true will install the Consul agent on all CAS hosts.
+# Set this value to true if you plan to support all configurations of CAS
+# going to the same Consul instance.
+# If you deploy multiple configurations of CAS on the same set of hosts and
+# configure them to connect to different Viya deployments, set this value
+# to false. The Consul agent cannot be deployed with CAS in this configuration.
+# When the value is false, the software that is included in the Viya
+# visual interface cannot be deployed on any of the CAS hosts, either, because
+# the Consul agent is deployed with each of these software components.
+# Valid values: true | false
+
+sas_consul_on_cas_hosts: true
+
+# Playbook supported Architecture, OS families, with support details
+support_map:
+  ppc64le:
+    RedHat:
+      '7':
+        default_repository_format: yum
+        repository_build_types:
+          yum: ppc64le_redhat_linux_7-yum
+      '8':
+        default_repository_format: yum
+        repository_build_types:
+          yum: ppc64le_redhat_linux_7-yum
+    Suse:
+      '12':
+        default_repository_format: yum
+        repository_build_types:
+          yum: ppc64le_suse_linux_12-yum
+      '15':
+        default_repository_format: yum
+        repository_build_types:
+          yum: ppc64le_suse_linux_12-yum
+  x86_64:
+    RedHat:
+      '6':
+        default_repository_format: yum
+        repository_build_types:
+          yum: x64_redhat_linux_6-yum
+      '7':
+        default_repository_format: yum
+        repository_build_types:
+          yum: x64_redhat_linux_6-yum
+      '8':
+        default_repository_format: yum
+        repository_build_types:
+          yum: x64_redhat_linux_6-yum
+    Suse:
+      '12':
+        default_repository_format: yum
+        repository_build_types:
+          yum: x64_suse_linux_12-yum
+      '15':
+        default_repository_format: yum
+        repository_build_types:
+          yum: x64_suse_linux_12-yum
+      '42':
+        default_repository_format: yum
+        repository_build_types:
+          yum: x64_suse_linux_12-yum

@@ -1,0 +1,10 @@
+---
+- name: Create/distribute service tokens and generate Vault-signed client certificates
+  become_user: '{{ INSTALL_USER }}'
+  hosts: sas_all
+  any_errors_fatal: true
+  vars_files:
+  - ../vars.yml
+  roles:
+  - vault_tokens
+  - vault_gencerts

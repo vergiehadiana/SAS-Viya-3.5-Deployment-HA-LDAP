@@ -1,0 +1,37 @@
+---
+# tasks file for sas-requirements-report
+
+- name: Verify that {{ snapshotloc }}/system_requirement.rpt exists
+  local_action: stat path={{ snapshotloc }}/system_requirement.rpt
+  run_once: yes
+  register: sysreqloc
+
+- name: "Get {{ snapshotloc }}/system_requirement.rpt"
+  local_action: shell cat {{ snapshotloc }}/system_requirement.rpt
+  when: sysreqloc.stat.exists is defined and sysreqloc.stat.exists
+  with_items:
+    - "{{ groups['sas_all'] }}"
+  run_once: yes
+  no_log: yes
+  register: catsysreq
+
+- name: Store system requirement report
+  set_fact:
+    message_to_disp: "{{ item.stdout_lines }}"
+  when: item.stdout_lines is defined
+  with_items:
+    - "{{ catsysreq.results }}"
+  run_once: yes
+  no_log: true
+
+- name: Display system requirement report
+  local_action: debug msg="{{ message_to_disp }}"
+  when: message_to_disp is defined
+  run_once: true
+
+- name: Stop processing if there was a system requirement error
+  local_action: fail msg="Stopping deployment due to system requirement errors"
+  failed_when: hostvars[item]['sas_sysreq_error'] is defined
+  with_items:
+    - "{{ groups['sas_all'] }}"
+...

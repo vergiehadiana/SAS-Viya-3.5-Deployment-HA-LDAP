@@ -1,0 +1,11 @@
+---
+- name: Run the hadooptracer script
+  hosts: hadooptracr1
+  any_errors_fatal: true
+  gather_facts: True
+  become: no
+  vars_files:
+  - ../vars.yml
+  roles:
+    - hadooptracer-precheck
+    - hadooptracer-run

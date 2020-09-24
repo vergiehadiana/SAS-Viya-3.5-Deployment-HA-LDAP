@@ -1,0 +1,36 @@
+---
+- name: envesntl
+  become_user: '{{ INSTALL_USER }}'
+  hosts: sas_all
+  any_errors_fatal: true
+  vars_files:
+  - ../vars.yml
+  tasks:
+  - name: Create consul.conf environment file
+    become: yes
+    blockinfile:
+      create: yes
+      block: |
+        export CONSUL_HTTP_ADDR={{ sas_vars.consul_url }}
+        export SSL_CERT_FILE={{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
+        export CONSUL_CACERT=$SSL_CERT_FILE
+        export VAULT_CACERT=$SSL_CERT_FILE
+      marker: "# {mark} Ansible managed Consul client connection options"
+      dest: "{{ SAS_CONFIG_ROOT }}/consul.conf"
+      owner: "{{ INSTALL_USER }}"
+      group: "{{ INSTALL_GROUP }}"
+      mode: 0644
+    when: not ansible_check_mode and sas_vars.consul_url is defined
+
+  - name: Create network.conf environment file
+    become: yes
+    blockinfile:
+      backup: yes
+      create: yes
+      block: "{% for key, value in network_conf.items() %}export {{ key }}=\"{{ value }}\"\n{% endfor %}"
+      marker: "# {mark} Ansible managed network configuration options"
+      dest: "{{ SAS_CONFIG_ROOT }}/network.conf"
+      owner: "{{ INSTALL_USER }}"
+      group: "{{ INSTALL_GROUP }}"
+      mode: 0644
+    when: not ansible_check_mode and network_conf is defined

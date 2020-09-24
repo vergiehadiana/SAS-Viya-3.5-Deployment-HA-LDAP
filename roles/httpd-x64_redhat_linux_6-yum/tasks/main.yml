@@ -1,0 +1,7 @@
+---
+# tasks file for httpd-x64_redhat_linux_6-yum
+
+- include_role:
+    name: httpd-x64_redhat_linux_6-yum
+    tasks_from: configure-and-start
+  when: not ansible_check_mode and sas_task | default('install') == 'configure-and-start'

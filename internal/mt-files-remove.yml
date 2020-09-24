@@ -1,0 +1,56 @@
+---
+# file: mt-files-remove.yml
+
+- name: Remove the configuration contents and file systems that are specific to the tenant
+  hosts: ComputeServer:programming:sas_casserver*:consul:CASServices
+  any_errors_fatal: true
+  gather_facts: false
+  become: false
+
+  vars:
+    sas_tenant_instance: "{{ tenant_instance | default('default') }}"
+
+  tasks:
+    - name: Remove the tenant consul configuration contents
+      shell: '. {{ SASROOT }}/viya/config/consul.conf ; {{ SASROOT }}/viya/home/bin/sas-bootstrap-config --token-file {{ SASROOT }}/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token kv delete {{ item }}'
+      become: yes
+      become_user: root
+      with_items:
+        - "locks/identities-service/{{ DEPLOYMENT_ID }}-cacheStatus"
+        - "--recurse config/application/fact/connect-spawner-{{ DEPLOYMENT_ID }}"
+        - "--recurse config/application/fact/launcher-server-{{ DEPLOYMENT_ID }}"
+        - "--recurse config/application/fact/watch-log-{{ DEPLOYMENT_ID }}"
+        - "--recurse config/cas-{{ DEPLOYMENT_ID }}-{{ sas_tenant_instance }}"
+        - "--recurse config/cas-{{ DEPLOYMENT_ID }}-{{ sas_tenant_instance }}-http"
+        - "--recurse configurationservice/sitedefaults/config/cas-{{ DEPLOYMENT_ID }}-{{ sas_tenant_instance }}"
+
+    - name: Remove the tenant file systems contents
+      file:
+        path: "{{ item }}"
+        state: absent
+      become: yes
+      become_user: root
+      with_items:
+        - "/etc/rc.d/init.d/sas-{{ DEPLOYMENT_ID }}-cascontroller-{{ sas_tenant_instance }}"
+        - "/etc/rc.d/init.d/sas-{{ DEPLOYMENT_ID }}-connect-{{ sas_tenant_instance }}"
+        - "/etc/rc.d/init.d/sas-{{ DEPLOYMENT_ID }}-runlauncher-{{ sas_tenant_instance }}"
+        - "/etc/rc.d/init.d/sas-{{ DEPLOYMENT_ID }}-spawner-{{ sas_tenant_instance }}"
+        - "/etc/rc.d/init.d/sas-{{ DEPLOYMENT_ID }}-watch-log-{{ sas_tenant_instance }}"
+        - "/etc/rc.d/init.d/sas-{{ DEPLOYMENT_ID }}-cas-{{ sas_tenant_instance }}"
+        - "/etc/rc.d/init.d/sas-{{ DEPLOYMENT_ID }}-cas-{{ sas_tenant_instance }}-deployment"
+        - "/etc/rc.d/init.d/sas-{{ DEPLOYMENT_ID }}-cas-{{ sas_tenant_instance }}-usermods"
+        - "/etc/rc.d/init.d/sas-{{ DEPLOYMENT_ID }}-all-services"
+        - "/etc/rc.d/init.d/sas-{{ DEPLOYMENT_ID }}-dagentsrv-{{ sas_tenant_instance }}"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-batchserver-{{ sas_tenant_instance }}"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-runlauncher-{{ sas_tenant_instance }}"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-launcher-{{ sas_tenant_instance }}"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-workspaceserver-{{ sas_tenant_instance }}"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-compsrv-{{ sas_tenant_instance }}"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-connect-{{ sas_tenant_instance }}"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-spawner-{{ sas_tenant_instance }}"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-cascontroller-{{ sas_tenant_instance }}"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-cas-{{ sas_tenant_instance }}"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-cas-{{ sas_tenant_instance }}-deployment"
+        - "/etc/sysconfig/sas/sas-{{ DEPLOYMENT_ID }}-cas-{{ sas_tenant_instance }}-usermods"
+        - "/opt/sas/{{ DEPLOYMENT_ID }}"
+

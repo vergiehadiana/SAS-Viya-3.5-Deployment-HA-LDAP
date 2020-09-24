@@ -1,0 +1,96 @@
+---
+############################################################################
+## User Input Required
+############################################################################
+# The path and name of the sid file on the Ansible machine.
+# This will be copied out to all nodes
+sasenv_license: "{% if LICENSE_FILENAME | default ('') %}{{ orchestration_root|default(playbook_dir) }}/{{ LICENSE_FILENAME }}{% else %}Undefined{% endif %}"
+
+# The path and name of the composite license file on the Ansible machine.
+sasenv_composite_license: "{% if LICENSE_COMPOSITE_FILENAME | default ('') %}{{ orchestration_root|default(playbook_dir) }}/{{ LICENSE_COMPOSITE_FILENAME }}{% else %}Undefined{% endif %}"
+
+############################################################################
+
+# SAS METAREPO certificate details #
+METAREPO_CERT_SOURCE: "{{ playbook_dir }}"
+METAREPO_CERT_HOME: "/etc/pki/sas/private"
+METAREPO_CERT_CA: SAS_CA_Certificate.pem
+METAREPO_CERT_CLIENT: entitlement_certificate.pem
+ENTITLEMENT_PATH: "{{ orchestration_root|default(playbook_dir) }}/{{ METAREPO_CERT_CLIENT }}"
+SAS_CERT_PATH: "{{ orchestration_root|default(playbook_dir) }}/{{ METAREPO_CERT_CA }}"
+
+# SAS METAREPO Install details #
+METAREPO_INSTALL: "{{ REPOSITORY_WAREHOUSE == 'https://ses.sas.download/ses/' }}"
+METAREPO_URL: "https://ses.sas.download/ses/repos/meta-repo/"
+METAREPO_RPM: "sas-meta-repo.rpm"
+METAREPO_SOE_ORDERABLE: '"sas-depentviya-135-x64_redhat_linux_6-yum" "sas-espcasvcf-135-x64_redhat_linux_6-yum" "sas-hive-125-x64_redhat_linux_6-yum" "sas-indbhive-125-x64_redhat_linux_6-yum" "sas-jobflwsch-135-x64_redhat_linux_6-yum" "sas-va-125-x64_redhat_linux_6-yum" "sas-vcmnfnd-125-x64_redhat_linux_6-yum"'
+METAREPO_FORCE_CERTS: "{{ REPOSITORY_WAREHOUSE == 'https://ses.sas.download/ses/' }}"
+
+# Ordered software from the Software Order Email
+sasenv_soe_groupinstall: '"SAS Data Connect Accelerator for Hadoop" "SAS Data Connector to Hadoop" "Data Conn OSS File Fmts" "SAS Foundation for SAS Econometrics" "ASTORE for EMBSCOREENG" "Meta RPM Event Stream CAS Client" "SAS Foundation for SAS Visual Forecasting" "Gold Layer YUM Group for SPRE" "CUDA Library Support for SAS" "SAS/ACCESS Interface to Hadoop (SPRE)" "SAS In-Database Technologies for Hadoop Map Reduce JAR File" "SAS Machine Learning" "SAS Open Source File Format Engines" "SAS Program Runtime Environment" "SAS Statistics" "SAS Text Analytics for English" "CAS for SAS Visual Analytics" "CAS for Viya Common Foundation" "SAS Visual Text Analytics" "SAS Configuration for Spawner"'
+
+
+SAS_REPO:
+  depentviya-135-x64_redhat_linux_6-yum:
+    name: depentviya-135-x64_redhat_linux_6-yum
+    baseurl: '{{ REPOSITORY_WAREHOUSE }}repos/shipped/depentviya/135/depentviya-135-x64_redhat_linux_6-yum'
+    enabled: 1
+    gpgcheck: 0
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-SAS-9.x
+    sslcacert: 0
+    sslclientcert: 0
+    sslverify: 0
+  espcasvcf-135-x64_redhat_linux_6-yum:
+    name: espcasvcf-135-x64_redhat_linux_6-yum
+    baseurl: '{{ REPOSITORY_WAREHOUSE }}repos/shipped/espcasvcf/135/espcasvcf-135-x64_redhat_linux_6-yum'
+    enabled: 1
+    gpgcheck: 0
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-SAS-9.x
+    sslcacert: 0
+    sslclientcert: 0
+    sslverify: 0
+  hive-125-x64_redhat_linux_6-yum:
+    name: hive-125-x64_redhat_linux_6-yum
+    baseurl: '{{ REPOSITORY_WAREHOUSE }}repos/shipped/hive/125/hive-125-x64_redhat_linux_6-yum'
+    enabled: 1
+    gpgcheck: 0
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-SAS-9.x
+    sslcacert: 0
+    sslclientcert: 0
+    sslverify: 0
+  indbhive-125-x64_redhat_linux_6-yum:
+    name: indbhive-125-x64_redhat_linux_6-yum
+    baseurl: '{{ REPOSITORY_WAREHOUSE }}repos/shipped/indbhive/125/indbhive-125-x64_redhat_linux_6-yum'
+    enabled: 1
+    gpgcheck: 0
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-SAS-9.x
+    sslcacert: 0
+    sslclientcert: 0
+    sslverify: 0
+  jobflwsch-135-x64_redhat_linux_6-yum:
+    name: jobflwsch-135-x64_redhat_linux_6-yum
+    baseurl: '{{ REPOSITORY_WAREHOUSE }}repos/shipped/jobflwsch/135/jobflwsch-135-x64_redhat_linux_6-yum'
+    enabled: 1
+    gpgcheck: 0
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-SAS-9.x
+    sslcacert: 0
+    sslclientcert: 0
+    sslverify: 0
+  va-125-x64_redhat_linux_6-yum:
+    name: va-125-x64_redhat_linux_6-yum
+    baseurl: '{{ REPOSITORY_WAREHOUSE }}repos/shipped/va/125/va-125-x64_redhat_linux_6-yum'
+    enabled: 1
+    gpgcheck: 0
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-SAS-9.x
+    sslcacert: 0
+    sslclientcert: 0
+    sslverify: 0
+  vcmnfnd-125-x64_redhat_linux_6-yum:
+    name: vcmnfnd-125-x64_redhat_linux_6-yum
+    baseurl: '{{ REPOSITORY_WAREHOUSE }}repos/shipped/vcmnfnd/125/vcmnfnd-125-x64_redhat_linux_6-yum'
+    enabled: 1
+    gpgcheck: 0
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-SAS-9.x
+    sslcacert: 0
+    sslclientcert: 0
+    sslverify: 0

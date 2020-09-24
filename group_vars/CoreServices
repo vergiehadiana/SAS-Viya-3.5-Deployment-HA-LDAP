@@ -1,0 +1,148 @@
+---
+sas_host_group_variables_CoreServices:
+  installables-x64_redhat_linux_6-yum:
+    audit:
+      SERVICE_APP_NAME: audit
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: audit
+      SERVICE_YUM_PACKAGE: sas-audit
+    authorization:
+      SERVICE_APP_NAME: authorizatn
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: authorization
+      SERVICE_YUM_PACKAGE: sas-authorization
+    bootstrap-config:
+      SERVICE_APP_NAME: bootstrapcfg
+      SERVICE_MEMORY_NEEDED: 3
+      SERVICE_PRODUCT_NAME: bootstrap-config
+      SERVICE_YUM_PACKAGE: sas-bootstrap-config
+    cachelocator:
+      SERVICE_APP_NAME: cachelocator
+      SERVICE_MEMORY_NEEDED: 256
+      SERVICE_PRODUCT_NAME: cachelocator
+      SERVICE_YUM_PACKAGE: sas-cachelocator
+    cacheserver:
+      SERVICE_APP_NAME: cacheserver
+      SERVICE_MEMORY_NEEDED: 256
+      SERVICE_PRODUCT_NAME: cacheserver
+      SERVICE_YUM_PACKAGE: sas-cacheserver
+    certframe:
+      SERVICE_APP_NAME: certframe
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: certframe
+      SERVICE_YUM_PACKAGE: sas-certframe
+    cleanutils:
+      SERVICE_APP_NAME: cleanutils
+      SERVICE_MEMORY_NEEDED: 32
+      SERVICE_PRODUCT_NAME: cleanutils
+      SERVICE_YUM_PACKAGE: sas-cleanutils
+    credentials:
+      SERVICE_APP_NAME: credentials
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: credentials
+      SERVICE_YUM_PACKAGE: sas-credentials
+    crossdomainproxy:
+      SERVICE_APP_NAME: crossdmnprxy
+      SERVICE_MEMORY_NEEDED: 196
+      SERVICE_PRODUCT_NAME: crossdomainproxy
+      SERVICE_YUM_PACKAGE: sas-crossdomainproxy
+    csq:
+      SERVICE_APP_NAME: csq
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: csq
+      SERVICE_YUM_PACKAGE: sas-csq
+    envesntl:
+      SERVICE_APP_NAME: envesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: envesntl
+      SERVICE_YUM_PACKAGE: sas-envesntl
+    evmcltsvcs:
+      SERVICE_APP_NAME: evmcltsvcs
+      SERVICE_MEMORY_NEEDED: 64
+      SERVICE_PRODUCT_NAME: evmcltsvcs
+      SERVICE_YUM_PACKAGE: sas-evmcltsvcs
+    evmcollect:
+      SERVICE_APP_NAME: evmcollect
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: evmcollect
+      SERVICE_YUM_PACKAGE: sas-evmcollect
+    files:
+      SERVICE_APP_NAME: filesservice
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: files
+      SERVICE_YUM_PACKAGE: sas-files
+    folders:
+      SERVICE_APP_NAME: foldersrvc
+      SERVICE_MEMORY_NEEDED: 1024
+      SERVICE_PRODUCT_NAME: folders
+      SERVICE_YUM_PACKAGE: sas-folders
+    identities:
+      SERVICE_APP_NAME: identities
+      SERVICE_MEMORY_NEEDED: 384
+      SERVICE_PRODUCT_NAME: identities
+      SERVICE_YUM_PACKAGE: sas-identities
+    javaesntl:
+      SERVICE_APP_NAME: javaesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: javaesntl
+      SERVICE_YUM_PACKAGE: sas-javaesntl
+    jobflowscheduling:
+      SERVICE_APP_NAME: jobflowsch
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: jobflowscheduling
+      SERVICE_YUM_PACKAGE: sas-jobflowscheduling
+    localconsul:
+      SERVICE_APP_NAME: localconsul
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: localconsul
+      SERVICE_YUM_PACKAGE: sas-localconsul
+    mail:
+      SERVICE_APP_NAME: mail
+      SERVICE_MEMORY_NEEDED: 1024
+      SERVICE_PRODUCT_NAME: mail
+      SERVICE_YUM_PACKAGE: sas-mail
+    notifications:
+      SERVICE_APP_NAME: notification
+      SERVICE_MEMORY_NEEDED: 196
+      SERVICE_PRODUCT_NAME: notifications
+      SERVICE_YUM_PACKAGE: sas-notifications
+    preferences:
+      SERVICE_APP_NAME: preferences
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: preferences
+      SERVICE_YUM_PACKAGE: sas-preferences
+    relationships:
+      SERVICE_APP_NAME: relationships
+      SERVICE_MEMORY_NEEDED: 1024
+      SERVICE_PRODUCT_NAME: relationships
+      SERVICE_YUM_PACKAGE: sas-relationships
+    runjavasvc:
+      SERVICE_APP_NAME: runjavasvc
+      SERVICE_MEMORY_NEEDED: 1
+      SERVICE_PRODUCT_NAME: runjavasvc
+      SERVICE_YUM_PACKAGE: sas-runjavasvc
+    saslogon:
+      SERVICE_APP_NAME: logon
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: saslogon
+      SERVICE_YUM_PACKAGE: sas-saslogon
+    scheduler:
+      SERVICE_APP_NAME: scheduler
+      SERVICE_MEMORY_NEEDED: 256
+      SERVICE_PRODUCT_NAME: scheduler
+      SERVICE_YUM_PACKAGE: sas-scheduler
+    templates:
+      SERVICE_APP_NAME: templates
+      SERVICE_MEMORY_NEEDED: 1024
+      SERVICE_PRODUCT_NAME: templates
+      SERVICE_YUM_PACKAGE: sas-templates
+    tenant:
+      SERVICE_APP_NAME: tenant
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: tenant
+      SERVICE_YUM_PACKAGE: sas-tenant
+    types:
+      SERVICE_APP_NAME: types
+      SERVICE_MEMORY_NEEDED: 196
+      SERVICE_PRODUCT_NAME: types
+      SERVICE_YUM_PACKAGE: sas-types

@@ -1,0 +1,21 @@
+---
+# file: foundation-ensure-port-availablity
+
+###############################################################################
+# SAS Foundation
+- name: Validate SAS Foundation ports
+  hosts: programming
+  any_errors_fatal: true
+  roles:
+  - foundation-ensure-port-availability
+
+  vars_files:
+  - ../vars.yml
+
+  pre_tasks:
+  - include_vars: "{{ item }}"
+    with_first_found:
+      - "{{ orchestration_root }}/soe.yml"
+      - "{{ orchestration_root }}/internal/soe_defaults.yml"
+###############################################################################
+...

@@ -1,0 +1,70 @@
+---
+# tasks file for ecosystem-users
+
+- debug: 
+    var: setup_sas_users
+    # verbosity: 2
+  when: sas_deploy_debug | bool == true
+
+- debug: 
+    var: sas_users
+    # verbosity: 2
+  when: sas_deploy_debug | bool == true
+
+- name: Create groups
+  group: 
+    name: "{{ item.value.group }}" 
+    state: present 
+  become: yes
+  with_dict: "{{ sas_users }}"
+  when: ( setup_sas_users | bool ) == true
+
+- name: Create users with a password, a home and a shell
+  user: 
+    name: "{{ item.key }}"
+    password: "{{ item.value.password }}" 
+    shell: "{{ item.value.shell }}"
+    home: "{{ item.value.home + '/' + item.key }}"
+    generate_ssh_key: yes 
+    ssh_key_bits: 4096
+    group: "{{ item.value.group }}" 
+    state: present
+  become: yes
+  with_dict: "{{ sas_users }}"
+  when: ( setup_sas_users | bool ) == true and ( item.value.setup_home | bool ) == true and item.value.password != ''
+
+- name: Create users without a password, but with a home and a shell
+  user: 
+    name: "{{ item.key }}"
+    shell: "{{ item.value.shell }}"
+    home: "{{ item.value.home + '/' + item.key }}"
+    generate_ssh_key: yes 
+    ssh_key_bits: 4096
+    group: "{{ item.value.group }}" 
+    state: present
+  become: yes
+  with_dict: "{{ sas_users }}"
+  when: ( setup_sas_users | bool ) == true and ( item.value.setup_home | bool ) == true and item.value.password == ''
+
+- name: Create users with a password, but without a home or a shell
+  user: 
+    name: "{{ item.key }}"
+    password: "{{ item.value.password }}" 
+    generate_ssh_key: yes 
+    ssh_key_bits: 4096
+    group: "{{ item.value.group }}" 
+    state: present
+  become: yes
+  with_dict: "{{ sas_users }}"
+  when: ( setup_sas_users | bool ) == true and ( item.value.setup_home | bool ) == false and item.value.password != ''
+
+- name: Create users without a password, a home, or a shell
+  user: 
+    name: "{{ item.key }}"
+    generate_ssh_key: yes 
+    ssh_key_bits: 4096
+    group: "{{ item.value.group }}" 
+    state: present
+  become: yes
+  with_dict: "{{ sas_users }}"
+  when: ( setup_sas_users | bool ) == true and ( item.value.setup_home | bool ) == false and item.value.password == ''

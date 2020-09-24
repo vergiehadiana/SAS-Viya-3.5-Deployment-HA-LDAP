@@ -1,0 +1,15 @@
+---
+# Configure and start
+- include: configure-and-start.yml
+
+# Configures CAS
+- include: deploy-cas.yml
+
+# Configures SAS Foundation and SAS Studio
+- include: deploy-foundation.yml
+
+# Start SAS Foundation services
+- include: services-foundation.yml service_action=started
+
+# Run post-configuration actions
+- include: post-configuration.yml

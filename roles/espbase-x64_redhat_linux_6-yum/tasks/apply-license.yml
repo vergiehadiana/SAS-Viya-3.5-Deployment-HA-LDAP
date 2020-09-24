@@ -1,0 +1,7 @@
+---
+- include: stop.yml
+
+- include: copy-license.yml
+
+- include: start.yml
+

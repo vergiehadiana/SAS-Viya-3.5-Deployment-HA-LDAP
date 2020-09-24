@@ -1,0 +1,37 @@
+- name: Verify that the hadooptracer script is available
+  stat:
+    path: "/tmp/hadooptracer.py"
+  register: hadooptracer_deployed
+  delegate_to: localhost
+
+- debug: var=hadooptracer_deployed
+
+- name: "Verify that the hadooptracer script exists in {{ SPREHOME }}/SASFoundation/lib/hadooptracer"
+  stat:
+    path: "{{ SPREHOME }}/SASFoundation/lib/hadooptracer/hadooptracer_py"
+  register: found_hadooptracer
+  become: 'yes'
+  become_user: "{{ INSTALL_USER }}"
+  when: (hadooptracer_deployed.stat.exists == False)
+
+- name: "Verify that the file driver.json exists in {{ SPREHOME }}/SASFoundation/lib/hadooptracer"
+  stat:
+    path: "{{ SPREHOME }}/SASFoundation/lib/hadooptracer/driver.json"
+  register: found_driver
+  become: 'yes'
+  become_user: "{{ INSTALL_USER }}"
+
+- name: Fetch the hadooptracer script to the local host
+  fetch:
+    src: "{{ SPREHOME }}/SASFoundation/lib/hadooptracer/hadooptracer_py"
+    dest: "/tmp/hadooptracer.py"
+    flat: yes
+    fail_on_missing: yes
+  when: (hadooptracer_deployed.stat.exists == False)
+
+- name: Fetch the file driver.json to the local host when the file exists
+  fetch:
+    src: "{{ SPREHOME }}/SASFoundation/lib/hadooptracer/driver.json"
+    dest: "/tmp/driver.json"
+    flat: yes
+  when: found_driver.stat.exists is defined and found_driver.stat.exists | bool == true

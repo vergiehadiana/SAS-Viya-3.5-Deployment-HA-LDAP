@@ -1,0 +1,97 @@
+---
+# file: deploy-cas.yml
+
+# Make sure the license is present
+- include: "{{ 'validate-license.yml' }}"
+  when: license_complete is not defined
+
+# Install Consul where needed
+- include: "{{ 'deploy-cas-consulagent.yml' }} consul_on_sas_hosts={{ sas_consul_on_cas_hosts }} sas_task_file=start.yml"
+
+# Load facts for httpproxy
+# The hosts for httpproxy could be a different set or are not in the set of hosts
+# that we are running the playbook against.  In that case, we want this to run to
+# make sure we get system information about those hosts as this is used for
+# setting the servicesbaseurl in the casconfig.lua.
+- include: "{{ 'load-httpproxy-facts.yml' }}"
+
+###############################################################################
+# Deploy the CAS environment
+- name: "Multi Machine: Deploy CAS"
+  hosts: sas_casserver*
+  any_errors_fatal: true
+  become: false
+
+  vars_files:
+    - ../vars.yml
+
+  pre_tasks:
+    ###########################################################################
+    # If the pre 17w47 style of CAS configuration is being used
+    # convert it to the new style
+    - block:
+
+      - name: Create CAS cluster definition file
+        template:
+          src: "{{ orchestration_root }}/roles/casserver-config/templates/cluster_defn_vars.yml.j2"
+          dest: "{{ orchestration_root }}/cluster_defn_vars.yml"
+          mode: 0644
+        delegate_to: 127.0.0.1
+
+      - name: include {{ orchestration_root }}/cluster_defn_vars.yml
+        include_vars: "{{ orchestration_root }}/cluster_defn_vars.yml"
+
+      when: not ansible_check_mode and CLUSTER_DEFINITIONS is not defined
+    ###########################################################################
+
+    - name: include soe.yml
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "{{ orchestration_root }}/soe.yml"
+        - "{{ orchestration_root }}/internal/soe_defaults.yml"
+
+    - name: If CLUSTER_DEFINITIONS.cas is not empty, copy contents
+      set_fact:
+        CLUSTER_DEFINITIONS_cas: "{{ CLUSTER_DEFINITIONS.cas }}"
+      when: not ansible_check_mode and CLUSTER_DEFINITIONS.cas is defined and CLUSTER_DEFINITIONS.cas | string != 'None'
+
+    - name: Make sure CLUSTER_DEFINITIONS_cas is defined
+      set_fact:
+        CLUSTER_DEFINITIONS_cas: {}
+      when: CLUSTER_DEFINITIONS_cas is not defined
+
+    - block:
+      - name: Stop services on the CAS hosts
+        include_role:
+          name: casserver-config
+        vars:
+          sas_task_file: conditional-stop.yml
+
+      - name: Create CAS SSH vars file
+        template:
+          src: "{{ orchestration_root }}/roles/casserver-config/templates/ssh_defn_vars.yml.j2"
+          dest: "{{ orchestration_root }}/ssh_defn_vars.yml"
+          mode: 0644
+        delegate_to: 127.0.0.1
+
+      - name: include {{ orchestration_root }}/ssh_defn_vars.yml
+        include_vars: "{{ orchestration_root }}/ssh_defn_vars.yml"
+
+      - name: Setup ssh for the CAS cluster
+        include: "{{ orchestration_root }}/roles/ssh_ecosystem/tasks/main.yml"
+        vars:
+          KEYNAME: 'id_rsa'
+          COMBINED_GROUP: "{{ casloopvar.value.hosts }}"
+          USERS: '[ ''{{ casloopvar.value.user }}'' ]'
+        with_dict: '{{ SSH_DEFINITIONS }}'
+        loop_control:
+          loop_var: casloopvar
+      when: not ansible_check_mode
+
+  roles:
+    - casserver-license
+    - { role: casserver-config, sas_task_file: framework.yml }
+    - { role: casserver-config, sas_task_file: start.yml }
+
+###############################################################################
+...

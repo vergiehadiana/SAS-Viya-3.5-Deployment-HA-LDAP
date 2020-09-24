@@ -1,0 +1,73 @@
+---
+# file: mt-launcher.yml
+
+- name: "Launcher setup for tenant"
+  hosts: ComputeServer
+  any_errors_fatal: true
+  gather_facts: false
+  become: false
+
+  vars:
+    tenant_launcher_conf: "{{ SASROOT }}/{{ DEPLOYMENT_ID }}/config/tenant_launcher.conf"
+    sas_tenant_instance: "{{ tenant_instance | default('default') }}"
+
+  tasks:
+    - name: Verify the sas-{{ DEPLOYMENT_ID }}-runlauncher-{{ sas_tenant_instance }} service is installed
+      register: register_var
+      stat:
+        path: /etc/init.d/sas-{{ DEPLOYMENT_ID }}-runlauncher-{{ sas_tenant_instance }}
+
+    - name: stopped sas-{{ DEPLOYMENT_ID }}-runlauncher-{{ sas_tenant_instance }} Service
+      become: 'yes'
+      become_user: root
+      service: name=sas-{{ DEPLOYMENT_ID }}-runlauncher-{{ sas_tenant_instance }} state=stopped
+      when: register_var.stat.exists is defined and register_var.stat.exists
+
+    - name: Create file
+      file:
+        path: "{{ tenant_launcher_conf }}"
+        state: touch
+        mode: "0664"
+        owner: "{{ tenant_admin }}"
+        group: "{{ tenant_admin_group }}"
+      become: yes
+      become_user: "{{ tenant_admin }}"
+
+    - name: Add environment variables
+      become: 'yes'
+      become_user: "{{ tenant_admin }}"
+      lineinfile:
+        dest: "{{ tenant_launcher_conf }}"
+        regexp: "{{ item.regex }}"
+        line: "{{ item.line}}"
+      with_items:
+        - { regex: "^\\s*export\\s+SASROOT\\s*=",             line: "export SASROOT='{{ SASROOT }}'" }
+        - { regex: "^\\s*export\\s+SASINSTANCE\\s*=",         line: "export SASINSTANCE='{{ sas_tenant_instance }}'" }
+        - { regex: "^\\s*export\\s+SASTENANT\\s*=",           line: "export SASTENANT='{{ sas_tenant }}'" }
+        - { regex: "^\\s*export\\s+SASTENANTADMIN\\s*=",      line: "export SASTENANTADMIN='{{ tenant_admin }}'" }
+        - { regex: "^\\s*export\\s+SASTENANTADMINGROUP\\s*=", line: "export SASTENANTADMINGROUP='{{ tenant_admin_group }}'" }
+        - { regex: "^\\s*export\\s+SASTENANTUSERSGROUP\\s*=", line: "export SASTENANTUSERSGROUP='{{ tenant_users_group }}'" }
+
+    - name: Run the script to create launcher and compute pieces
+      command: '{{ SASROOT }}/spre/home/bin/tenant_setup_launcher.sh  --file {{ tenant_launcher_conf }}'
+      become: yes
+      become_user: root
+
+    - name: started sas-{{ DEPLOYMENT_ID }}-runlauncher-{{ sas_tenant_instance }} Service
+      become: 'yes'
+      become_user: root
+      service: name=sas-{{ DEPLOYMENT_ID }}-runlauncher-{{ sas_tenant_instance }} state=started
+
+# Create the deployment specific files for compute server
+- include: computeserver.yml
+
+- name: connect
+  become_user: '{{ INSTALL_USER }}'
+  hosts: ComputeServer
+  any_errors_fatal: true
+  roles:
+  - role: connect-config
+    when: not ansible_check_mode
+  vars_files:
+  - ../vars.yml
+...

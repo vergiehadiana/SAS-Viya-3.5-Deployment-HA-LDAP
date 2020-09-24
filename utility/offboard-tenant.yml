@@ -1,0 +1,33 @@
+---
+# file: offboard-tenant.yml
+
+# Set the variables to be specific for the tenant.
+- hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      INSTALL_USER: '{{ tenant_admin }}'
+  - set_fact:
+      INSTALL_GROUP: '{{ tenant_admin_group }}'
+  - set_fact:
+      DEPLOYMENT_ID: '{{ sas_tenant }}'
+  - set_fact:
+      SASHOME: '{{ SASROOT }}/{{ DEPLOYMENT_ID }}/home'
+  - set_fact:
+      SAS_CONFIG_ROOT: '{{ SASROOT }}/{{ DEPLOYMENT_ID }}/config'
+
+# Run disable-tenant play
+- include: "{{ playbook_dir }}/../utility/disable-tenant.yml"
+
+# This runs the sas-admin CLI to offboard the specified tenant
+- include: "{{ playbook_dir }}/../internal/mt-cli-offboard.yml"
+
+# This drops the database-user and database that are owned by the specified tenant
+- include: "{{ playbook_dir }}/../internal/mt-database-remove.yml"
+
+# This removes file systems that are owned by the specified tenant
+- include: "{{ playbook_dir }}/../internal/mt-files-remove.yml"
+
+# This runs the sas-admin CLI to delete the specified tenant
+- include: "{{ playbook_dir }}/../internal/mt-cli-delete.yml"
+...

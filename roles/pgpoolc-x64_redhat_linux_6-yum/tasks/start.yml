@@ -1,0 +1,71 @@
+---
+- name: Create invocation variable directory
+  become: 'yes'
+  become_user: root
+  file: path="{{ SAS_CONFIG_ROOT }}/etc/sasdatasvrc/{{ item.SERVICE_NAME }}/pgpool{{ item.POOL_NUMBER }}" state=directory owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode=0755 recurse=yes
+  with_items:
+  - '{{ INVOCATION_VARIABLES[inventory_hostname][''pgpoolc''] }}'
+
+- name: Create invocation variable file
+  become: 'yes'
+  become_user: root
+  template: src="invocation_vars.j2" dest="{{ SAS_CONFIG_ROOT }}/etc/sasdatasvrc/{{ item.SERVICE_NAME }}/pgpool{{ item.POOL_NUMBER }}/sds_env_var.sh" owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode=0644
+  with_items:
+  - '{{ INVOCATION_VARIABLES[inventory_hostname][''pgpoolc''] }}'
+
+- name: Reset invocation_exec variable.
+  set_fact:
+    invocation_exec:
+      results: []
+
+- name: Execute Pre Deployment Setup
+  async: 250
+  become: 'yes'
+  become_user: root
+  command: bash -c '{{ SASHOME }}/libexec/sasdatasvrc/script/sds_pre_setup_pool.sh -config_path {{ SAS_CONFIG_ROOT }}/etc/sasdatasvrc/{{ item.SERVICE_NAME }}/pgpool{{ item.POOL_NUMBER }}/sds_env_var.sh'
+  poll: 0
+  register: invocation_exec
+  when: 'not ansible_check_mode '
+  with_items:
+  - '{{ INVOCATION_VARIABLES[inventory_hostname][''pgpoolc''] }}'
+
+- name: Await completion
+  async_status: jid={{ item.ansible_job_id }}
+  become: 'yes'
+  become_user: root
+  delay: 5
+  register: invocation_exec_results
+  retries: 50
+  until: invocation_exec_results.finished
+  when: not ansible_check_mode
+  with_items:
+  - '{{ invocation_exec.results }}'
+
+- name: Reset invocation_exec variable.
+  set_fact:
+    invocation_exec:
+      results: []
+
+- name: Execute Cluster Setup
+  async: 600
+  become: 'yes'
+  become_user: root
+  command: bash -c '{{ SASHOME }}/libexec/sasdatasvrc/script/sds_setup_pool.sh -config_path {{ SAS_CONFIG_ROOT }}/etc/sasdatasvrc/{{ item.SERVICE_NAME }}/pgpool{{ item.POOL_NUMBER }}/sds_env_var.sh'
+  poll: 0
+  register: invocation_exec
+  when: 'not ansible_check_mode '
+  with_items:
+  - '{{ INVOCATION_VARIABLES[inventory_hostname][''pgpoolc''] }}'
+
+- name: Await completion
+  async_status: jid={{ item.ansible_job_id }}
+  become: 'yes'
+  become_user: root
+  delay: 10
+  register: invocation_exec_results
+  retries: 60
+  until: invocation_exec_results.finished
+  when: not ansible_check_mode
+  with_items:
+  - '{{ invocation_exec.results }}'
+

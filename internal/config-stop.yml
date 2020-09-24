@@ -1,0 +1,174 @@
+---
+- include: vanalytics-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-sasvisualanalytics'] is defined
+- include: reportservicesgroup-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-reportservicesgroup'] is defined
+- include: reportpackages-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-report-packages'] is defined
+- include: reportdistribution-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-reportdistribution'] is defined
+- include: reportdata-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-report-data'] is defined
+- include: reportRenderer-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-report-renderer'] is defined
+- include: maps-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-maps'] is defined
+- include: drive-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-drive'] is defined
+- include: dmdpstu-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-datastudio'] is defined
+- include: dmdatahub-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-dataexplorer'] is defined
+- include: web-data-access-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-web-data-access'] is defined
+- include: themedesign-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-sasthemedesigner'] is defined
+- include: sasstudiov-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-studiov'] is defined
+- include: jobexecapp-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-jobexecapp'] is defined
+- include: graphbuilder-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-sasgraphbuilder'] is defined
+- include: envmgr-app-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-environmentmanager'] is defined
+- include: dmdplin-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-lineage'] is defined
+- include: codedebugui-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-codedebuggerui'] is defined
+- include: backupmgr-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-backupmanager'] is defined
+- include: types-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-types'] is defined
+- include: transfer-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-transfer'] is defined
+- include: thumbnails-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-thumbnails'] is defined
+- include: themes-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-themes'] is defined
+- include: themecontent-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-themecontent'] is defined
+- include: tenant-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-tenant'] is defined
+- include: templates-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-templates'] is defined
+- include: searchservice-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-search'] is defined
+- include: jobflowsch-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-jobflowscheduling'] is defined
+- include: scheduler-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-scheduler'] is defined
+- include: runlauncher-x64_redhat_linux_6-yum.yml sas_task=stop
+- include: reportViewerNaturalLanguageUnderstanding-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-reportviewernaturallanguageunderstanding'] is defined
+- include: annotations-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-annotations'] is defined
+- include: relationships-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-relationships'] is defined
+- include: projects-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-projects'] is defined
+- include: preferences-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-preferences'] is defined
+- include: notification-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-notifications'] is defined
+- include: naturalLanguageUnderstanding-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-naturalLanguageUnderstanding'] is defined
+- include: naturalLanguageGeneration-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-naturalLanguageGeneration'] is defined
+- include: appregistry-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-appregistry'] is defined
+- include: monitoring-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-monitoring'] is defined
+- include: mail-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-mail'] is defined
+- include: logon-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-saslogon'] is defined
+- include: links-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-links'] is defined
+- include: compservice-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-compute'] is defined
+- include: launcher-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-launcher'] is defined
+- include: dmtransformservices-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-dmtransformservices'] is defined
+- include: dmprofilesvc-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-dataprofiles'] is defined
+- include: dataplans-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-dataplans'] is defined
+- include: jobexecution-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-jobexecution'] is defined
+- include: import9-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-import9'] is defined
+- include: credentials-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-credentials'] is defined
+- include: identities-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-identities'] is defined
+- include: graphtemplates-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-graph-templates'] is defined
+- include: geo-enhancement-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-geo-enrichment'] is defined
+- include: fonts-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-fonts'] is defined
+- include: foldersrvc-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-folders'] is defined
+- include: filesservice-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-files'] is defined
+- include: dmdataservices-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-dmdataservices'] is defined
+- include: deviceManagement-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-device-management'] is defined
+- include: crossdmnprxy-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-crossdomainproxy'] is defined
+- include: configuratn-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-configuration'] is defined
+- include: comments-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-comments'] is defined
+- include: codedebugservice-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-codedebugger'] is defined
+- include: casmgmtcli-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-casmanagement-cli'] is defined
+- include: caslicense-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-cas-license'] is defined
+- include: casformats-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-cas-formats'] is defined
+- include: casacl-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-cas-access-management'] is defined
+- include: cas-row-sets-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-casrowsets'] is defined
+- include: cas-administration-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-cas-administration'] is defined
+- include: backupagent-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-backup-agent'] is defined
+- include: backup-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-deploymentBackup'] is defined
+- include: authorizatn-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-authorization'] is defined
+- include: audit-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-audit'] is defined
+- include: sasstudio-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-sasstudio'] is defined
+- include: sasgpudcfg-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-sasgpudcfg'] is defined
+- include: pgpoolc-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-pgpoolc'] is defined
+- include: sasdatasvrc-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-sasdatasvrc'] is defined
+- include: evmsvrops-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-evmsvrops'] is defined
+- include: evmcltsvcs-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-evmcltsvcs'] is defined
+- include: rabbitmq-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-rabbitmq-server'] is defined
+- include: mbagent-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-mbagent'] is defined
+- include: cacheserver-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-cacheserver'] is defined
+- include: cachelocator-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-cachelocator'] is defined
+- include: httpproxy-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-httpproxy'] is defined
+- include: localconsul-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-localconsul'] is defined
+- include: vault-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-vault'] is defined
+- include: consul-x64_redhat_linux_6-yum.yml sas_task=stop
+  when: sas_packages is defined and sas_packages.updatables is defined and sas_packages.updatables['sas-consul'] is defined

@@ -1,0 +1,12 @@
+---
+# defaults file for httpd-x64_redhat_linux_6-yum
+
+# The location of the file to create
+# When Consul is installed, this file will be replaced by consul template
+sas_httpd_conf: /etc/httpd/conf.d/proxy.conf
+
+additional_httpd_configuration:
+  empty:
+    context:
+    host:
+    port:

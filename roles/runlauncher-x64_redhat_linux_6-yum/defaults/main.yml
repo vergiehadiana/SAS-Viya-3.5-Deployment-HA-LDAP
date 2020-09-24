@@ -1,0 +1,18 @@
+---
+SERVICE_APP_NAME: runlauncher
+SERVICE_FACET: sas-run-launcher
+SERVICE_INSTANCES_COUNT: '{{ play_hosts | length }}'
+SERVICE_NAME: '{{ SERVICE_NAME_DEFAULT }}'
+SERVICE_PRODUCT_NAME: runlauncher
+SERVICE_SYSCONFIG_PATH: /etc/sysconfig/sas/{{ SERVICE_NAME }}
+SERVICE_YUM_PACKAGE: sas-runlauncher
+consumer_items:
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.1:
+    APPNAME: runlauncher
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/sas-run-launcher/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: sas-run-launcher
+    DESTINATION_destination.file.name: vault.token

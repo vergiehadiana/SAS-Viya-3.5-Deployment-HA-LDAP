@@ -1,0 +1,4 @@
+- name: Include redhat host-setup role
+  include_role:
+    name: host-setup-x64_redhat_linux_6-yum
+  when: inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([])

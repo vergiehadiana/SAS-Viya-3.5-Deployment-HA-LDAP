@@ -1,0 +1,16 @@
+---
+- name: Execute Create deployment share folder
+  become: 'yes'
+  become_user: root
+  command: mkdir -p {{ SASHOME }}/share/deployment
+
+- name: Execute Generate scripts that can be used in the management of CAS
+  become: 'yes'
+  become_user: root
+  command: '{{ SASHOME }}/bin/sas-admin cas generate-auxiliary-scripts --output-location {{ SASHOME }}/share/deployment'
+
+- name: Execute Set caslib script permissions
+  become: 'yes'
+  become_user: root
+  command: chown {{ INSTALL_USER }}:{{ INSTALL_GROUP }} {{ SASHOME }}/share/deployment/add_new_caslib_controls.sh {{ SASHOME }}/share/deployment/md5.txt
+

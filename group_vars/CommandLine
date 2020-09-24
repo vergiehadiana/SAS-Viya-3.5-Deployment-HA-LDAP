@@ -1,0 +1,173 @@
+---
+sas_host_group_variables_CommandLine:
+  installables-x64_redhat_linux_6-yum:
+    audit-cli:
+      SERVICE_APP_NAME: auditcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: audit-cli
+      SERVICE_YUM_PACKAGE: sas-audit-cli
+    authorcli:
+      SERVICE_APP_NAME: authorcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: authorcli
+      SERVICE_YUM_PACKAGE: sas-authorcli
+    backupcli:
+      SERVICE_APP_NAME: backupcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: backupcli
+      SERVICE_YUM_PACKAGE: sas-backupcli
+    bootstrap-config:
+      SERVICE_APP_NAME: bootstrapcfg
+      SERVICE_MEMORY_NEEDED: 3
+      SERVICE_PRODUCT_NAME: bootstrap-config
+      SERVICE_YUM_PACKAGE: sas-bootstrap-config
+    casmanagement-cli:
+      SERVICE_APP_NAME: casmgmtcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: casmanagement-cli
+      SERVICE_YUM_PACKAGE: sas-casmanagement-cli
+    certframe:
+      SERVICE_APP_NAME: certframe
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: certframe
+      SERVICE_YUM_PACKAGE: sas-certframe
+    cleanutils:
+      SERVICE_APP_NAME: cleanutils
+      SERVICE_MEMORY_NEEDED: 32
+      SERVICE_PRODUCT_NAME: cleanutils
+      SERVICE_YUM_PACKAGE: sas-cleanutils
+    compsrvcli:
+      SERVICE_APP_NAME: compsrvcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: compsrvcli
+      SERVICE_YUM_PACKAGE: sas-compsrvcli
+    configuration-cli:
+      SERVICE_APP_NAME: configcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: configuration-cli
+      SERVICE_YUM_PACKAGE: sas-configuration-cli
+    csq:
+      SERVICE_APP_NAME: csq
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: csq
+      SERVICE_YUM_PACKAGE: sas-csq
+    devicemanagement-cli:
+      SERVICE_APP_NAME: devmgmtcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: devicemanagement-cli
+      SERVICE_YUM_PACKAGE: sas-devicemanagement-cli
+    envesntl:
+      SERVICE_APP_NAME: envesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: envesntl
+      SERVICE_YUM_PACKAGE: sas-envesntl
+    evmcltsvcs:
+      SERVICE_APP_NAME: evmcltsvcs
+      SERVICE_MEMORY_NEEDED: 64
+      SERVICE_PRODUCT_NAME: evmcltsvcs
+      SERVICE_YUM_PACKAGE: sas-evmcltsvcs
+    evmcollect:
+      SERVICE_APP_NAME: evmcollect
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: evmcollect
+      SERVICE_YUM_PACKAGE: sas-evmcollect
+    folderscli:
+      SERVICE_APP_NAME: folderscli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: folderscli
+      SERVICE_YUM_PACKAGE: sas-folderscli
+    fonts-cli:
+      SERVICE_APP_NAME: fontscli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: fonts-cli
+      SERVICE_YUM_PACKAGE: sas-fonts-cli
+    healthcheck-cli:
+      SERVICE_APP_NAME: healthcheckcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: healthcheck-cli
+      SERVICE_YUM_PACKAGE: sas-healthcheck-cli
+    identitiecli:
+      SERVICE_APP_NAME: identitiecli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: identitiecli
+      SERVICE_YUM_PACKAGE: sas-identitiecli
+    inventory-cli:
+      SERVICE_APP_NAME: inventorycli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: inventory-cli
+      SERVICE_YUM_PACKAGE: sas-inventory-cli
+    javaesntl:
+      SERVICE_APP_NAME: javaesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: javaesntl
+      SERVICE_YUM_PACKAGE: sas-javaesntl
+    job-cli:
+      SERVICE_APP_NAME: jobcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: job-cli
+      SERVICE_YUM_PACKAGE: sas-job-cli
+    jobflows-cli:
+      SERVICE_APP_NAME: jobflwschcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: jobflows-cli
+      SERVICE_YUM_PACKAGE: sas-jobflows-cli
+    launcher-cli:
+      SERVICE_APP_NAME: launchercli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: launcher-cli
+      SERVICE_YUM_PACKAGE: sas-launcher-cli
+    licenses-cli:
+      SERVICE_APP_NAME: licensescli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: licenses-cli
+      SERVICE_YUM_PACKAGE: sas-licenses-cli
+    localconsul:
+      SERVICE_APP_NAME: localconsul
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: localconsul
+      SERVICE_YUM_PACKAGE: sas-localconsul
+    mirrormgr:
+      SERVICE_APP_NAME: mirrormgr
+      SERVICE_MEMORY_NEEDED: 64
+      SERVICE_PRODUCT_NAME: mirrormgr
+      SERVICE_YUM_PACKAGE: sas-mirrormgr
+    orchestration-cli:
+      SERVICE_APP_NAME: orchstrtncli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: orchestration-cli
+      SERVICE_YUM_PACKAGE: sas-orchestration-cli
+    qkbs-cli:
+      SERVICE_APP_NAME: qkbscli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: qkbs-cli
+      SERVICE_YUM_PACKAGE: sas-qkbs-cli
+    reports-cli:
+      SERVICE_APP_NAME: reportscli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: reports-cli
+      SERVICE_YUM_PACKAGE: sas-reports-cli
+    restorecli:
+      SERVICE_APP_NAME: restorecli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: restorecli
+      SERVICE_YUM_PACKAGE: sas-restorecli
+    runjavasvc:
+      SERVICE_APP_NAME: runjavasvc
+      SERVICE_MEMORY_NEEDED: 1
+      SERVICE_PRODUCT_NAME: runjavasvc
+      SERVICE_YUM_PACKAGE: sas-runjavasvc
+    sasadmclnt:
+      SERVICE_APP_NAME: sasadmclnt
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: sasadmclnt
+      SERVICE_YUM_PACKAGE: sas-sasadmclnt
+    tenant-cli:
+      SERVICE_APP_NAME: tenantcli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: tenant-cli
+      SERVICE_YUM_PACKAGE: sas-tenant-cli
+    transfercli:
+      SERVICE_APP_NAME: transfercli
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: transfercli
+      SERVICE_YUM_PACKAGE: sas-transfercli

@@ -1,0 +1,11 @@
+---
+- name: computeserver
+  become_user: '{{ INSTALL_USER }}'
+  hosts: ComputeServer
+  any_errors_fatal: true
+  roles:
+  - computeserver
+  vars_files:
+  - ../vars.yml
+
+...

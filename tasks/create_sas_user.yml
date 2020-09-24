@@ -1,0 +1,5 @@
+---
+- name: Ensure installation user and group are present
+  become: yes
+  become_user: root
+  script: "../scripts/create_sas_user_group.sh"

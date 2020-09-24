@@ -1,0 +1,12 @@
+export CONSUL_PORT="{{ CONSUL_EXTERNAL_ADDRESS_PORT }}"
+export INSTALL_GROUP="{{ INSTALL_GROUP }}"
+export INSTALL_USER="{{ INSTALL_USER }}"
+export INVENTORY_HOSTNAME="{{ inventory_hostname }}"
+export SASCONFIG="{{ SAS_CONFIG_ROOT }}/etc/sasdatasvrc"
+export SASHOME="{{ SASHOME }}"
+export SAS_LOG_DIR="{{ SAS_CONFIG_ROOT }}/var/log/sasdatasvrc"
+
+export NODE_NUMBER={{ item.NODE_NUMBER | string | quote }}
+export PG_PORT={{ item.PG_PORT | string | quote }}
+export SANMOUNT={{ item.SANMOUNT | string | quote }}
+export SERVICE_NAME={{ item.SERVICE_NAME | string | quote }}

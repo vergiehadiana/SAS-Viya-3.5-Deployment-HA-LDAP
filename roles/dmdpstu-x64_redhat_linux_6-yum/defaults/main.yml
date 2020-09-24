@@ -1,0 +1,18 @@
+---
+SERVICE_APP_NAME: dmdpstu
+SERVICE_FACET: SASDataStudio
+SERVICE_INSTANCES_COUNT: '{{ play_hosts | length }}'
+SERVICE_NAME: '{{ SERVICE_NAME_DEFAULT }}'
+SERVICE_PRODUCT_NAME: datastudio
+SERVICE_SYSCONFIG_PATH: /etc/sysconfig/sas/{{ SERVICE_NAME }}
+SERVICE_YUM_PACKAGE: sas-datastudio
+consumer_items:
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.1:
+    APPNAME: dmdpstu
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/SASDataStudio/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: SASDataStudio
+    DESTINATION_destination.file.name: value.token

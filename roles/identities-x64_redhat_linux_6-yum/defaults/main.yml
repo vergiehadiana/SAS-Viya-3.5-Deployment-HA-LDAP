@@ -1,0 +1,18 @@
+---
+SERVICE_APP_NAME: identities
+SERVICE_FACET: identities
+SERVICE_INSTANCES_COUNT: '{{ play_hosts | length }}'
+SERVICE_NAME: '{{ SERVICE_NAME_DEFAULT }}'
+SERVICE_PRODUCT_NAME: identities
+SERVICE_SYSCONFIG_PATH: /etc/sysconfig/sas/{{ SERVICE_NAME }}
+SERVICE_YUM_PACKAGE: sas-identities
+consumer_items:
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.1:
+    APPNAME: identities
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/identities/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: identities
+    DESTINATION_destination.file.name: vault.token

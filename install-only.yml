@@ -1,0 +1,11 @@
+---
+# file: install-only.yml
+- hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      orchestration_root: "{{ playbook_dir }}"
+
+- include: internal/deploy-preinstall.yml
+- include: internal/deploy-install.yml
+- include: internal/deploy-complete.yml

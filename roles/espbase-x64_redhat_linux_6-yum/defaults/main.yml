@@ -1,0 +1,9 @@
+---
+SERVICE_APP_NAME: espbase
+SERVICE_FACET: espbase
+SERVICE_INSTANCES_COUNT: '{{ play_hosts | length }}'
+SERVICE_NAME: '{{ SERVICE_NAME_DEFAULT }}'
+SERVICE_PRODUCT_NAME: espbase
+SERVICE_SYSCONFIG_PATH: /etc/sysconfig/sas/{{ SERVICE_NAME }}
+SERVICE_YUM_PACKAGE: sas-espbase
+consumer_items: {}

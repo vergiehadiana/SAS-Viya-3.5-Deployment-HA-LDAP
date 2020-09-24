@@ -1,0 +1,98 @@
+---
+- block:
+  - name: Verify the presence of a CA certificate
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    register: cacert
+    stat: path='{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/sas.crt'
+
+  - name: Create temporary directory on Ansible machine
+    local_action: shell mktemp -d
+    run_once: yes
+    register: tmpdir
+
+  - name: Fetch certificates
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    fetch: src="{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/sas.crt" dest="{{ tmpdir.stdout }}/{{ inventory_hostname_short }}-ca.crt" flat=yes fail_on_missing=yes
+    when: (inventory_hostname in COMBINED_GROUP) and (cacert.stat.exists is defined and cacert.stat.exists == true)
+
+  - name: Verify the presence of the original certificate
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    register: orgcert
+    stat: path="{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/{{ hostvars[item]['inventory_hostname_short'] }}-ca.crt"
+    with_items: '{{ COMBINED_GROUP }}'
+
+  - name: Backup original certificate
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    shell: 'mv {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/{{ hostvars[item.0][''inventory_hostname_short''] }}-ca.crt {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/{{ hostvars[item.0][''inventory_hostname_short''] }}-ca.crt.orig'
+    when: item.1.stat.exists is defined and item.1.stat.exists == true
+    with_together:
+    - '{{ COMBINED_GROUP }}'
+    - '{{ orgcert.results }}'
+
+  - name: Distribute certificates
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    copy: src="{{ tmpdir.stdout }}/" dest="{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/"
+
+  - name: Verify the presence of distributed CA certificate
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    register: distcert
+    stat: path="{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/{{ hostvars[item]['inventory_hostname_short'] }}-ca.crt"
+    with_items: '{{ COMBINED_GROUP }}'
+
+  - name: Update trust stores
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-merge-certificates.sh {{ SASHOME }} {{ SAS_CONFIG_ROOT }}'
+
+  - name: Verify certificate validity with trustedcerts.pem
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    ignore_errors: 'yes'
+    register: verifypem
+    shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-crypto-management verify --cert {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tls/certs/sas.crt --trust-bundle {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem --bundle-form pem'
+    when: inventory_hostname in COMBINED_GROUP
+
+  - name: Verify certificate validity with trustedcerts.jks
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    ignore_errors: 'yes'
+    register: verifyjks
+    shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-crypto-management verify --cert {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tls/certs/sas.crt --trust-bundle {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.jks --bundle-form jks'
+    when: inventory_hostname in COMBINED_GROUP
+
+  - name: Clean up backups
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    delegate_to: '{{ item }}'
+    file: path="{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/{{ inventory_hostname_short }}-ca.crt.orig" state=absent
+    when: (verifypem.rc is defined and verifypem.rc == 0) and (verifyjks.rc is defined and verifyjks.rc == 0)
+    with_items: '{{ groups[''sas_all''] }}'
+
+  - name: Reinstate backups
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    delegate_to: '{{ item }}'
+    shell: 'mv {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/{{ inventory_hostname_short }}-ca.crt.orig {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/{{ inventory_hostname_short }}-ca.crt'
+    when: (verifypem.rc is defined and verifypem.rc != 0) or (verifyjks.rc is defined and verifyjks.rc != 0)
+    with_items: '{{ groups[''sas_all''] }}'
+
+  - name: Integrate any reinstated backups into trust stores
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-merge-certificates.sh {{ SASHOME }} {{ SAS_CONFIG_ROOT }}'
+
+  - name: Clean up temp folder on local machine
+    delegate_to: 127.0.0.1
+    file: path="{{ tmpdir.stdout }}" state=absent
+    run_once: true
+
+  - name: Check for failures
+    fail: msg="The certificate at {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tls/certs/sas.crt failed verification against one of the trust bundles. Please review the log output."
+    failed_when: (verifypem.rc is defined and verifypem.rc != 0) or (verifyjks.rc is defined and verifyjks.rc != 0)
+  when: COMBINED_GROUP | length > 0

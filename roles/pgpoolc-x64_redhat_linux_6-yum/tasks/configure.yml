@@ -1,0 +1,24 @@
+---
+- include: '{{ orchestration_root }}/roles/framework/tasks/main.yml'
+  loop_control:
+    loop_var: consumer_data
+  with_dict: '{{ consumer_items | default({}) }}'
+
+- name: Confirm that pgpoolc variable definitions exist for this system
+  fail: msg="Please add pgpoolc variable definitions for the system named '{{ inventory_hostname }}'"
+  failed_when: INVOCATION_VARIABLES[inventory_hostname] is not defined or INVOCATION_VARIABLES[inventory_hostname]['pgpoolc'] is not defined
+
+- name: Create invocation variable directory
+  become: 'yes'
+  become_user: root
+  file: path="{{ SAS_CONFIG_ROOT }}/etc/sasdatasvrc/{{ item.SERVICE_NAME }}/pgpool{{ item.POOL_NUMBER }}" state=directory owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode=0755 recurse=yes
+  with_items:
+  - '{{ INVOCATION_VARIABLES[inventory_hostname][''pgpoolc''] }}'
+
+- name: Create invocation variable file
+  become: 'yes'
+  become_user: root
+  template: src="invocation_vars.j2" dest="{{ SAS_CONFIG_ROOT }}/etc/sasdatasvrc/{{ item.SERVICE_NAME }}/pgpool{{ item.POOL_NUMBER }}/sds_env_var.sh" owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode=0644
+  with_items:
+  - '{{ INVOCATION_VARIABLES[inventory_hostname][''pgpoolc''] }}'
+

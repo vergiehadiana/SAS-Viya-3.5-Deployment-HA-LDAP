@@ -1,0 +1,80 @@
+---
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+CONSUL_BIND_EXTERNAL\s*=" line="export CONSUL_BIND_EXTERNAL='{{ consul_bind_adapter | default('') }}'"
+  register: config_change_0
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+CONSUL_BOOTSTRAP_EXPECT\s*=" line="export CONSUL_BOOTSTRAP_EXPECT='{{ SERVICE_INSTANCES_COUNT }}'"
+  register: config_change_1
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+CONSUL_DATACENTER_NAME\s*=" line="export CONSUL_DATACENTER_NAME='{{ DEPLOYMENT_LABEL }}'"
+  register: config_change_2
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+CONSUL_SERVER_FLAG\s*=" line="export CONSUL_SERVER_FLAG='true'"
+  register: config_change_3
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+CONSUL_SERVER_LIST\s*=" line="export CONSUL_SERVER_LIST='{{ hostvars | to_fqdn_list(groups, 'consul') | join(', ') }}'"
+  register: config_change_4
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+DISABLE_CONSUL_HTTP_PORT\s*=" line="export DISABLE_CONSUL_HTTP_PORT='{{ DISABLE_CONSUL_HTTP_PORT }}'"
+  register: config_change_5
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+SECURE_CONSUL\s*=" line="export SECURE_CONSUL='{{ SECURE_CONSUL }}'"
+  register: config_change_6
+  when: not ansible_check_mode
+
+- name: Execute create consul self-signed certificate
+  become: 'yes'
+  become_user: root
+  command: bash -c '{{ SASHOME }}/bin/consul_generate_cert.sh'
+
+- name: Execute update local truststore
+  become: 'yes'
+  command: bash -c '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-merge-certificates.sh {{ SASHOME }} {{ SAS_CONFIG_ROOT }}'
+
+- name: Ensure {{ SERVICE_NAME }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name={{ SERVICE_NAME }} state=started
+
+- name: Restart service if necessary.
+  become: 'yes'
+  become_user: root
+  service: name={{ SERVICE_NAME }} state=restarted
+  when: not service_start.changed and (config_change_0.changed or config_change_1.changed or config_change_2.changed or config_change_3.changed or config_change_4.changed or config_change_5.changed or config_change_6.changed)
+
+- name: Execute sleep 30
+  become: 'yes'
+  command: sleep 30
+
+- name: Execute confirm consul can be accessed
+  become: 'yes'
+  become_user: root
+  command: bash -c 'source {{ SAS_CONFIG_ROOT }}/consul.conf && {{ SASHOME }}/bin/sas-bootstrap-config status leader'
+

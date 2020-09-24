@@ -1,0 +1,16 @@
+---
+- name: dataplans on x64_redhat_linux_6-yum
+  any_errors_fatal: true
+  become_user: '{{ INSTALL_USER }}'
+  hosts: DataServices:&sas-hosts-x64_redhat_linux_6-yum
+  pre_tasks:
+  - name: include soe.yml
+    include_vars: '{{ item }}'
+    with_first_found:
+    - '{{ orchestration_root }}/soe.yml'
+    - '{{ orchestration_root }}/internal/soe_defaults.yml'
+  roles:
+  - dataplans-x64_redhat_linux_6-yum
+  vars_files:
+  - ../vars.yml
+

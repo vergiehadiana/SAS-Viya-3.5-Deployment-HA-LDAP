@@ -1,0 +1,12 @@
+---
+- name: Execute replace_httpd_default_cert.sh
+  become: 'yes'
+  become_user: root
+  command: /opt/sas/viya/home/bin/replace_httpd_default_cert.sh
+
+- name: Ensure {{ SERVICE_NAME }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name={{ SERVICE_NAME }} state=started
+

@@ -1,0 +1,10 @@
+---
+- name: Copy the hadooptracer script to the Hadoop cluster host
+  hosts: programming
+  any_errors_fatal: true
+  gather_facts: True
+  become: no
+  vars_files:
+  - ../vars.yml
+  roles:
+    - hadooptracer-copy-tolocal

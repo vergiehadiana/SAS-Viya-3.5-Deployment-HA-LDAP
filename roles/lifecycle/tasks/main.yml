@@ -1,0 +1,135 @@
+---
+- name: Lifecycle validation
+  run_once: True
+  when:
+    - VERIFY_DEPLOYMENT
+    - REPOSITORY_WAREHOUSE|lower != 'none'
+  block:
+    - name: Check if sas-lifecycle is already installed
+      command: rpm -q sas-lifecycle
+      args:
+        warn: no
+      become: True
+      become_user: root
+      register: sas_lifecycle_query
+      failed_when: sas_lifecycle_query.rc > 1
+      changed_when: False
+
+    - set_fact:
+        is_sas_lifecycle_installed: "{{ sas_lifecycle_query.rc == 0 }}"
+
+    - name: Update SAS Lifecycle for Redhat
+      yum:
+        name: sas-lifecycle
+        state: latest
+      become: True
+      become_user: root
+      ignore_errors: yes
+      when: inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([]) or
+            inventory_hostname in groups['sas-hosts-ppc64le_redhat_linux_7-yum'] | default([])
+
+    - name: Update SAS Lifecycle for SUSE
+      zypper:
+        name: sas-lifecycle
+        state: latest
+      become: True
+      become_user: root
+      ignore_errors: yes
+      when: inventory_hostname in groups['sas-hosts-x64_suse_linux_12-yum'] | default([]) or
+            inventory_hostname in groups['sas-hosts-ppc64le_suse_linux_12-yum'] | default([])
+
+    - set_fact:
+        validate_executable: "{{ SASHOME }}/libexec/lifecycle/bin/sas-lifecycle-validate-snapshot"
+
+    - name: Check for validate executable
+      stat:
+        path: "{{ validate_executable }}"
+        follow: yes
+      register: validate_executable_stat_results
+
+    - name: Perform validation of playbook metadata
+      when: validate_executable_stat_results.stat.exists | default(false)
+      block:
+        - name: Create temporary lifecycle directory
+          register: lifecycle_dir
+          tempfile:
+            state: directory
+            prefix: lifecycle-files
+
+        - set_fact:
+            # For substituting into repository_warehouse_create_v1.json.j2
+            ca_certificate: "{{ lookup('file', SAS_CERT_PATH) }}"
+            entitlement_certificate: "{{ lookup('file', ENTITLEMENT_PATH) }}"
+            lifecycle_validate_name: "{{ 'lifecycle_validate_' + ansible_date_time.iso8601 }}"
+            # For processing in the playbook
+            entitlement_dest: "{{ lifecycle_dir['path'] }}/entitlement.cert"
+            cacert_dest: "{{ lifecycle_dir['path'] }}/ca.cert"
+            warehouse_dest: "{{ lifecycle_dir['path'] }}/warehouse.json"
+            snapshot_dest: "{{ lifecycle_dir['path'] }}/snapshot.json"
+
+        - name: Copy entitlement certificate
+          copy:
+            src: "{{ ENTITLEMENT_PATH }}"
+            dest: "{{ entitlement_dest }}"
+
+        - name: Copy ca certificate
+          copy:
+            src: "{{ SAS_CERT_PATH }}"
+            dest: "{{ cacert_dest }}"
+
+        - name: Create repository warehouse lifecycle JSON file
+          template:
+            src: "repository_warehouse_create_v1.json.j2"
+            dest: "{{ warehouse_dest }}"
+
+        - name: "Create software group sets lifecycle JSON file: Copy"
+          copy:
+            src: "softwareGroupSets.json"
+            dest: "{{ snapshot_dest }}"
+
+        - name: "Create software group sets lifecycle JSON file: Format beginning"
+          lineinfile:
+            path: "{{ snapshot_dest }}"
+            insertbefore: BOF
+            line: '{"softwareGroupSets":'
+
+        - name: "Create software group sets lifecycle JSON file: Format ending"
+          lineinfile:
+            path: "{{ snapshot_dest }}"
+            insertafter: EOF
+            line: '}'
+
+        - name: Validate playbook metadata
+          command: "{{ validate_executable }} {{ warehouse_dest }} {{ snapshot_dest }}"
+          environment:
+            LCS_VERBOSE: "{% if ansible_verbosity | default(1) < 2 %}off{% else %}on{% endif %}"
+          changed_when: False
+
+      always:
+        - name: Delete temporary lifecycle directory
+          when: lifecycle_dir is defined
+          file:
+            state: absent
+            path: "{{ lifecycle_dir['path'] }}"
+
+        - name: Uninstall sas-lifecycle if not previously installed for Redhat
+          yum:
+            name: sas-lifecycle
+            state: absent
+          become: True
+          become_user: root
+          when:
+            - not is_sas_lifecycle_installed
+            - inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([]) or
+              inventory_hostname in groups['sas-hosts-ppc64le_redhat_linux_7-yum'] | default([])
+
+        - name: Uninstall sas-lifecycle if not previously installed for SUSE
+          zypper:
+            name: sas-lifecycle
+            state: absent
+          become: True
+          become_user: root
+          when:
+            - not is_sas_lifecycle_installed
+            - inventory_hostname in groups['sas-hosts-x64_suse_linux_12-yum'] | default([]) or
+              inventory_hostname in groups['sas-hosts-ppc64le_suse_linux_12-yum'] | default([])

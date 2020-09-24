@@ -1,0 +1,19 @@
+# we will expand this role to test if we got all the jars for EP and other dependency products.
+- name: Check if SAS/ACCESS Interface to Hadoop (SPRE) is installed on the sas programming host
+  stat:
+    path: "{{ SPREHOME }}/SASFoundation/etc/checkaccesshdp.sas"
+  register: found_sashome
+
+# Currently the same logic is used to check whether the Hadoop cluster is Kerberos enabled or not.
+- name: Check if Hadoop cluster is Kerberos enabled
+  command: grep kerberos "{{ hadoop_conf_home }}/{{ conf_folder_name }}/core-site.xml"
+  register: cluster_is_kerberized
+  failed_when: false
+
+- set_fact:
+      sas_prog_name: "checkaccesshdp_k.sas"
+  when: cluster_is_kerberized.rc == 0
+
+- name: Execute the SAS/Access Interface to Hadoop (SPRE) program to verify that the required Hadoop JAR and config files exist in the specified location
+  shell: '{{ SPREHOME }}/SASFoundation/sas  -nodms -noterminal -log /tmp/checkaccesshdp{{ ansible_date_time.epoch }}.log -noautoexec -sysparm {{ hadoop_conf_home }}/{{ lib_folder_name }},/user/test,/user/test/,{{ hadoop_conf_home }}/{{ conf_folder_name }},{{ hostvars[groups[''hadooptracr1''][0]][''ansible_host''] }},default,{{ hive_username }},hive,{{ hive_server2_port }} {{ SPREHOME }}/SASFoundation/etc/{{ sas_prog_name }}'
+  when: "found_sashome.stat.exists == True and 'SAS/ACCESS Interface to Hadoop (SPRE)' in sasenv_soe_groupinstall"

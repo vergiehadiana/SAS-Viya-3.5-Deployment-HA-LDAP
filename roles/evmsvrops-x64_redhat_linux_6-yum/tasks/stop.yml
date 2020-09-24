@@ -1,0 +1,23 @@
+---
+- name: Verify the sas-{{ DEPLOYMENT_ID }}-stream-evdm-{{ INSTANCE_ID }} service is installed
+  register: register_var
+  stat:
+    path: /etc/init.d/sas-{{ DEPLOYMENT_ID }}-stream-evdm-{{ INSTANCE_ID }}
+
+- name: If sas-{{ DEPLOYMENT_ID }}-stream-evdm-{{ INSTANCE_ID }} service is installed, ensure it is stopped
+  become: 'yes'
+  become_user: root
+  service: name=sas-{{ DEPLOYMENT_ID }}-stream-evdm-{{ INSTANCE_ID }} state=stopped
+  when: register_var.stat.exists is defined and register_var.stat.exists
+
+- name: Verify the sas-{{ DEPLOYMENT_ID }}-ops-agentsrv-{{ INSTANCE_ID }} service is installed
+  register: register_var
+  stat:
+    path: /etc/init.d/sas-{{ DEPLOYMENT_ID }}-ops-agentsrv-{{ INSTANCE_ID }}
+
+- name: If sas-{{ DEPLOYMENT_ID }}-ops-agentsrv-{{ INSTANCE_ID }} service is installed, ensure it is stopped
+  become: 'yes'
+  become_user: root
+  service: name=sas-{{ DEPLOYMENT_ID }}-ops-agentsrv-{{ INSTANCE_ID }} state=stopped
+  when: register_var.stat.exists is defined and register_var.stat.exists
+

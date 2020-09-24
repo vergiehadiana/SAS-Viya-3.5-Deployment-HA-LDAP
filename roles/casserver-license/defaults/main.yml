@@ -1,0 +1,19 @@
+---
+# defaults file for casserver-license
+
+sas_root_dir: "{{ SASROOT }}"
+sas_deployment_id: "{{ DEPLOYMENT_ID }}"
+sas_install_dir: "{{ sas_root_dir + '/' + sas_deployment_id + '/home/SASFoundation' }}"
+cas_instance: "{{ INSTANCE_ID }}"
+
+cas_rpm_user: cas
+cas_rpm_group: "{{ INSTALL_GROUP }}"
+
+# The path that will be created on all nodes in the grid that will store the log files.
+# This will be added to the logcfg.xml file
+# casenv_log_dir: "{{'/var/log/sas/viya/cas/' + cas_instance }}"
+casenv_log_dir: "{{ sas_root_dir + '/' + sas_deployment_id + '/config/var/log/sas/cas/' + cas_instance }}"
+
+# Location created on all hosts on the grid
+casenv_config_dir: "{{ sas_root_dir + '/' + sas_deployment_id + '/config/etc/cas' }}"
+

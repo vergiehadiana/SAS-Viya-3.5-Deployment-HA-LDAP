@@ -1,0 +1,14 @@
+---
+# tasks file for ecosystem-packages
+
+- debug: var=extra_packages
+  when: ( sas_deploy_debug | bool ) == true
+
+- name: Get additional packages
+  yum:
+    name: "{{ item.key }}"
+    state: present
+  become: yes
+  with_dict: "{{ extra_packages }}"
+  when: ( setup_sas_packages | bool ) == true and extra_packages is defined
+

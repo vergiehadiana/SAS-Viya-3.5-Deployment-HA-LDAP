@@ -1,0 +1,19 @@
+---
+- name: fonts on x64_redhat_linux_6-yum - configure-and-start
+  include_role:
+    name: fonts-x64_redhat_linux_6-yum
+    tasks_from: configure-and-start
+  when: sas_task | default('start') == 'start'
+
+- name: fonts on x64_redhat_linux_6-yum - start
+  include_role:
+    name: fonts-x64_redhat_linux_6-yum
+    tasks_from: start
+  when: sas_task | default('start') == 'start-only'
+
+- name: fonts on x64_redhat_linux_6-yum - stop
+  include_role:
+    name: fonts-x64_redhat_linux_6-yum
+    tasks_from: stop
+  when: sas_task | default('start') == 'stop'
+

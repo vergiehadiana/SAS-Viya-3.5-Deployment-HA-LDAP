@@ -1,0 +1,11 @@
+---
+- name: spawner
+  become_user: '{{ INSTALL_USER }}'
+  hosts: programming
+  any_errors_fatal: true
+  roles:
+  - spawner-config
+  vars_files:
+  - ../vars.yml
+
+...

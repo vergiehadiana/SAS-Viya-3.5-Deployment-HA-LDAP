@@ -1,0 +1,196 @@
+# The value of the sas_tenant represents the tenant ID.
+# The value is used in creating directories and services for the
+# Cloud Analytic Server, SAS Compute Server, SAS Object Spawner and SAS/CONNECT.
+# It is also used as the id in SAS Environment Manager. Unacceptable values are
+# "viya", "spre" and anything beginning with "sas". Do not start the string with
+# numerics and do not use spaces or non alpha-numeric characters in the name.
+
+sas_tenant: "< replace me >"
+
+# If skip_ldap_config is set to "true", the provider admin will need to configure
+# LDAP and add the tenant admin to the tenant instance once the onboard process
+# is complete.
+# Note: When skip_ldap_config is "true", enable_tenant will always be treated as "false".
+
+skip_ldap_config: "false"
+
+# If validate_subdomain is set to "false", the onboard play will not attempt to
+# validate that the DNS for the tenant was set up correctly before starting the
+# onboard process.
+
+validate_subdomain: "true"
+
+# If delete_tenant is set to "true", the offboard play will delete the tenant ID
+# reserved for the tenant.
+delete_tenant: "true"
+
+# If stop_services is set to "true", the play to disable a tenant will stop any
+# tenant specific services associated with the tenant.
+stop_services: "true"
+
+# If authorize_provider_admin is set to "true", the play to onboard a tenant will
+# authorize the user ID "sasprovider" and the password specified by
+# tenant_provider_pwd to access the tenant's environment.
+authorize_provider_admin: "true"
+
+# If enable_tenant is set to "true", the play to onboard a tenant will enable
+# access to the tenant's environment.
+# Note: When skip_ldap_config is "true", enable_tenant will always be treated as "false".
+enable_tenant: "true"
+
+# The tenant admin is the owner of files and directories on disk as well as the
+# process owner of the tenant-specific services. The tenant_admin_group defines
+# the primary group that the tenant administrator belongs to.
+
+tenant_admin: "< replace me >"
+tenant_admin_group: "< replace me >"
+
+# The tenant users group is the primary group for all non-administrator tenant users
+
+tenant_users_group: "< replace me >"
+
+# This is the password for the "sasprovider" user that is a tenant super user. This
+# user allows a provider to log into the tenant space.
+
+tenant_provider_pwd: "< replace me >"
+
+# The provider admin and password are needed to make SAS Tenant command line calls
+# to create and onboard the tenant as well as add the "sasprovider" user to the
+# tenant. By default "sasboot" will be used but this can be any user in the
+# SASAdministrators group for the provider tenant.
+
+provider_admin: "sasboot"
+provider_admin_pwd: "< replace me >"
+
+# Set the ports that SAS/CONNECT will listen on.
+# The management port is used for monitoring the health
+# of the SAS/CONNECT Spawner. Typically these run on ports 17551 and 17541 respectively.
+
+sasenv_connect_port: < replace me >
+sasenv_connect_mgmt_port: < replace me >
+
+# Set the first of two consecutive ports on which the tenant-specific SAS Data Agent
+# will run. Typically this port is set to 25143 for the first tenant to be onboarded,
+# to 25145 for the second tenant, and so on. The ports will be used on all hosts in the
+# "DataAgent" host group.
+
+data_agent_fsnet_port: < replace me >
+
+# Set the port that the tenant-specific SAS Object Spawner will run on.
+# Typically this runs on port 8591.
+
+SPAWNER_CONFIGURATION:
+  sasPort: < replace me >
+
+# Anything added to the below "WORKSPACESERVER_CONFIGURATION" section will end up
+# in the autoexec_deployment.sas file in the tenant-specific SAS Workspace Server,
+# SAS/CONNECT Server and SAS Compute Server configuration directories. It will be
+# in the format of 'options key="value"'.
+#
+# To use this section uncomment "WORKSPACESERVER_CONFIGURATION" and add the desired lines
+
+#WORKSPACESERVER_CONFIGURATION:
+  #1: '/* Comment about key */'
+  #2: key=value;
+
+# Anything added to the below "FOUNDATION_CONFIGURATION" section will end up
+# in the sasenv_deployment file in the tenant-specific SAS Workspace Server and
+# SAS/CONNECT Server configuration directories. It will be in the format
+# of 'export KEY="value"'.
+#
+# To use this section uncomment "FOUNDATION_CONFIGURATION" and add the desired lines
+
+#FOUNDATION_CONFIGURATION:
+  #1: '# Comment about KEY'
+  #2: KEY=value
+
+# Anything added to the below "SASV9_CONFIGURATION" section will end up
+# in the sasv9_deployment.cfg file in the tenant-specific SAS Workspace Server,
+# SAS/CONNECT Server and SAS Compute Server configuration directories. It will be
+# in the format of '-OPTION value'.
+#
+# To use this section uncomment "SASV9_CONFIGURATION" and add the desired lines
+
+#SASV9_CONFIGURATION:
+  #1: '/* Comment about OPTION */'
+  #2: 'OPTION value'
+
+# For information on adding hosts to inventory.ini as CAS resources,
+# see "Add CAS Resources to a Specific Tenant" in
+# "SAS Viya Administration: Multi-tenancy".
+
+CLUSTER_DEFINITIONS:
+  cas:
+    default:
+
+      # The primary host value is the Ansible alias name from a host
+      # in the inventory.ini file. There should only be one entry for
+      # the primary_host. This host will be the main CAS controller
+      # for the CAS grid.
+
+      primary_host: "< replace me >"
+
+      # The secondary host value is the Ansible alias name from a host
+      # in the inventory.ini file. There should only be one entry for
+      # the secondary_host. This host will be the backup CAS controller
+      # for the CAS grid.
+
+      secondary_host: ""
+
+      # The worker hosts value is a comma-separated list of the Ansible
+      # alias names from the inventory.ini file. The listed hosts will
+      # be the workers for the CAS grid.
+
+      worker_hosts: ""
+
+      # The tenant that this CAS configuration belongs to.
+      # *** Do not edit this value ***
+
+      tenant: "{{ sas_tenant }}"
+
+      # This is the user that the CAS process will run as
+      # *** Do not edit this value ***
+
+      casenv_user: "{{ tenant_admin }}"
+
+      # This is the group that the casenv_user belongs to
+      # *** Do not edit this value ***
+
+      casenv_group: "{{ tenant_admin_group }}"
+
+      # Anything added to the below "cas" section will be inserted into the
+      # casconfig_deployment.lua file as a CAS option in the format of "cas."
+      # CAS typically runs on port 5570, HTTP port 8777 and gc port 0. The port
+      # and httpport will need to be changed to avoid port conflicts if other CAS
+      # servers are running on the same host.
+
+      cas:
+        port: < replace me >
+        httpport: < replace me >
+        gcport: 0
+        #SERVICESBASEURL: "https://< tenant ID >.loadbalancer.company.com"
+
+      # Anything added to the below "env" section will be inserted into the
+      # casconfig_deployment.lua file as an environment variable in the format
+      # of "env."
+      # To use this section, uncomment "env" and any keys below "env" that contain
+      # custom values.
+
+      #env:
+        #CAS_DISK_CACHE: /tmp
+        #CAS_VIRTUAL_HOST: "< tenant ID >.loadbalancer.company.com"
+        #CAS_VIRTUAL_PROTO: "https"
+        #CAS_VIRTUAL_PORT: 443
+
+
+      # Anything added to the below "settings" section will be inserted into the
+      # cas_deployment.settings file as an environment variable.
+
+      #settings:
+        #JAVA_HOME: /usr/lib/jvm/jre-1.8.0
+        #ODBCHOME: /path/to/ODBC
+        #ODBCINST: /path/to/ODBC/odbcinst.ini
+        #ODBCINI: /path/to/ODBC/odbc.ini
+        #ODBCSYSINI: /path/to/ODBC
+        #001_LD_LIBRARY_PATH: '$LD_LIBRARY_PATH:$JAVA_HOME/lib/amd64/server'
+        #002_LD_LIBRARY_PATH: '$LD_LIBRARY_PATH:/additional/path'

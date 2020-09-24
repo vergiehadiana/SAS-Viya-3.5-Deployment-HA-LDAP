@@ -1,0 +1,195 @@
+---
+# file: deploy-casworker.yml
+- hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      orchestration_root: "{{ playbook_dir }}"
+
+# Verify third party requirements
+- include: "{{ 'internal/third-party-assessment.yml' }}"
+
+# Get a snapshot of the environment
+- include: "{{ 'internal/create-snapshot.yml' }}"
+
+# Gather additional host facts to store in hostvars
+- include: "{{ 'internal/gather-host-facts.yml' }}"
+
+# Validate that the system is ready for the deployment
+- include: "{{ 'internal/validate.yml' }}"
+
+# Validate PostgreSQL user-modifiable entries
+- include: "{{ 'internal/validate-postgres-rules.yml' }}"
+
+# Validate CPS-PostgreSQL user-modifiable entries
+- include: "{{ 'internal/validate-cps-postgres-rules.yml' }}"
+
+# Analyze existing Java
+- include: "{{ 'internal/analyze-existing-java.yml' }}"
+
+# Setup the host
+- include: "{{ 'internal/host-setup.yml' }}"
+
+# Setup the repositories
+- include: "{{ 'internal/repo-setup.yml' }}"
+
+# Ensure the install user
+- include: "{{ 'internal/ensure-install-user.yml' }}"
+
+# Verify the host
+- include: "{{ 'internal/host-verification.yml' }}"
+
+# Run a set of tasks common to all hosts
+- include: "{{ 'internal/common.yml' }}"
+
+# Validate Java
+- include: "{{ 'internal/validate-java.yml' }}"
+
+# Install on Worker hosts
+- include: internal/install-packages.yml install_hosts=sas_casserver_worker
+
+# Update SPRE Java
+- include: internal/update-spre-java.yml
+
+# Write consul.conf and network.conf on all hosts
+- include: "{{ 'internal/envesntl.yml' }}"
+
+# Setup known-hosts and install any additional packages
+- include: "{{ 'internal/ecosystem.yml' }}"
+
+# Make sure the license is present
+- include: "{{ 'internal/validate-license.yml' }}"
+  when: license_complete is not defined
+
+# Rerun the vault distribution to get security artifacts on the new worker.
+- include: "{{ 'internal/vault-x64_redhat_linux_6-yum.yml' }}"
+
+# Install Consul where needed
+- include: "{{ 'internal/deploy-cas-consulagent.yml' }} consul_on_sas_hosts={{ sas_consul_on_cas_hosts }} sas_task_file=start.yml"
+
+# Load facts for httpproxy
+# The hosts for httpproxy could be a different set or are not in the set of hosts
+# that we are running the playbook against.  In that case, we want this to run to
+# make sure we get system information about those hosts as this is used for
+# setting the servicesbaseurl in the casconfig.lua.
+- include: "{{ 'internal/load-httpproxy-facts.yml' }}"
+
+#################
+# Make sure ssh is configured across all hosts in the grid
+- name: "Configure Users"
+  hosts: sas_casserver*
+  any_errors_fatal: true
+  become: false
+
+  vars_files:
+    - vars.yml
+
+  pre_tasks:
+    - name: Build up collection of CAS hosts
+      add_host:
+        name: "{{ item }}"
+        group: cas_hosts
+      with_items:
+        - "{{ groups['sas_casserver_primary'] }}"
+        - "{{ groups['sas_casserver_worker'] }}"
+      changed_when: no
+
+  roles:
+    - ecosystem-users
+    - { role: ssh_ecosystem, COMBINED_GROUP: '{{ groups[''cas_hosts''] }}', KEYNAME: 'id_rsa', USERS: '[ ''{{ casenv_user }}'' ]' }
+
+#################
+
+#################
+# Configure on new Worker hosts
+- name: "Configure CAS"
+  hosts: "sas_casserver_worker"
+  any_errors_fatal: true
+  become: false
+
+  vars:
+    # Set the deployment instance id
+    sas_deployment_id: "{{ sasenv_deployment_id | default('viya') }}"
+    cas_instance: "{{ casenv_instance | default('default') }}"
+    cas_tenant: "{{ casenv_tenant | default('shared') }}"
+    cas_user: "{{ casenv_user | default('cas') }}"
+    cas_group: "{{ casenv_group | default('sas') }}"
+    # Used to validate the mode against the number of hosts
+    num_cas_hosts: "{{ groups['sas_casserver_worker'] | length }}"
+    # Using this to get around anisble issue https://github.com/ansible/ansible/issues/14228
+    os_family: "{{ ansible_os_family | default('unknown_by_sas') }}"
+
+  vars_files:
+    - vars.yml
+    - roles/casserver-validate/defaults/main.yml
+
+  pre_tasks:
+    ###########################################################################
+    # If the pre 17w47 style of CAS configuration is being used
+    # convert it to the new style
+    - block:
+
+      - name: Create CAS cluster definition file
+        template:
+          src: "../roles/casserver-config/templates/cluster_defn_vars.yml.j2"
+          dest: "{{ playbook_dir }}/../cluster_defn_vars.yml"
+          mode: 0644
+        delegate_to: 127.0.0.1
+
+      - name: include {{ playbook_dir }}/../cluster_defn_vars.yml
+        include_vars: "{{ playbook_dir }}/../cluster_defn_vars.yml"
+
+      when: CLUSTER_DEFINITIONS is not defined
+    ###########################################################################
+
+    - name: include soe.yml
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "soe.yml"
+        - "internal/soe_defaults.yml"
+
+  roles:
+    - role: casserver-license
+    - { role: casserver-config, sas_task_file: framework.yml }
+    - { role: casserver-config, sas_task_file: start.yml }
+
+#################
+# Register CAS workers in Consul
+- name: "Register CAS workers in Consul"
+  hosts: "sas_casserver_primary"
+  any_errors_fatal: true
+  become: false
+
+  vars:
+    cas_worker_list: ""
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Set worker list
+      set_fact:
+        cas_worker_list: '{{ hostvars[item].sas_vars.hostname_fqdn }},{{ cas_worker_list }}'
+      with_items: '{{ groups[''sas_casserver_worker''] }}'
+      when: groups['sas_casserver_worker']
+
+    - name: Run sas-bootstrap-config to register workers
+      become: 'yes'
+      become_user: '{{ INSTALL_USER }}'
+      shell: |
+        source '{{ SAS_CONFIG_ROOT }}'/consul.conf
+        export CONSUL_HTTP_TOKEN=$(cat '{{ SAS_CONFIG_ROOT }}'/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token)
+        '{{ SASHOME }}'/bin/sas-bootstrap-config kv write --force config/cas-{{item.value.tenant }}-{{ item.key }}/sas.cas/general/SASWORKERHOSTS "{{ cas_worker_list }}"
+      args:
+        executable: /bin/sh
+      when: (item.value.primary_host is defined and inventory_hostname == item.value.primary_host) and cas_worker_list is defined and cas_worker_list
+      with_dict: '{{ CLUSTER_DEFINITIONS_cas }}'
+
+#################
+# When workers start their own process we will want to add that into this play
+# We will want the start of the service to be after we have installed and
+# configured everything.
+#################
+
+# Post deployment
+- include: "{{ 'internal/post-deployment.yml' }}"

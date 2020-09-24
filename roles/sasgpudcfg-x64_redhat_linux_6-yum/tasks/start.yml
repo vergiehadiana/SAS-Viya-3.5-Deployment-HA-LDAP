@@ -1,0 +1,6 @@
+---
+- name: Execute SAS GPU Reservation Service setup
+  become: 'yes'
+  become_user: root
+  command: bash -c '{{ SAS_CONFIG_ROOT }}/etc/sasgpud/{{ INSTANCE_ID }}/sasgpud_setup.sh -ansible'
+

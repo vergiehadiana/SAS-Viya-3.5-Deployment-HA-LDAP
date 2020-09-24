@@ -1,0 +1,7 @@
+---
+# defaults file for foundation-license
+
+sas_root_dir: "{{ SASROOT }}"
+sas_install_dir: "{{ sas_root_dir + '/' + SPRE_DEPLOYMENT_ID + '/home/SASFoundation' }}"
+sas_license_force: false
+...

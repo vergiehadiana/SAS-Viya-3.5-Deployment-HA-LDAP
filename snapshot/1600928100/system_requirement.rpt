@@ -1,0 +1,10 @@
+
+Java System Check
+-----------------
+
+- On intviya01.race.sas.com setting SAS_JAVA_HOME to /usr/lib/jvm/jre-1.8.0
+- On intviya02.race.sas.com setting SAS_JAVA_HOME to /usr/lib/jvm/jre-1.8.0
+- On intviya03.race.sas.com setting SAS_JAVA_HOME to /usr/lib/jvm/jre-1.8.0
+- On intcas01.race.sas.com setting SAS_JAVA_HOME to /usr/lib/jvm/jre-1.8.0
+- On intcas02.race.sas.com setting SAS_JAVA_HOME to /usr/lib/jvm/jre-1.8.0
+- On intcas03.race.sas.com setting SAS_JAVA_HOME to /usr/lib/jvm/jre-1.8.0

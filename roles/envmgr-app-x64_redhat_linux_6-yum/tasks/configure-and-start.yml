@@ -1,0 +1,11 @@
+---
+- name: envmgr-app on x64_redhat_linux_6-yum - configure.yml
+  include_role:
+    name: envmgr-app-x64_redhat_linux_6-yum
+    tasks_from: configure.yml
+
+- name: envmgr-app on x64_redhat_linux_6-yum - start.yml
+  include_role:
+    name: envmgr-app-x64_redhat_linux_6-yum
+    tasks_from: start.yml
+

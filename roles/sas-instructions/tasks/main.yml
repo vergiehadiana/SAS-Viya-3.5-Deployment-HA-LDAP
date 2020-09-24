@@ -1,0 +1,60 @@
+---
+# tasks file for sas-instructions
+
+####################################################################################
+## Create the file that will show the user where to go
+####################################################################################
+
+- debug: var=snapshotloc
+
+- name: Define the instruction directory if snapshot directory is not defined
+  local_action: set_fact instructloc="{{ sasenv_snapshot_dir + '/' + ansible_date_time.epoch }}"
+  when: snapshotloc is undefined
+  run_once: yes
+
+- name: "Create {{ instructloc }}"
+  local_action: file dest={{ instructloc }} state=directory
+  when: snapshotloc is undefined
+  run_once: yes
+
+- name: Define snapshot directory equal to instruction directory
+  local_action: set_fact snapshotloc="{{ instructloc }}"
+  when: snapshotloc is undefined
+  run_once: yes
+
+- name: "Verify that ansible.cfg exists"
+  local_action: stat path={{ orchestration_root }}/ansible.cfg
+  run_once: yes
+  register: ansiblecfg
+
+- name: Get log_path from ansible.cfg
+  set_fact:
+    deployment_log: "{{ lookup('ini', 'log_path section=defaults file={{ orchestration_root }}/ansible.cfg') }}"
+  run_once: yes
+  when: ansiblecfg is defined and ansiblecfg.stat is defined and ansiblecfg.stat.exists | default(false)
+
+- name: make path absolute if it isn't already
+  set_fact:
+    deployment_log: "{{ orchestration_root }}/{{ deployment_log }}"
+  run_once: yes
+  when: (deployment_log | default("")) and not (deployment_log is match("^/"))
+
+- name: "Verify that deployment log exists"
+  local_action: stat path="{{ deployment_log }}"
+  run_once: yes
+  register: deploymentlog
+  when: (deployment_log)
+
+- name: "Copy deployment log to {{ snapshotloc }}"
+  local_action: shell cp '{{ deployment_log }}' '{{ snapshotloc }}'
+  when: deploymentlog is defined and deploymentlog.stat is defined and deploymentlog.stat.exists | default(false)
+  run_once: yes
+
+- name: Zip up debug info
+  local_action: shell tar -czvf '{{ orchestration_root }}/sas_deployment.tgz' '{{ snapshotloc }}'
+  run_once: yes
+
+- name: "Move debug info to {{ snapshotloc }}"
+  local_action: shell mv '{{ orchestration_root }}/sas_deployment.tgz' '{{ snapshotloc }}'
+  run_once: yes
+...

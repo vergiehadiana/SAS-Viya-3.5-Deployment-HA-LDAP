@@ -1,0 +1,15 @@
+---
+# file: validate-java.yml
+
+- name: Verify that Java is properly installed
+  hosts: sas_all
+  any_errors_fatal: true
+  become: no
+
+  vars_files:
+    - ../vars.yml
+
+  roles:
+    - sas-requirements-java
+    - sas-requirements-report
+...

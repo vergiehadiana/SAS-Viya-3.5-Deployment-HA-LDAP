@@ -1,0 +1,19 @@
+---
+- name: Safety stop - Check for additional packages that represent services that should be stopped
+  hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+    - name: Get updated sas package data
+      list_sas_packages:
+        sas_vars: "{{ sas_vars }}"
+      become: yes
+      become_user: root
+      register: sas_updated
+
+    - name: Check for additional packages that require updates
+      revise_updatables:
+        before: "{{ sas_packages }}"
+        after: "{{ sas_updated }}"
+      register: sas_packages
+
+- include: config-stop.yml

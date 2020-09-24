@@ -1,0 +1,54 @@
+---
+SERVICE_APP_NAME: reportservicesgroup
+SERVICE_FACET: reportAlerts
+SERVICE_INSTANCES_COUNT: '{{ play_hosts | length }}'
+SERVICE_NAME: '{{ SERVICE_NAME_DEFAULT }}'
+SERVICE_PRODUCT_NAME: reportservicesgroup
+SERVICE_SYSCONFIG_PATH: /etc/sysconfig/sas/{{ SERVICE_NAME }}
+SERVICE_YUM_PACKAGE: sas-reportservicesgroup
+consumer_items:
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.1:
+    APPNAME: reportservicesgroup
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/reports/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: reports
+    DESTINATION_destination.file.name: vault.token
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.2:
+    APPNAME: reportservicesgroup
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/reportAlerts/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: reportAlerts
+    DESTINATION_destination.file.name: vault.token
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.3:
+    APPNAME: reportservicesgroup
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/reportImages/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: reportImages
+    DESTINATION_destination.file.name: vault.token
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.4:
+    APPNAME: reportservicesgroup
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/reportTemplates/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: reportTemplates
+    DESTINATION_destination.file.name: vault.token
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.5:
+    APPNAME: reportservicesgroup
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/reportTransforms/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: reportTransforms
+    DESTINATION_destination.file.name: vault.token

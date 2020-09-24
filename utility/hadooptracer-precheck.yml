@@ -1,0 +1,8 @@
+---
+- name: Verify that the prerequisites are installed on the Hadoop cluster host
+  hosts: hadooptracr1
+  any_errors_fatal: true
+  gather_facts: True
+  roles:
+    - hadooptracer-precheck
+

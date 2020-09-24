@@ -1,0 +1,29 @@
+- name: Get user IDs
+  getent:
+    database: passwd
+    key: '{{ USER_TO_CHECK }}'
+    split: ':'
+    fail_key: false
+
+- name: Verify user ID consistency
+  fail:
+    msg: "The id for user '{{ USER_TO_CHECK }}' should be the same across all hosts. The id for {{ hostvars[item].sas_vars.hostname_fqdn }} is {{ hostvars[item].getent_passwd.get(USER_TO_CHECK)[1] }} and the id for {{ sas_vars.hostname_fqdn }} is {{ getent_passwd.get(USER_TO_CHECK)[1] }}."
+  failed_when: hostvars[item].getent_passwd.get(USER_TO_CHECK)[1] != getent_passwd.get(USER_TO_CHECK)[1]
+  when: ((cluster_definiton.value.primary_host is defined and item == cluster_definiton.value.primary_host) or (cluster_definiton.value.primary_host is not defined and item == groups['sas_casserver_primary'] | default([]) | first)) or ((cluster_definiton.value.secondary_host is defined and item == cluster_definiton.value.secondary_host) or (cluster_definiton.value.secondary_host is not defined and item == groups['sas_casserver_secondary'] | default([]) | first)) or ((cluster_definiton.value.worker_hosts is defined and cluster_definiton.value.worker_hosts and item in cluster_definiton.value.worker_hosts.split(',')) or (cluster_definiton.value.worker_hosts is not defined and item in groups['sas_casserver_worker'] | default([]))) and ((hostvars[item].getent_passwd.get(USER_TO_CHECK)[1] is defined) and (getent_passwd.get(USER_TO_CHECK)[1] is defined))
+  with_items:
+  - '{{ ansible_play_hosts | difference(inventory_hostname) }}'
+
+- name: Get group IDs
+  getent:
+    database: group
+    key: '{{ GROUP_TO_CHECK }}'
+    split: ':'
+    fail_key: false
+
+- name: Verify group ID consistency
+  fail:
+    msg: "The id for group '{{ GROUP_TO_CHECK }}' should be the same across all hosts. The id for {{ hostvars[item].sas_vars.hostname_fqdn }} is {{ hostvars[item].getent_group.get(GROUP_TO_CHECK)[1] }} and the id for {{ sas_vars.hostname_fqdn }} is {{ getent_group.get(GROUP_TO_CHECK)[1] }}."
+  failed_when: hostvars[item].getent_group.get(GROUP_TO_CHECK)[1] != getent_group.get(GROUP_TO_CHECK)[1]
+  when: ((cluster_definiton.value.primary_host is defined and item == cluster_definiton.value.primary_host) or (cluster_definiton.value.primary_host is not defined and item == groups['sas_casserver_primary'] | default([]) | first)) or ((cluster_definiton.value.secondary_host is defined and item == cluster_definiton.value.secondary_host) or (cluster_definiton.value.secondary_host is not defined and item == groups['sas_casserver_secondary'] | default([]) | first)) or ((cluster_definiton.value.worker_hosts is defined and cluster_definiton.value.worker_hosts and item in cluster_definiton.value.worker_hosts.split(',')) or (cluster_definiton.value.worker_hosts is not defined and item in groups['sas_casserver_worker'] | default([]))) and ((hostvars[item].getent_group.get(GROUP_TO_CHECK)[1] is defined) and (getent_group.get(GROUP_TO_CHECK)[1] is defined))
+  with_items:
+  - '{{ ansible_play_hosts | difference(inventory_hostname) }}'

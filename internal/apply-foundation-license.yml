@@ -1,0 +1,23 @@
+---
+# file: apply-foundation-license.yml
+
+###############################################################################
+# SPRE
+- name: Apply a license to the SAS SPRE environment
+  hosts: programming:ComputeServer
+  any_errors_fatal: true
+  become: false
+
+  vars_files:
+    - ../vars.yml
+
+  pre_tasks:
+  - include_vars: "{{ item }}"
+    with_first_found:
+      - "{{ orchestration_root }}/soe.yml"
+      - "{{ orchestration_root }}/internal/soe_defaults.yml"
+
+  roles:
+    - foundation-license
+###############################################################################
+...

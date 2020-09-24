@@ -1,0 +1,14 @@
+---
+- name: Verify the presence of post-configuration-actions
+  become: yes
+  become_user: "{{ INSTALL_USER }}"
+  stat:
+    path: "{{ SASHOME }}/libexec/deployment/post-configuration-actions"
+  register: post_configuration
+
+- name: Run post-configuration-actions
+  become: yes
+  become_user: root
+  command: "{{ SASHOME }}/libexec/deployment/post-configuration-actions"
+  when: post_configuration.stat.exists | default(false)
+...

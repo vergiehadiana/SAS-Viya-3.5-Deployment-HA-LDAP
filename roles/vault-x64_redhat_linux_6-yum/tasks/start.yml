@@ -1,0 +1,66 @@
+---
+- name: Execute Fix consul address backend section in vault.hcl
+  become: 'yes'
+  become_user: root
+  command: bash -c ' {{ SASHOME }}/bin/fix_vault_hcl_file_to_correct_format.sh {{ SAS_CONFIG_ROOT }} {{ SECURE_CONSUL }}'
+
+- name: Execute Add consul client token to vault.hcl
+  become: 'yes'
+  command: bash -c 'sed -i s#@CONSUL_TOKEN@#$(cat {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/consul/{{ INSTANCE_ID }}/client.token)# {{ SAS_CONFIG_ROOT }}/etc/vault/default/vault.hcl'
+
+- name: Ensure {{ SERVICE_NAME }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name={{ SERVICE_NAME }} state=started
+
+- name: Restart service if necessary.
+  become: 'yes'
+  become_user: root
+  service: name={{ SERVICE_NAME }} state=restarted
+  when: not service_start.changed and (config_change_0.changed or config_change_1.changed)
+
+- name: Execute Configure vault
+  become: 'yes'
+  become_user: root
+  command: /bin/sh {{ SASHOME }}/bin/vault-setup
+
+- name: Execute Wait for consul kill script to finish
+  become: 'yes'
+  become_user: root
+  command: bash -c '{{ SASHOME }}/bin/wait_until_consul_killed.sh'
+
+- name: Ensure sas-viya-consul-default service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name=sas-viya-consul-default state=started
+
+- name: Restart service if necessary.
+  become: 'yes'
+  become_user: root
+  service: name=sas-viya-consul-default state=restarted
+  when: not service_start.changed and (config_change_0.changed or config_change_1.changed)
+
+- name: Execute confirm consul can be accessed
+  become: 'yes'
+  become_user: root
+  command: bash -c 'source {{ SAS_CONFIG_ROOT }}/consul.conf && {{ SASHOME }}/bin/sas-bootstrap-config status leader --wait'
+
+- name: Ensure {{ SERVICE_NAME }} service is stopped
+  become: 'yes'
+  become_user: root
+  service: name={{ SERVICE_NAME }} state=stopped
+
+- name: Ensure {{ SERVICE_NAME }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name={{ SERVICE_NAME }} state=started
+
+- name: Restart service if necessary.
+  become: 'yes'
+  become_user: root
+  service: name={{ SERVICE_NAME }} state=restarted
+  when: not service_start.changed and (config_change_0.changed or config_change_1.changed)
+

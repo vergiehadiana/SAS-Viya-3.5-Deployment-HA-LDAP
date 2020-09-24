@@ -1,0 +1,54 @@
+- name: Verify that the hadooptracer script is available locally
+  stat:
+      path: "/tmp/hadooptracer.py"
+  register: hadooptracer_deployed
+  delegate_to: localhost
+
+- name: Stop if the hadooptracer script is not copied to the local host
+  fail: 
+    msg: |
+      "The hadooptracer script was not copied to the local machine so terminate the playbook."
+  when: (hadooptracer_deployed.stat.exists == False)
+
+- name: Verify that more than a single host name is specified for the Hadoop cluster
+  fail:
+    msg: |
+      "Found that a multiple hostnames are defined for the Hadoop cluster.  A single host name is required. Terminating the playbook."
+  failed_when: groups['hadooptracr1'] | length  != 1
+
+- name: Verify that the hadooptracer script is running
+  shell: ps aux | grep hadooptracer.py | grep -v grep
+  register: service_tracer_status
+  failed_when: false
+
+- name: Report status of the hadooptracer script
+  fail:
+    msg: |
+      The hadooptracer script is already running on this cluster.
+      Return code from `grep`:
+      {{ service_tracer_status.rc }}
+  when: service_tracer_status.rc == 0
+
+# Ansible script module: http://docs.ansible.com/ansible/script_module.html
+- name: Verify that the HDFS command is not set to safe mode and that the HDFS command is present
+  script: checksafemode.sh
+  register: safemode
+
+- name: Stop the hadooptracer execution if either the HDFS command is not found or failed to leave safe mode
+  fail:
+    msg: |
+     The HDFS command not found on this host "{{ inventory_hostname }}" or failed to leave HDFS safe mode.
+     Return code from checksafemode.sh
+     {{ safemode.rc }}
+  failed_when : safemode.rc != 0
+
+- name: Verify that the strace package is installed
+  shell: which strace
+  register: strace
+
+- name: Terminate the hadooptracer execution when the strace package is not installed
+  fail:
+    msg: |
+     The strace package is not installed on the cluster. Terminating the hadooptracer execution.
+     {{ strace.rc }}
+  failed_when: strace.rc != 0

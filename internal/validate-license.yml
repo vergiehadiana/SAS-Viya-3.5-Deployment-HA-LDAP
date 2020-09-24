@@ -1,0 +1,41 @@
+---
+# file: validate-license.yml
+
+- name: Verify that license is valid
+  hosts: sas_all
+  any_errors_fatal: true
+  gather_facts: no
+  become: no
+
+  vars_files:
+    - ../vars.yml
+
+  pre_tasks:
+  - include_vars: "{{ item }}"
+    with_first_found:
+      - "{{ orchestration_root }}/soe.yml"
+      - "{{ orchestration_root }}/internal/soe_defaults.yml"
+
+  tasks:
+  - include: "{{ orchestration_root }}/tasks/set_license_file.yml"
+
+  - name: Assert license is defined
+    local_action: fail msg="Please make sure either the vars.yml file has a valid LICENSE_FILENAME or LICENSE_COMPOSITE_FILENAME."
+    failed_when: "license_file | trim | string == 'None' or license_file | trim | string == '' "
+    run_once: yes
+
+  - name: Verify that license is present on disk
+    local_action: stat path="{{ license_file | trim }}"
+    register: licpath
+    run_once: yes
+
+  - name: Verify that license is present on local disk
+    local_action: fail msg="Make sure the license is at {{ license_file | trim }}."
+    failed_when: "( licpath.stat.exists | bool ) == false or (( licpath.stat.exists | bool ) == true and ( licpath.stat.isreg | bool ) == false)"
+    run_once: yes
+
+  - name: Set a fact so that other playbooks do not run the same task
+    set_fact:
+      license_complete: yes
+    when: license_complete is not defined
+    run_once: yes

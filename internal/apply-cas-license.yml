@@ -1,0 +1,47 @@
+---
+# file: apply-cas-license.yml
+
+- name: Apply a license to the CAS environment
+  hosts: sas_casserver*
+  any_errors_fatal: true
+  become: false
+
+  vars:
+    # Set the deployment instance id
+    sas_deployment_id: "{{ sasenv_deployment_id | default('viya') }}"
+    cas_instance: "{{ casenv_instance | default('default') }}"
+
+  vars_files:
+    - ../vars.yml
+
+  pre_tasks:
+    - include_vars: "{{ item }}"
+      with_first_found:
+        - "{{ orchestration_root }}/soe.yml"
+        - "{{ orchestration_root }}/internal/soe_defaults.yml"
+
+    ###########################################################################
+    # If the pre 17w47 style of CAS configuration is being used
+    # convert it to the new style
+    - block:
+
+      - name: Create CAS cluster definition file
+        template:
+          src: "{{ orchestration_root }}/roles/casserver-config/templates/cluster_defn_vars.yml.j2"
+          dest: "{{ playbook_dir }}/../cluster_defn_vars.yml"
+          mode: 0644
+        delegate_to: 127.0.0.1
+
+      - name: include {{ playbook_dir }}/../cluster_defn_vars.yml
+        include_vars: "{{ playbook_dir }}/../cluster_defn_vars.yml"
+
+      when: CLUSTER_DEFINITIONS is not defined
+    ###########################################################################
+
+    - name: If CLUSTER_DEFINITIONS.cas is not empty, copy contents
+      set_fact:
+        CLUSTER_DEFINITIONS_cas: "{{ CLUSTER_DEFINITIONS.cas }}"
+      when: CLUSTER_DEFINITIONS.cas is defined and CLUSTER_DEFINITIONS.cas | string != 'None'
+
+  roles:
+    - casserver-license

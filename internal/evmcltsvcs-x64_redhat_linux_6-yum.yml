@@ -1,0 +1,16 @@
+---
+- name: evmcltsvcs on x64_redhat_linux_6-yum
+  any_errors_fatal: true
+  become_user: '{{ INSTALL_USER }}'
+  hosts: AdminServices:CASServices:CognitiveComputingServices:CommandLine:ComputeServer:ComputeServices:CoreServices:DataServices:GraphBuilderServices:HomeServices:Operations:ReportServices:ReportViewerServices:StudioViya:ThemeServices:configuratn:consul:httpproxy:pgpoolc:programming:rabbitmq:sas_casserver_primary:sas_casserver_secondary:sas_casserver_primary:sas_casserver_secondary:sas_casserver_worker:sasdatasvrc:&sas-hosts-x64_redhat_linux_6-yum
+  pre_tasks:
+  - name: include soe.yml
+    include_vars: '{{ item }}'
+    with_first_found:
+    - '{{ orchestration_root }}/soe.yml'
+    - '{{ orchestration_root }}/internal/soe_defaults.yml'
+  roles:
+  - evmcltsvcs-x64_redhat_linux_6-yum
+  vars_files:
+  - ../vars.yml
+

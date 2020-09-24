@@ -1,0 +1,15 @@
+- name: Correct permissions on vault directory and files
+  become: 'yes'
+  become_user: 'root'
+  file:
+    path: '{{ SAS_CONFIG_ROOT }}/etc/vault'
+    owner: '{{ INSTALL_USER }}'
+    group: '{{ INSTALL_GROUP }}'
+    state: 'directory'
+    recurse: 'yes'
+  when: (groups['consul'] | length > 0) and (inventory_hostname in groups['consul'])
+
+- include: tasks/create_service_token.yml
+  vars:
+    APP_NAME: 'staticcerts'
+    COMBINED_GROUP: '{{ groups[''sas_all''] }}'

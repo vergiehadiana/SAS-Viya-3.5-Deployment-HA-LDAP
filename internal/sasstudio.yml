@@ -1,0 +1,11 @@
+---
+- name: sasstudio
+  become_user: '{{ INSTALL_USER }}'
+  hosts: programming
+  any_errors_fatal: true
+  roles:
+  - sas-studio-config
+  vars_files:
+  - ../vars.yml
+
+...

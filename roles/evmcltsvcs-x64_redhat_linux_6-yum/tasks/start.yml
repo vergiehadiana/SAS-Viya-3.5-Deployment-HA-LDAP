@@ -1,0 +1,19 @@
+---
+- name: Ensure sas-{{ DEPLOYMENT_ID }}-ops-agent-{{ INSTANCE_ID }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name=sas-{{ DEPLOYMENT_ID }}-ops-agent-{{ INSTANCE_ID }} state=started
+
+- name: Ensure sas-{{ DEPLOYMENT_ID }}-watch-log-{{ INSTANCE_ID }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name=sas-{{ DEPLOYMENT_ID }}-watch-log-{{ INSTANCE_ID }} state=started
+
+- name: Ensure sas-{{ DEPLOYMENT_ID }}-alert-track-{{ INSTANCE_ID }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name=sas-{{ DEPLOYMENT_ID }}-alert-track-{{ INSTANCE_ID }} state=started
+

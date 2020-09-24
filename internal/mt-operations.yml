@@ -1,0 +1,45 @@
+---
+# file: mt-operations.yml
+
+- name: "Operations setup for tenant"
+  hosts: ComputeServer:programming:sas_casserver*
+  any_errors_fatal: true
+  gather_facts: false
+  become: false
+
+  vars:
+    sas_tenant_instance: "{{ tenant_instance | default('default') }}"
+    ops_onboard_script: "{{ SASROOT }}/viya/home/bin/ops-onboard"
+
+  tasks:
+    - name: Verify that the ops-onboard script is deployed
+      register: ops_var
+      stat:
+        path: "{{ ops_onboard_script }}"
+
+    - block:
+
+      - name: Verify the sas-{{ DEPLOYMENT_ID }}-watch-log-{{ sas_tenant_instance }} service is installed
+        register: register_var
+        stat:
+          path: /etc/init.d/sas-{{ DEPLOYMENT_ID }}-watch-log-{{ sas_tenant_instance }}
+
+      - name: stopped sas-{{ DEPLOYMENT_ID }}-watch-log-{{ sas_tenant_instance }} Service
+        become: 'yes'
+        become_user: root
+        service: name=sas-{{ DEPLOYMENT_ID }}-watch-log-{{ sas_tenant_instance }} state=stopped
+        when: register_var.stat.exists is defined and register_var.stat.exists
+
+      - name: Run the script to setup Operations services
+        command: '{{ ops_onboard_script }} -tn {{ sas_tenant }} -tu {{ tenant_admin }} -tg {{ tenant_admin_group }}'
+        become: 'yes'
+        become_user: root
+
+      - name: started sas-{{ DEPLOYMENT_ID }}-watch-log-{{ sas_tenant_instance }} Service
+        become: 'yes'
+        become_user: root
+        service: name=sas-{{ DEPLOYMENT_ID }}-watch-log-{{ sas_tenant_instance }} state=started
+
+      when: ops_var.stat.exists is defined and ops_var.stat.exists
+
+...

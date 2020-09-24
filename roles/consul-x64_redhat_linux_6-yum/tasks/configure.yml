@@ -1,0 +1,11 @@
+---
+- name: Get stats for {{ orchestration_root }}/roles/{{ SERVICE_APP_NAME }}/files/sitedefault.yml
+  local_action: stat path="{{ orchestration_root }}/roles/{{ SERVICE_APP_NAME }}/files/sitedefault.yml"
+  register: copy_file_1
+
+- name: Copy from {{ orchestration_root }}/roles/{{ SERVICE_APP_NAME }}/files/sitedefault.yml to {{ SAS_CONFIG_ROOT }}/etc/consul.d/default/sitedefault.yml
+  become: 'yes'
+  become_user: root
+  copy: src="{{ orchestration_root }}/roles/{{ SERVICE_APP_NAME }}/files/sitedefault.yml" dest="{{ SAS_CONFIG_ROOT }}/etc/consul.d/default/sitedefault.yml" owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode="0600"
+  when: copy_file_1.stat.exists == true
+

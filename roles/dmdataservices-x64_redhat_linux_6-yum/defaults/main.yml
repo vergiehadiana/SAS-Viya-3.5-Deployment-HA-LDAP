@@ -1,0 +1,36 @@
+---
+SERVICE_APP_NAME: dmdataservices
+SERVICE_FACET: datasources
+SERVICE_INSTANCES_COUNT: '{{ play_hosts | length }}'
+SERVICE_NAME: '{{ SERVICE_NAME_DEFAULT }}'
+SERVICE_PRODUCT_NAME: dmdataservices
+SERVICE_SYSCONFIG_PATH: /etc/sysconfig/sas/{{ SERVICE_NAME }}
+SERVICE_YUM_PACKAGE: sas-dmdataservices
+consumer_items:
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.1:
+    APPNAME: dmdataservices
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/dataSources/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: dataSources
+    DESTINATION_destination.file.name: vault.token
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.2:
+    APPNAME: dmdataservices
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/dataTables/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: dataTables
+    DESTINATION_destination.file.name: vault.token
+  certificateAuthority-generateTokenForSecretsAndCertificates-1.3:
+    APPNAME: dmdataservices
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/rowSets/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: rowSets
+    DESTINATION_destination.file.name: vault.token

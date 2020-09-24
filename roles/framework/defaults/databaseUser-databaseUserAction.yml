@@ -1,0 +1,5 @@
+provider_data:
+  APPNAME: sasdatasvrc
+  COMMAND: '{{ SASHOME }}/libexec/sasdatasvrc/script/sds_manage_database_user.sh -u {{ consumer_data.value["DESTINATION_database_user_name"] }} -o {{ consumer_data.value["DESTINATION_database_user_option"] }} -d {{ consumer_data.value["DESTINATION_database_name"] }} -k {{ consumer_data.value["DESTINATION_consul_kv_path"] }}'
+  OUTPUT_PATH: '{{ SAS_CONFIG_ROOT }}/var/log/sasdatasvrc/{{ consumer_data.value["DESTINATION_database_name"] }}_{{ consumer_data.value["DESTINATION_database_user_name"] }}.log'
+  PROVIDING_GROUP: '{{ groups[''sasdatasvrc''] }}'

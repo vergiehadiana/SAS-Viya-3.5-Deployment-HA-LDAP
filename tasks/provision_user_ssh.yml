@@ -1,0 +1,40 @@
+---
+- name: Default user group to installation group if undefined
+  set_fact:
+    GROUP: '{{ INSTALL_GROUP }}'
+  when: GROUP is undefined
+
+- name: Verify the user home directory
+  stat: path=~{{ USER }}
+  become: yes
+  become_user: '{{ USER }}'
+  register: home_directory
+
+- name: Create user home directory if required
+  file: path=~{{ USER }} state=directory owner={{ USER }} group={{ GROUP }} mode=0700 follow=yes
+  become: yes
+  become_user: root
+  when: home_directory.stat.exists == false
+
+- name: Verify the user .ssh directory
+  stat: path=~{{ USER }}/.ssh
+  become: yes
+  become_user: '{{ USER }}'
+  register: ssh_directory
+
+- name: "Create user .ssh directory as {{ USER }} if required"
+  file: path=~{{ USER }}/.ssh state=directory mode=0700 follow=yes
+  become: yes
+  become_user: '{{ USER }}'
+  when: ssh_directory.stat.exists == false and (home_directory.stat.exists == false or (home_directory.stat.pw_name is defined and home_directory.stat.pw_name == USER))
+
+- name: Create user .ssh directory as root if required
+  file: path=~{{ USER }}/.ssh state=directory owner={{ USER }} group={{ GROUP }} mode=0700 follow=yes
+  become: yes
+  become_user: root
+  when: ssh_directory.stat.exists == false and home_directory.stat.pw_name is defined and home_directory.stat.pw_name != USER
+
+- name: Create user authorized_keys file
+  file: path=~{{ USER }}/.ssh/authorized_keys state=touch mode=0600
+  become: yes
+  become_user: '{{ USER }}'

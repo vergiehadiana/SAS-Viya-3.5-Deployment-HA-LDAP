@@ -1,0 +1,23 @@
+---
+- name: Include package install tasks
+  hosts: "{{ install_hosts | default('sas_all') }}"
+  any_errors_fatal: true
+  become_user: root
+  vars_files:
+    - ../vars.yml
+  tasks:
+    - name: include install-packages-x64_redhat_linux_6-yum.yml
+      include_tasks: install-packages-x64_redhat_linux_6-yum.yml
+      when: inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([])
+
+    - name: include install-packages-x64_suse_linux_12-yum.yml
+      include_tasks: install-packages-x64_suse_linux_12-yum.yml
+      when: inventory_hostname in groups['sas-hosts-x64_suse_linux_12-yum'] | default([])
+
+    - name: include install-packages-ppc64le_redhat_linux_7-yum.yml
+      include_tasks: install-packages-ppc64le_redhat_linux_7-yum.yml
+      when: inventory_hostname in groups['sas-hosts-ppc64le_redhat_linux_7-yum'] | default([])
+
+    - name: include install-packages-ppc64le_suse_linux_12-yum.yml
+      include_tasks: install-packages-ppc64le_suse_linux_12-yum.yml
+      when: inventory_hostname in groups['sas-hosts-ppc64le_suse_linux_12-yum'] | default([])

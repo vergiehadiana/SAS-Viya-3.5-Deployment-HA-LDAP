@@ -1,0 +1,17 @@
+---
+# file: analyze-existing-java.yml
+
+- name: Analyze existing Java
+  hosts: sas_all
+  any_errors_fatal: true
+  become: no
+
+  vars_files:
+    - ../vars.yml
+
+  tasks:
+    - name: Analyze existing Java
+      include_role:
+        name: sas-requirements-java
+        tasks_from: analyze-existing
+...

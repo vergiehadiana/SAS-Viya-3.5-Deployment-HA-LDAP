@@ -1,0 +1,40 @@
+---
+# file: mt-database.yml
+
+# This creates a database per tenant if the environment is configures as such
+
+- name: "Create database per tenant"
+  hosts: sasdatasvrc
+  any_errors_fatal: true
+  gather_facts: false
+  become: false
+
+  vars:
+    db_name: SharedServices
+
+  tasks:
+    - name: Get the sas.multi.tenancy.db.mode value
+      shell: '. {{ SASROOT }}/viya/config/consul.conf ; {{ SASROOT }}/viya/home/bin/sas-bootstrap-config --token-file {{ SASROOT }}/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/{{ INSTANCE_ID }}/client.token kv read config/application/sas.multi.tenancy.db.mode'
+      become: yes
+      become_user: sas
+      register: tenant_db_mode
+      run_once: yes
+
+    - name: Create database for tenant if sas.multi.tenancy.db.mode == databasePerTenant
+      command: '{{ SASROOT }}/viya/home/libexec/sasdatasvrc/script/sds_tenant_db_management.sh -t {{ sas_tenant }} -o create'
+      become: yes
+      become_user: sas
+      run_once: yes
+      when: tenant_db_mode.stdout == 'databasePerTenant'
+
+    - name: Define database name if sas.multi.tenancy.db.mode == databasePerTenant
+      set_fact:
+        db_name: "{{ sas_tenant }}"
+      when: tenant_db_mode.stdout == 'databasePerTenant'
+
+    - name: Create dataMiningWarehouse user
+      command: '{{ SASROOT }}/viya/home/libexec/sasdatasvrc/script/sds_manage_database_user.sh -u dataMiningWarehouse{{ sas_tenant }} -o create -d {{ db_name }} -k config/application/tenants/{{ sas_tenant }}/sas.datamining.warehouse'
+      become: yes
+      become_user: sas
+      run_once: yes
+...

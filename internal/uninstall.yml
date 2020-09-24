@@ -1,0 +1,19 @@
+---
+# uninstall playbook
+
+- name: uninstall
+  hosts: sas_all
+  any_errors_fatal: true
+  become: true
+
+  pre_tasks:
+    - name: include soe.yml
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "{{ orchestration_root }}/soe.yml"
+        - "{{ orchestration_root }}/internal/soe_defaults.yml"
+  roles:
+    - { role: run_executable, executable: "{{ SASHOME }}/libexec/deployment/stop-all-services.sh" }
+    - { role: run_executable, executable: "{{ SASHOME }}/libexec/deployment/pre-uninstall.sh" }
+    - { role: run_executable, executable: "{{ SASHOME }}/libexec/deployment/uninstall.sh" }
+    - post-uninstall

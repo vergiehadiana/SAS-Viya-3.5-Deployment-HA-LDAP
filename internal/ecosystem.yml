@@ -1,0 +1,36 @@
+---
+- name: ecosystem
+  any_errors_fatal: true
+  hosts: sas_all
+  roles:
+  - APP_NAME: consul
+    COMBINED_GROUP: '{{ groups[''consul''] }}'
+    MODE: '0600'
+    SCOPE_GROUP: '{{ groups[''consul''] }}'
+    TOKEN_NAME: management.token
+    role: uuid_token_ecosystem
+  - APP_NAME: consul
+    COMBINED_GROUP: '{{ groups[''consul''] }}'
+    MODE: '0640'
+    SCOPE_GROUP: '{{ groups[''sas_all''] }}'
+    TOKEN_NAME: client.token
+    role: uuid_token_ecosystem
+  - APP_NAME: consul
+    COMBINED_GROUP: '{{ groups[''consul''] }}'
+    MODE: '0600'
+    SCOPE_GROUP: '{{ groups[''sas_all''] }}'
+    TOKEN_NAME: encryption.token
+    role: consulEncryption_token_ecosystem
+  - APP_NAME: rabbitmq
+    COMBINED_GROUP: '{{ groups[''rabbitmq''] }}'
+    MODE: '0600'
+    SCOPE_GROUP: '{{ groups[''rabbitmq''] }}'
+    TOKEN_NAME: erlang.cookie
+    role: erlangCookie_token_ecosystem
+  - COMBINED_GROUP: '{{ groups[''consul''] }}'
+    KEYNAME: sas_key
+    USERS: '[''{{ INSTALL_USER }}'']'
+    role: ssh_ecosystem
+  vars_files:
+  - ../vars.yml
+

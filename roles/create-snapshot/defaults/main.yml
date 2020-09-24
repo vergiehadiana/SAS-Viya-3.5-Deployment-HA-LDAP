@@ -1,0 +1,6 @@
+---
+# defaults file for create-snapshot
+
+sasenv_collect_snapshot: true
+sasenv_snapshot_dir: "{{ orchestration_root }}/snapshot"
+...

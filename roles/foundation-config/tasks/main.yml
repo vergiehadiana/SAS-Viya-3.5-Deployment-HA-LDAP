@@ -1,0 +1,22 @@
+---
+# tasks file for foundation-config
+- include: "{{ orchestration_root }}/roles/framework/tasks/main.yml"
+  loop_control:
+    loop_var: consumer_data
+  with_dict: '{{ consumer_items | default({}) }}'
+
+###### START - post install tasks #########
+- name: Verify that post_install script is installed
+  wait_for:
+    path: "{{ sas_install_dir + '/utilities/bin/post_install.sh' }}"
+    timeout: 5
+
+- name: Call post install script
+  shell: "{{ sas_install_dir + '/utilities/bin/post_install.sh' }}"
+  become: true
+  become_user: root
+  environment:
+    SASPREHOME: '{{ SPREHOME }}'
+###### END - post install tasks #########
+
+...

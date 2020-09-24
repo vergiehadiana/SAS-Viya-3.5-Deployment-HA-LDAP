@@ -1,0 +1,2267 @@
+[ {
+  "deploymentType" : "default",
+  "repositoryType" : "x64_redhat_linux_6-yum",
+  "softwareGroups" : [ {
+    "softwareUnits" : [ {
+      "name" : "ASTORE for EMBSCOREENG",
+      "type" : "yum"
+    }, {
+      "name" : "CAS for SAS Visual Analytics",
+      "type" : "yum"
+    }, {
+      "name" : "CAS for Viya Common Foundation",
+      "type" : "yum"
+    }, {
+      "name" : "CUDA Library Support for SAS",
+      "type" : "yum"
+    }, {
+      "name" : "Data Conn OSS File Fmts",
+      "type" : "yum"
+    }, {
+      "name" : "Meta RPM Event Stream CAS Client",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Data Connect Accelerator for Hadoop",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Data Connector to Hadoop",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Text Analytics for English",
+      "type" : "yum"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casasr",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casluaclnt",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-caspythnclnt",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casrclnt",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfbase",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfephive",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfhive",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfspde",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfweb",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsaggregate",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsastore",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsds2",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsdtree",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsfcmpact",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsfedsql",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsforecast",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsmlrning",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsmodelpub",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsmtpsrvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsparse",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crspseudo",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsrecommend",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsregressn",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssearch",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssentiment",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssequence",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssgcomp",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsstat",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crstranspose",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crstxtmining",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-dmscorecas",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-docconvjars",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-embscoreeng",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-espauth",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-espbase",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-hdatplugins",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mapsvahdat",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-postgresql-secure-libs-11",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-sasgpudcfg",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkcas",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkesp",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkets",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhps",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-txtmineng",
+      "type" : "rpm"
+    } ],
+    "name" : "sas_casserver_primary"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-backup-agent",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "sas-casserver-primary"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-compsrvcli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-compute",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-jobexecapp",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-launcher",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "ComputeServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "Gold Layer YUM Group for SPRE",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Configuration for Spawner",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Foundation for SAS Econometrics",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Foundation for SAS Visual Forecasting",
+      "type" : "yum"
+    }, {
+      "name" : "SAS In-Database Technologies for Hadoop Map Reduce JAR File",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Machine Learning",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Open Source File Format Engines",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Program Runtime Environment",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Statistics",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Visual Text Analytics",
+      "type" : "yum"
+    }, {
+      "name" : "SAS/ACCESS Interface to Hadoop (SPRE)",
+      "type" : "yum"
+    }, {
+      "name" : "sas-aacomp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-aastatistcs1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-accelmva1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-analyticcmn1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-base1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-basecfg1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-basestat1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-baseui1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cas1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cbase1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cmp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-codegnscrpt1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-dmscore1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-econometrcs1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-etscomp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-grjavarendr1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-grodscrendr1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-hadoop1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-hadoopbascs1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-hadoopmrjrs1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mlearning1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mnsrvutl1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mtrb1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mvaeventbus1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-odstemplate1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-optimizatin1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-prochttp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-sasstudio",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-scoreaccel1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-secureclint1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-securedom1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-securelite1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-spawnercfg",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-spdsclient1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-statcomp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-textmine1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tk1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkaa1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkaccess1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkbasestat1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkcmp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkcore1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkcs3rdclnt1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkdmine1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkets1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tketsutil1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkeventbus1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkfnc1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkformats1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkgraph1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhadoophiv1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhpdmine1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhpets1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhphpf1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhps1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhpstat1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkiml1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkiog1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkiom1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkjava1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkjavajars1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkl4sas1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkmpi1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkmtrb1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tknls1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkormp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkormpgraph1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkqc1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkrabbitmq1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tksecure1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tksecuressh1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkspddrv1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkspde1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkspdsdrv1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkstat1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tktscore1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tktxtan1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tsmodel1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tsreconcile1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tstimeinfo1",
+      "type" : "rpm"
+    } ],
+    "name" : "programming"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-backup-agent",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "sas-casserver-secondary"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-sasgraphbuilder",
+      "type" : "rpm"
+    } ],
+    "name" : "GraphBuilderServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-backup-agent",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-consul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-vault",
+      "type" : "rpm"
+    } ],
+    "name" : "consul"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-audit-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-authorcli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-backupcli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casmanagement-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-compsrvcli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-configuration-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-devicemanagement-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-folderscli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-fonts-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-healthcheck-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-identitiecli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-inventory-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-job-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-jobflows-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-launcher-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-licenses-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mirrormgr",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-orchestration-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-qkbs-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-reports-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-restorecli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-sasadmclnt",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tenant-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-transfercli",
+      "type" : "rpm"
+    } ],
+    "name" : "CommandLine"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmsvrops",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mbagent",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "Operations"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "ASTORE for EMBSCOREENG",
+      "type" : "yum"
+    }, {
+      "name" : "CAS for SAS Visual Analytics",
+      "type" : "yum"
+    }, {
+      "name" : "CAS for Viya Common Foundation",
+      "type" : "yum"
+    }, {
+      "name" : "CUDA Library Support for SAS",
+      "type" : "yum"
+    }, {
+      "name" : "Data Conn OSS File Fmts",
+      "type" : "yum"
+    }, {
+      "name" : "Meta RPM Event Stream CAS Client",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Data Connect Accelerator for Hadoop",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Data Connector to Hadoop",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Text Analytics for English",
+      "type" : "yum"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casasr",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casluaclnt",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-caspythnclnt",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casrclnt",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfbase",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfephive",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfhive",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfspde",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfweb",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsaggregate",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsastore",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsds2",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsdtree",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsfcmpact",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsfedsql",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsforecast",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsmlrning",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsmodelpub",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsmtpsrvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsparse",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crspseudo",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsrecommend",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsregressn",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssearch",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssentiment",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssequence",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssgcomp",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsstat",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crstranspose",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crstxtmining",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-dmscorecas",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-docconvjars",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-embscoreeng",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-espauth",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-espbase",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-hdatplugins",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mapsvahdat",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-postgresql-secure-libs-11",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-sasgpudcfg",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkcas",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkesp",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkets",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhps",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-txtmineng",
+      "type" : "rpm"
+    } ],
+    "name" : "sas_casserver_secondary"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-sasthemedesigner",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-themecontent",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-themes",
+      "type" : "rpm"
+    } ],
+    "name" : "ThemeServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-appregistry",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-comments",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-drive",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-search",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-thumbnails",
+      "type" : "rpm"
+    } ],
+    "name" : "HomeServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-graph-templates",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-links",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-maps",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-reportdistribution",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-reportservicesgroup",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-sasvisualanalytics",
+      "type" : "rpm"
+    } ],
+    "name" : "ReportServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-htmlcommons10",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-htmlcommonsbase",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-httpproxy",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "httpproxy"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-audit",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-authorization",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cachelocator",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cacheserver",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-credentials",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crossdomainproxy",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-files",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-folders",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-identities",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-jobflowscheduling",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mail",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-notifications",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-preferences",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-relationships",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-saslogon",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-scheduler",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-templates",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tenant",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-types",
+      "type" : "rpm"
+    } ],
+    "name" : "CoreServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-backup-agent",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-rabbitmq-server",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "rabbitmq"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-studiov",
+      "type" : "rpm"
+    } ],
+    "name" : "StudioViya"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-annotations",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-dataexplorer",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-dataplans",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-dataprofiles",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-datastudio",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-dmdataservices",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-dmtransformservices",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-jobexecution",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-lineage",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-projects",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-web-data-access",
+      "type" : "rpm"
+    } ],
+    "name" : "DataServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "ASTORE for EMBSCOREENG",
+      "type" : "yum"
+    }, {
+      "name" : "CAS for SAS Visual Analytics",
+      "type" : "yum"
+    }, {
+      "name" : "CAS for Viya Common Foundation",
+      "type" : "yum"
+    }, {
+      "name" : "CUDA Library Support for SAS",
+      "type" : "yum"
+    }, {
+      "name" : "Data Conn OSS File Fmts",
+      "type" : "yum"
+    }, {
+      "name" : "Meta RPM Event Stream CAS Client",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Data Connect Accelerator for Hadoop",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Data Connector to Hadoop",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Text Analytics for English",
+      "type" : "yum"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casasr",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casluaclnt",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-caspythnclnt",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casrclnt",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfbase",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfephive",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfhive",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfspde",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cdfweb",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsaggregate",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsastore",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsds2",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsdtree",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsfcmpact",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsfedsql",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsforecast",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsmlrning",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsmodelpub",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsmtpsrvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsparse",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crspseudo",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsrecommend",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsregressn",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssearch",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssentiment",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssequence",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crssgcomp",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crsstat",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crstranspose",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-crstxtmining",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-dmscorecas",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-docconvjars",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-embscoreeng",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-espauth",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-espbase",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-hdatplugins",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mapsvahdat",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-postgresql-secure-libs-11",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-sasgpudcfg",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkcas",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkesp",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkets",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhps",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-txtmineng",
+      "type" : "rpm"
+    } ],
+    "name" : "sas_casserver_worker"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-pgupgrade-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-postgresql-secure-11",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-postgresql-secure-libs-11",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-sasdatasvrc",
+      "type" : "rpm"
+    } ],
+    "name" : "sasdatasvrc"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-backup-agent",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-pgpool-II-40",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-pgpoolc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-pgupgrade-cli",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "pgpoolc"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "Gold Layer YUM Group for SPRE",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Foundation for SAS Econometrics",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Foundation for SAS Visual Forecasting",
+      "type" : "yum"
+    }, {
+      "name" : "SAS In-Database Technologies for Hadoop Map Reduce JAR File",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Machine Learning",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Open Source File Format Engines",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Program Runtime Environment",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Statistics",
+      "type" : "yum"
+    }, {
+      "name" : "SAS Visual Text Analytics",
+      "type" : "yum"
+    }, {
+      "name" : "SAS/ACCESS Interface to Hadoop (SPRE)",
+      "type" : "yum"
+    }, {
+      "name" : "sas-aacomp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-aastatistcs1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-accelmva1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-analyticcmn1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-base1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-basecfg1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-basestat1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-baseui1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cas1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cbase1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cmp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-codegnscrpt1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-compsrv1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-dmscore1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-econometrcs1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-etscomp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-grjavarendr1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-grodscrendr1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-hadoop1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-hadoopbascs1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-hadoopmrjrs1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mlearning1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mnsrvutl1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mtrb1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-mvaeventbus1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-odstemplate1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-optimizatin1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-prochttp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runlauncher",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-scoreaccel1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-secureclint1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-securedom1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-securelite1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-spdsclient1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-statcomp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-textmine1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tk1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkaa1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkaccess1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkbasestat1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkcmp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkcore1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkcs3rdclnt1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkdmine1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkets1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tketsutil1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkeventbus1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkfnc1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkformats1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkgraph1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhadoophiv1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhpdmine1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhpets1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhphpf1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhps1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkhpstat1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkiml1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkiog1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkiom1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkjava1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkjavajars1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkl4sas1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tklauncher1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkmpi1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkmtrb1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tknls1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkormp1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkormpgraph1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkqc1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkrabbitmq1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tksecure1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tksecuressh1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkspddrv1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkspde1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkspdsdrv1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tkstat1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tktscore1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tktxtan1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tsmodel1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tsreconcile1",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-tstimeinfo1",
+      "type" : "rpm"
+    } ],
+    "name" : "ComputeServer"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-naturalLanguageGeneration",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-naturalLanguageUnderstanding",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "CognitiveComputingServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-fonts",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-report-data",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-report-packages",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-report-renderer",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-reportviewernaturallanguageunderstanding",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "ReportViewerServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-backupmanager",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cas-access-management",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cas-license",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-deploymentBackup",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-device-management",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-environmentmanager",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-import9",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-monitoring",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-transfer",
+      "type" : "rpm"
+    } ],
+    "name" : "AdminServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cas-administration",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cas-formats",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-casrowsets",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-codedebugger",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-codedebuggerui",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-geo-enrichment",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "CASServices"
+  }, {
+    "softwareUnits" : [ {
+      "name" : "sas-bootstrap-config",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-certframe",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-cleanutils",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-configuration",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-csq",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-envesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcltsvcs",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-evmcollect",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-javaesntl",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-localconsul",
+      "type" : "rpm"
+    }, {
+      "name" : "sas-runjavasvc",
+      "type" : "rpm"
+    } ],
+    "name" : "configuratn"
+  } ]
+} ]

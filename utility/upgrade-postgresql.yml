@@ -1,0 +1,22 @@
+---
+- name: SAS PostgreSQL Upgrade Utility
+  hosts: sasdatasvrc:pgpoolc
+  tasks:
+  - name: Check if SAS PostgreSQL Upgrade Utility is Present
+    become: yes
+    become_user: "{{ INSTALL_USER }}"
+    stat:
+      path: "{{ SASHOME }}/libexec/sasdatasvrc/utilities/sas-pgupgrade-cli"
+    register: stat_result
+
+  - name: Print Information Regarding Existance of SAS PostgreSQL Upgrade Utility
+    debug:
+      msg: "{% if stat_result.stat.exists %} SAS PostgreSQL upgrade utility found.{% else %} SAS PostgreSQL upgrade utility not found. The upgrade utility was first released in November of 2019, please verify that your playbook is sufficiently up-to-date and review the SAS Viya administration guide.{% endif %}"
+
+  - name: Upgrading SAS PostgreSQL Servers
+    when: stat_result.stat.exists
+    become: yes
+    become_user: "{{ INSTALL_USER }}"
+    command: "{{ SASHOME }}/libexec/sasdatasvrc/utilities/sas-pgupgrade-cli upgrade --viya-root {{ SASROOT }}/{{ DEPLOYMENT_ID }} --assumeyes"
+
+...

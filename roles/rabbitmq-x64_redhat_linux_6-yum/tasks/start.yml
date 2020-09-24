@@ -1,0 +1,22 @@
+---
+- name: Execute Reload sas-{{ DEPLOYMENT_ID }}-consul-{{ INSTANCE_ID }}
+  become: 'yes'
+  become_user: root
+  command: /etc/init.d/sas-{{ DEPLOYMENT_ID }}-consul-{{ INSTANCE_ID }} reload
+
+- name: Execute sleep 5
+  become: 'yes'
+  become_user: root
+  command: sleep 5
+
+- name: Execute Invoke cluster setup
+  become: 'yes'
+  become_user: root
+  command: '{{ SASHOME }}/bin/setup_rabbit_cluster --hostlist ''{{ hostvars | to_fqdn_list(groups, ''rabbitmq'') | join('', '') }}''  --home {{ SASHOME }} --config {{ SAS_CONFIG_ROOT }} --service {{ SERVICE_NAME }} --logfile /tmp/sas_setup_rabbit_cluster.log'
+
+- name: Ensure {{ SERVICE_NAME }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name={{ SERVICE_NAME }} state=started
+

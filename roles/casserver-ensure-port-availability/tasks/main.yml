@@ -1,0 +1,51 @@
+---
+# tasks file for casserver-ensure-port-availability
+
+####################################################################################
+## Validate CAS ports
+####################################################################################
+
+- name: Verify that controller port is available on the controller
+  wait_for:
+    port: "{% if item.value.cas is defined and item.value.cas.port is defined %}{{ item.value.cas.port | default(5570) }}{% else %}5570{% endif %}"
+    host: "{{ hostvars[inventory_hostname].sas_vars.hostname_fqdn }}"
+    state: stopped
+    timeout: 5
+  when: |
+    ((item.value.primary_host is defined and inventory_hostname == item.value.primary_host) or
+     (item.value.primary_host is not defined and inventory_hostname == groups['sas_casserver_primary'][0])) or
+    ((item.value.secondary_host is defined and inventory_hostname == item.value.secondary_host) or
+     (item.value.secondary_host is not defined and groups['sas_casserver_secondary'] | length > 0 and inventory_hostname == groups['sas_casserver_primary'][0]))
+  with_dict: "{{ CLUSTER_DEFINITIONS_cas }}"
+
+- name: Verify that controller GC port is available on all hosts in the cluster
+  wait_for:
+    port: "{{ item.value.cas.gcport }}"
+    host: "{{ hostvars[inventory_hostname].sas_vars.hostname_fqdn }}"
+    state: stopped
+    timeout: 5
+  when: |
+    (item.value.cas is defined and item.value.cas.gcport is defined and
+     item.value.cas.gcport and item.value.cas.gcport | int != 0) and
+    (((item.value.primary_host is defined and inventory_hostname == item.value.primary_host) or
+      (item.value.primary_host is not defined and inventory_hostname == groups['sas_casserver_primary'][0])) or
+     ((item.value.secondary_host is defined and inventory_hostname == item.value.secondary_host) or
+      (item.value.secondary_host is not defined and groups['sas_casserver_secondary'] | length > 0 and inventory_hostname == groups['sas_casserver_secondary'][0])) or
+     ((item.value.worker_hosts is defined and item.value.worker_hosts and inventory_hostname in item.value.worker_hosts.split(',')) or
+      (item.value.worker_hosts is not defined and inventory_hostname in groups['sas_casserver_worker'])))
+  with_dict: "{{ CLUSTER_DEFINITIONS_cas }}"
+
+- name: Verify that controller HTTP port is available on all hosts in the cluster
+  wait_for:
+    port: "{% if item.value.cas is defined and item.value.cas.httpport is defined %}{{ item.value.cas.httpport | default(8777) }}{% else %}8777{% endif %}"
+    host: "{{ hostvars[inventory_hostname].sas_vars.hostname_fqdn }}"
+    state: stopped
+    timeout: 5
+  when: |
+    (((item.value.primary_host is defined and inventory_hostname == item.value.primary_host) or
+      (item.value.primary_host is not defined and inventory_hostname == groups['sas_casserver_primary'][0])) or
+     ((item.value.secondary_host is defined and inventory_hostname == item.value.secondary_host) or
+      (item.value.secondary_host is not defined and groups['sas_casserver_secondary'] | length > 0 and inventory_hostname == groups['sas_casserver_secondary'][0])) or
+     ((item.value.worker_hosts is defined and item.value.worker_hosts and inventory_hostname in item.value.worker_hosts.split(',')) or
+      (item.value.worker_hosts is not defined and inventory_hostname in groups['sas_casserver_worker'])))
+  with_dict: "{{ CLUSTER_DEFINITIONS_cas }}"

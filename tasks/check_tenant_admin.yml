@@ -1,0 +1,52 @@
+---
+# file: check_tenant_admin.yml
+
+- block:
+
+  - name: "Verify that tenant_admin exists"
+    vars:
+      RC_ERROR: 1
+    shell: id -u {{ tenant_admin }}
+    register: user_exists
+    changed_when: False
+    failed_when: user_exists.rc not in [0,RC_ERROR]
+
+  - name: "Accumulate check_tenant_admin error messages 1"
+    when: check_tenant_admin_results is defined and user_exists.rc != 0
+    vars:
+      errormsg: "The user name specified by tenant_admin ({{ tenant_admin }}) does not exist."
+    set_fact:
+      check_tenant_admin_results: "{{ check_tenant_admin_results + [ errormsg ] }}"
+
+  - name: "Verify that tenant_admin is a member of tenant_admin_group"
+    vars:
+      RC_ERROR: 1
+    shell: id -Gn {{ tenant_admin }} | grep -q '\b{{ tenant_admin_group }}\b'
+    when: user_exists.rc == 0
+    register: user_exists_in_admin_group
+    changed_when: False
+    failed_when: user_exists_in_admin_group.rc not in [0,RC_ERROR]
+
+  - name: "Accumulate check_tenant_admin error messages 2"
+    when: check_tenant_admin_results is defined and user_exists.rc == 0 and user_exists_in_admin_group.rc != 0
+    vars:
+      errormsg: "The user name specified by tenant_admin ({{ tenant_admin }}) is required to be a member of the group whose name is specified by tenant_admin_group ({{ tenant_admin_group }})."
+    set_fact:
+      check_tenant_admin_results: "{{ check_tenant_admin_results + [ errormsg ] }}"
+
+  - name: "Verify that tenant_users_group exists"
+    vars:
+      RC_NOT_FOUND: 2
+    shell: getent group {{ tenant_users_group  }}
+    register: users_group_exists
+    changed_when: False
+    failed_when: users_group_exists.rc not in [0,RC_NOT_FOUND]
+
+  - name: "Accumulate check_tenant_admin error messages 3"
+    when: check_tenant_admin_results is defined and users_group_exists.rc != 0
+    vars:
+      errormsg: "The group name specified by tenant_users_group ({{ tenant_users_group }}) does not exist."
+    set_fact:
+      check_tenant_admin_results: "{{ check_tenant_admin_results + [ errormsg ] }}"
+
+  when: not ansible_check_mode

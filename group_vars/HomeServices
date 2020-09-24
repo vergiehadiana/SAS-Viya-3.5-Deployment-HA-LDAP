@@ -1,0 +1,78 @@
+---
+sas_host_group_variables_HomeServices:
+  installables-x64_redhat_linux_6-yum:
+    appregistry:
+      SERVICE_APP_NAME: appregistry
+      SERVICE_MEMORY_NEEDED: 1024
+      SERVICE_PRODUCT_NAME: appregistry
+      SERVICE_YUM_PACKAGE: sas-appregistry
+    bootstrap-config:
+      SERVICE_APP_NAME: bootstrapcfg
+      SERVICE_MEMORY_NEEDED: 3
+      SERVICE_PRODUCT_NAME: bootstrap-config
+      SERVICE_YUM_PACKAGE: sas-bootstrap-config
+    certframe:
+      SERVICE_APP_NAME: certframe
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: certframe
+      SERVICE_YUM_PACKAGE: sas-certframe
+    cleanutils:
+      SERVICE_APP_NAME: cleanutils
+      SERVICE_MEMORY_NEEDED: 32
+      SERVICE_PRODUCT_NAME: cleanutils
+      SERVICE_YUM_PACKAGE: sas-cleanutils
+    comments:
+      SERVICE_APP_NAME: comments
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: comments
+      SERVICE_YUM_PACKAGE: sas-comments
+    csq:
+      SERVICE_APP_NAME: csq
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: csq
+      SERVICE_YUM_PACKAGE: sas-csq
+    drive:
+      SERVICE_APP_NAME: drive
+      SERVICE_MEMORY_NEEDED: 1024
+      SERVICE_PRODUCT_NAME: drive
+      SERVICE_YUM_PACKAGE: sas-drive
+    envesntl:
+      SERVICE_APP_NAME: envesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: envesntl
+      SERVICE_YUM_PACKAGE: sas-envesntl
+    evmcltsvcs:
+      SERVICE_APP_NAME: evmcltsvcs
+      SERVICE_MEMORY_NEEDED: 64
+      SERVICE_PRODUCT_NAME: evmcltsvcs
+      SERVICE_YUM_PACKAGE: sas-evmcltsvcs
+    evmcollect:
+      SERVICE_APP_NAME: evmcollect
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: evmcollect
+      SERVICE_YUM_PACKAGE: sas-evmcollect
+    javaesntl:
+      SERVICE_APP_NAME: javaesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: javaesntl
+      SERVICE_YUM_PACKAGE: sas-javaesntl
+    localconsul:
+      SERVICE_APP_NAME: localconsul
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: localconsul
+      SERVICE_YUM_PACKAGE: sas-localconsul
+    runjavasvc:
+      SERVICE_APP_NAME: runjavasvc
+      SERVICE_MEMORY_NEEDED: 1
+      SERVICE_PRODUCT_NAME: runjavasvc
+      SERVICE_YUM_PACKAGE: sas-runjavasvc
+    search:
+      SERVICE_APP_NAME: searchservice
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: search
+      SERVICE_YUM_PACKAGE: sas-search
+    thumbnails:
+      SERVICE_APP_NAME: thumbnails
+      SERVICE_MEMORY_NEEDED: 1024
+      SERVICE_PRODUCT_NAME: thumbnails
+      SERVICE_YUM_PACKAGE: sas-thumbnails

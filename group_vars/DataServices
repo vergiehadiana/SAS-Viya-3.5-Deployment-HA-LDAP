@@ -1,0 +1,108 @@
+---
+sas_host_group_variables_DataServices:
+  installables-x64_redhat_linux_6-yum:
+    annotations:
+      SERVICE_APP_NAME: annotations
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: annotations
+      SERVICE_YUM_PACKAGE: sas-annotations
+    bootstrap-config:
+      SERVICE_APP_NAME: bootstrapcfg
+      SERVICE_MEMORY_NEEDED: 3
+      SERVICE_PRODUCT_NAME: bootstrap-config
+      SERVICE_YUM_PACKAGE: sas-bootstrap-config
+    certframe:
+      SERVICE_APP_NAME: certframe
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: certframe
+      SERVICE_YUM_PACKAGE: sas-certframe
+    cleanutils:
+      SERVICE_APP_NAME: cleanutils
+      SERVICE_MEMORY_NEEDED: 32
+      SERVICE_PRODUCT_NAME: cleanutils
+      SERVICE_YUM_PACKAGE: sas-cleanutils
+    csq:
+      SERVICE_APP_NAME: csq
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: csq
+      SERVICE_YUM_PACKAGE: sas-csq
+    dataexplorer:
+      SERVICE_APP_NAME: dmdatahub
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: dataexplorer
+      SERVICE_YUM_PACKAGE: sas-dataexplorer
+    dataplans:
+      SERVICE_APP_NAME: dataplans
+      SERVICE_MEMORY_NEEDED: 256
+      SERVICE_PRODUCT_NAME: dataplans
+      SERVICE_YUM_PACKAGE: sas-dataplans
+    dataprofiles:
+      SERVICE_APP_NAME: dmprofilesvc
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: dataprofiles
+      SERVICE_YUM_PACKAGE: sas-dataprofiles
+    datastudio:
+      SERVICE_APP_NAME: dmdpstu
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: datastudio
+      SERVICE_YUM_PACKAGE: sas-datastudio
+    dmdataservices:
+      SERVICE_APP_NAME: dmdataservices
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: dmdataservices
+      SERVICE_YUM_PACKAGE: sas-dmdataservices
+    dmtransformservices:
+      SERVICE_APP_NAME: dmtransformservices
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: dmtransformservices
+      SERVICE_YUM_PACKAGE: sas-dmtransformservices
+    envesntl:
+      SERVICE_APP_NAME: envesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: envesntl
+      SERVICE_YUM_PACKAGE: sas-envesntl
+    evmcltsvcs:
+      SERVICE_APP_NAME: evmcltsvcs
+      SERVICE_MEMORY_NEEDED: 64
+      SERVICE_PRODUCT_NAME: evmcltsvcs
+      SERVICE_YUM_PACKAGE: sas-evmcltsvcs
+    evmcollect:
+      SERVICE_APP_NAME: evmcollect
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: evmcollect
+      SERVICE_YUM_PACKAGE: sas-evmcollect
+    javaesntl:
+      SERVICE_APP_NAME: javaesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: javaesntl
+      SERVICE_YUM_PACKAGE: sas-javaesntl
+    jobexecution:
+      SERVICE_APP_NAME: jobexecution
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: jobexecution
+      SERVICE_YUM_PACKAGE: sas-jobexecution
+    lineage:
+      SERVICE_APP_NAME: dmdplin
+      SERVICE_MEMORY_NEEDED: 256
+      SERVICE_PRODUCT_NAME: lineage
+      SERVICE_YUM_PACKAGE: sas-lineage
+    localconsul:
+      SERVICE_APP_NAME: localconsul
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: localconsul
+      SERVICE_YUM_PACKAGE: sas-localconsul
+    projects:
+      SERVICE_APP_NAME: projects
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: projects
+      SERVICE_YUM_PACKAGE: sas-projects
+    runjavasvc:
+      SERVICE_APP_NAME: runjavasvc
+      SERVICE_MEMORY_NEEDED: 1
+      SERVICE_PRODUCT_NAME: runjavasvc
+      SERVICE_YUM_PACKAGE: sas-runjavasvc
+    web-data-access:
+      SERVICE_APP_NAME: web-data-access
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: web-data-access
+      SERVICE_YUM_PACKAGE: sas-web-data-access

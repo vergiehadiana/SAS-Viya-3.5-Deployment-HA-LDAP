@@ -1,0 +1,51 @@
+---
+# file: setup-ecosystem.yml
+
+########################################################
+# A set of tasks specific to the current hosts we are on
+########################################################
+- name: Local task for setting up ecosystem
+  hosts: localhost
+  any_errors_fatal: true
+  gather_facts: no
+  connection: local
+  become: no
+
+  vars_files:
+    - ../vars.yml
+
+  tasks:
+
+    - block:
+      - name: Verify that known_hosts file exists
+        stat:
+          path: "{{ lookup('env','HOME') + '/.ssh/known_hosts' }}"
+        register: knownhostlookup
+
+      - name: Create known_hosts file if it does not already exist
+        file:
+          path: "{{ lookup('env','HOME') + '/.ssh/known_hosts' }}"
+          state: touch
+        when: knownhostlookup.stat.exists | bool == false
+
+      - name: Insert remote hosts into known_hosts
+        shell: ssh-keygen -f {{ lookup('env','HOME') }}/.ssh/known_hosts -R {{ hostvars[item].sas_vars.hostname_fqdn }}; ssh-keyscan {{ hostvars[item].sas_vars.hostname_fqdn }} >> {{ lookup('env','HOME') }}/.ssh/known_hosts
+        with_items:
+          - "{{ groups['sas_all'] }}"
+        run_once: yes
+      when: use_ssh_keyscan | default('true') | bool
+
+###########################################################
+# A set of tasks specific to the hosts we are connecting to
+###########################################################
+- name: Install additional packages
+  hosts: sas_all
+  any_errors_fatal: true
+  gather_facts: no
+  become: no
+
+  vars_files:
+    - ../vars.yml
+
+  roles:
+    - ecosystem-packages

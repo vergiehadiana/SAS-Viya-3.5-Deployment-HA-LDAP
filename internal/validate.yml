@@ -1,0 +1,234 @@
+---
+- name: Validate user-defined input
+  any_errors_fatal: true
+  hosts: localhost
+  tasks:
+  - set_fact:
+      all_results: []
+    when: all_results is not defined
+  - name: Verify DEPLOYMENT_LABEL is a string
+    fail:
+      msg: DEPLOYMENT_LABEL failed verification.  DEPLOYMENT_LABEL must be a string.
+    failed_when: DEPLOYMENT_LABEL is not defined or DEPLOYMENT_LABEL is none or DEPLOYMENT_LABEL is not string
+    ignore_errors: true
+    register: check_register
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ check_register.msg ] }}'
+    when: check_register is defined and check_register.failed is defined and check_register.failed
+  - name: Verify DEPLOYMENT_LABEL is valid
+    fail:
+      msg: DEPLOYMENT_LABEL ( {{DEPLOYMENT_LABEL}} ) failed verification. DEPLOYMENT_LABEL must be a non-empty string, using only lowercase characters, numeric characters, and the hyphen character.
+    failed_when: not DEPLOYMENT_LABEL is match('^([a-z0-9\-])+$')
+    ignore_errors: true
+    register: check_register
+    when: DEPLOYMENT_LABEL is defined and DEPLOYMENT_LABEL is not none and DEPLOYMENT_LABEL is string
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ check_register.msg ] }}'
+    when: check_register is defined and check_register.failed is defined and check_register.failed
+  - name: Verify deprecated variable sas_install_type is not misused
+    fail:
+      msg: The sas_install_type option that was used with the deploy command in earlier versions of SAS Viya has been deprecated. The current version of SAS Viya requires that you create a playbook for the type of deployment that you want by using the --deployment-type option with the SAS Orchestration CLI.
+    failed_when: sas_install_type is defined and sas_install_type not in ("all", "programming")
+    ignore_errors: true
+    register: check_register
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ check_register.msg ] }}'
+    when: check_register is defined and check_register.failed is defined and check_register.failed
+  - name: Verify deprecated variable sas_install_type is not misused
+    fail:
+      msg: The sas_install_type option that was used with the deploy command in earlier versions of SAS Viya has been deprecated. The current version of SAS Viya requires that you create a playbook for the type of deployment that you want by using the --deployment-type option with the SAS Orchestration CLI.
+    failed_when: sas_install_type is defined and sas_install_type == "all" and "default" != "default"
+    ignore_errors: true
+    register: check_register
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ check_register.msg ] }}'
+    when: check_register is defined and check_register.failed is defined and check_register.failed
+  - name: Verify deprecated variable sas_install_type is not misused
+    fail:
+      msg: The sas_install_type option that was used with the deploy command in earlier versions of SAS Viya has been deprecated. The current version of SAS Viya requires that you create a playbook for the type of deployment that you want by using the --deployment-type option with the SAS Orchestration CLI.
+    failed_when: sas_install_type is defined and sas_install_type == "programming" and "default" != "programming"
+    ignore_errors: true
+    register: check_register
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ check_register.msg ] }}'
+    when: check_register is defined and check_register.failed is defined and check_register.failed
+  - name: Verify sitedefault.yml is valid YAML
+    ignore_errors: true
+    register: check_register
+    verify_yaml_file:
+      must_exist: false
+      yaml_file: ../roles/consul/files/sitedefault.yml
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ check_register.msg ] }}'
+    when: check_register is defined and check_register.failed is defined and check_register.failed
+  - name: Validate CAS controller host is defined when necessary
+    fail:
+      msg: No CAS controller host found. Either define sasenv_cas_host in vars.yml or assign a machine to the sas_casserver_primary group.
+    failed_when: (groups['programming'] is defined and groups['programming'] | length > 0) and not ((sasenv_cas_host is defined and sasenv_cas_host) or (groups['sas_casserver_primary'] is defined and groups['sas_casserver_primary'] | length > 0))
+    ignore_errors: true
+    register: check_register
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ check_register.msg ] }}'
+    when: check_register is defined and check_register.failed is defined and check_register.failed
+  vars_files:
+  - ../vars.yml
+
+- name: Validate hosts
+  any_errors_fatal: true
+  hosts: sas_all
+  tasks:
+  - set_fact:
+      all_results: []
+    when: all_results is not defined
+  - name: Perform fully qualified domain name length validation
+    fail:
+      msg: 'Fully qualified domain name length exceeds the maximum 64 characters allowed: {{ sas_vars.hostname_fqdn }}.'
+    failed_when: sas_vars.hostname_fqdn | length > 64
+    ignore_errors: true
+    register: check_register
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ check_register.msg ] }}'
+    when: check_register is defined and check_register.failed is defined and check_register.failed
+  - name: Perform host connection checks
+    host_connection_check:
+      host_list: '{{ hostvars | to_fqdn_list(groups, ''sas_all'') | union( hostvars | to_ipv4_list(groups, ''sas_all'') ) | union( [ sas_vars.self_deployment_ipv4 ] ) }}'
+    ignore_errors: true
+    register: host_connection_register
+    when: use_ssh_keyscan | default('true') | bool
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ host_connection_register.msg ] }}'
+    when: host_connection_register is defined and host_connection_register.failed is defined and host_connection_register.failed
+  - name: Add host connection results to stored data
+    set_fact:
+      sas_vars: '{{ sas_vars | combine({ ''target_host_keys'': host_connection_register.host_keys }) }}'
+    when: use_ssh_keyscan | default('true') | bool
+  - name: Ensure host address resolution alignment
+    ensure_address_alignment:
+      hostvars: '{{ hostvars }}'
+      inventory_hostname: '{{ inventory_hostname }}'
+    ignore_errors: true
+    register: check_register
+    when: use_ssh_keyscan | default('true') | bool
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ check_register.msg ] }}'
+    when: check_register is defined and check_register.failed is defined and check_register.failed
+  - name: Perform no_proxy environment variable check
+    become: true
+    become_user: root
+    fail:
+      msg: http_proxy or https_proxy environment variables were detected, but the required 'no_proxy' variable was not detected. See the 'Configure a Proxy Server' section of the SAS Viya Administration documentation for additional details.
+    failed_when: ansible_env.get('no_proxy') == None and (ansible_env.get('http_proxy') != None or ansible_env.get('https_proxy') != None)
+    ignore_errors: true
+    register: check_register
+  - name: Accumulate any failure results
+    set_fact:
+      all_results: '{{ all_results + [ check_register.msg ] }}'
+    when: check_register is defined and check_register.failed is defined and check_register.failed
+  vars_files:
+  - ../vars.yml
+
+- name: Summarize pre-flight check status
+  any_errors_fatal: true
+  hosts: sas_all,localhost
+  tasks:
+  - name: Identify any pre-flight check failures
+    fail:
+      msg: 'At least one pre-flight check failed on {{ inventory_hostname }}: {{ '' ''.join(all_results) }}'
+    failed_when: all_results | length > 0
+    when: VERIFY_DEPLOYMENT == true
+  vars_files:
+  - ../vars.yml
+
+- name: Check user accounts required by the playbook
+  any_errors_fatal: true
+  hosts: sas_all
+  tasks:
+  - include: ../tasks/check_user.yml
+    vars:
+      FAIL_ON_USER_CHECK: false
+      GROUP_TO_CHECK: '{{ INSTALL_GROUP }}'
+      USER_TO_CHECK: '{{ INSTALL_USER }}'
+
+- name: Check for unsupported tags
+  any_errors_fatal: true
+  hosts: sas_all
+  tasks:
+  - name: Check if any tags are in scope
+    set_fact:
+      tags_are_empty: 'true'
+  - name: Check for the install tag
+    fail:
+      msg: The 'install' tag is no longer supported. To install only, use the install-only.yml playbook without the --tags option.
+    tags:
+    - install
+    when: tags_are_empty is not defined
+  - name: Check for the config tag
+    fail:
+      msg: The 'config' tag is no longer supported. To configure, use the site.yml playbook without the --tags option.
+    tags:
+    - config
+    when: tags_are_empty is not defined
+
+- name: Validate existence of cas user, group membership, and the consistency of IDs
+  any_errors_fatal: true
+  hosts: sas_casserver_*
+  pre_tasks:
+  - include: ../tasks/create_cas_cluster_defs.yml
+  tasks:
+  - include: ../tasks/check_user.yml
+    vars:
+      FAIL_ON_USER_CHECK: true
+      GROUP_TO_CHECK: '{{ item.value.casenv_group | default(INSTALL_GROUP) }}'
+      USER_TO_CHECK: '{{ item.value.casenv_user | default(''cas'') }}'
+    when: (    (    item.value.primary_host is defined     and inventory_hostname == item.value.primary_host    ) or (    item.value.primary_host is not defined     and inventory_hostname == groups['sas_casserver_primary'] | default([]) | first    )) or (    (    item.value.secondary_host is defined     and inventory_hostname == item.value.secondary_host    ) or (    item.value.secondary_host is not defined     and inventory_hostname == groups['sas_casserver_secondary'] | default([]) | first    )) or (    (    item.value.worker_hosts is defined     and item.value.worker_hosts     and inventory_hostname in item.value.worker_hosts.split(',')    ) or (    item.value.worker_hosts is not defined     and inventory_hostname in groups['sas_casserver_worker'] | default([])    ))
+    with_dict: '{{ CLUSTER_DEFINITIONS_cas | default({}) }}'
+  - include: ../tasks/check_user.yml
+    vars:
+      FAIL_ON_USER_CHECK: true
+      GROUP_TO_CHECK: '{{ INSTALL_GROUP }}'
+      USER_TO_CHECK: '{{ item.value.casenv_user | default(''cas'') }}'
+    when: (sas_tenant is not defined) and ((    (    item.value.primary_host is defined     and inventory_hostname == item.value.primary_host    ) or (    item.value.primary_host is not defined     and inventory_hostname == groups['sas_casserver_primary'] | default([]) | first    )) or (    (    item.value.secondary_host is defined     and inventory_hostname == item.value.secondary_host    ) or (    item.value.secondary_host is not defined     and inventory_hostname == groups['sas_casserver_secondary'] | default([]) | first    )) or (    (    item.value.worker_hosts is defined     and item.value.worker_hosts     and inventory_hostname in item.value.worker_hosts.split(',')    ) or (    item.value.worker_hosts is not defined     and inventory_hostname in groups['sas_casserver_worker'] | default([])    )))
+    with_dict: '{{ CLUSTER_DEFINITIONS_cas | default({}) }}'
+  - include: ../tasks/cas_check_id_consistency.yml
+    loop_control:
+      loop_var: cluster_definiton
+    vars:
+      GROUP_TO_CHECK: '{{ cluster_definiton.value.casenv_group | default(INSTALL_GROUP) }}'
+      USER_TO_CHECK: '{{ cluster_definiton.value.casenv_user | default(''cas'') }}'
+    when: (    (    cluster_definiton.value.primary_host is defined     and inventory_hostname == cluster_definiton.value.primary_host    ) or (    cluster_definiton.value.primary_host is not defined     and inventory_hostname == groups['sas_casserver_primary'] | default([]) | first    )) or (    (    cluster_definiton.value.secondary_host is defined     and inventory_hostname == cluster_definiton.value.secondary_host    ) or (    cluster_definiton.value.secondary_host is not defined     and inventory_hostname == groups['sas_casserver_secondary'] | default([]) | first    )) or (    (    cluster_definiton.value.worker_hosts is defined     and cluster_definiton.value.worker_hosts     and inventory_hostname in cluster_definiton.value.worker_hosts.split(',')    ) or (    cluster_definiton.value.worker_hosts is not defined     and inventory_hostname in groups['sas_casserver_worker'] | default([])    ))
+    with_dict: '{{ CLUSTER_DEFINITIONS_cas | default({}) }}'
+  vars_files:
+  - ../vars.yml
+
+- name: Validate CAS Admin User and cas_provlist
+  any_errors_fatal: true
+  hosts: sas_casserver_*
+  roles:
+  - casserver-validate
+  vars_files:
+  - ../vars.yml
+  - ../roles/casserver-config/defaults/main.yml
+
+- name: Validate CAS host
+  any_errors_fatal: true
+  hosts: programming
+  roles:
+  - foundation-validate
+  vars_files:
+  - ../vars.yml
+  pre_tasks:
+  - include_vars: "{{ item }}"
+    with_first_found:
+      - "{{ orchestration_root }}/soe.yml"
+      - "{{ orchestration_root }}/internal/soe_defaults.yml"
+

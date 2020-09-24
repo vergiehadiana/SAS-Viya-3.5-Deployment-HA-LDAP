@@ -1,0 +1,12 @@
+---
+sas_task_file: start.yml
+consumer_items:
+  certificateAuthority-generateTokenForSecretsAndCertificates:
+    APPNAME: cas
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/cas/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: 'sas'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: 'sas'
+    DESTINATION_app.name: cas
+    DESTINATION_destination.file.name: vault.token

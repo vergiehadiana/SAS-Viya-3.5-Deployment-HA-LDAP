@@ -1,0 +1,7 @@
+SSH_DEFINITIONS:
+  default:
+    hosts:
+    - sascas01
+    - sascas02
+    - sascas03
+    user: cas

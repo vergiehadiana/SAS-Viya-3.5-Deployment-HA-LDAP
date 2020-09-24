@@ -1,0 +1,34 @@
+---
+# file: mt-database-remove.yml
+
+# This drops a database user and database that are owned by the given tenant
+# shell: 'echo y | {{ SASROOT }}/viya/home/libexec/sasdatasvrc/script/sds_manage_database_user.sh -u dataMiningWarehouse{{ DEPLOYMENT_ID }}  -d {{ db_name }} -o drop -k config/dataMining/{{ DEPLOYMENT_ID }}/warehouse'
+
+- name: "Drop the database user and the database that are owned by the tenant"
+  hosts: sasdatasvrc
+  any_errors_fatal: true
+  gather_facts: false
+  become: false
+
+  vars:
+    db_name: SharedServices
+
+  tasks:
+    - name: Drop the tenant schema from the SharedServices database
+      shell: 'echo y | {{ SASROOT }}/viya/home/libexec/sasdatasvrc/script/sds_manage_database_schema.sh -t {{ DEPLOYMENT_ID }} -d {{ db_name }}'
+      become: yes
+      become_user: 'sas'
+      run_once: yes
+
+    - name: Drop the tenant database
+      shell: 'echo y | {{ SASROOT }}/viya/home/libexec/sasdatasvrc/script/sds_tenant_db_management.sh -t {{ DEPLOYMENT_ID }} -o drop'
+      become: yes
+      become_user: 'sas'
+      run_once: yes
+
+    - name: Drop the database user that is owned by the tenant
+      shell: 'echo y | {{ SASROOT }}/viya/home/libexec/sasdatasvrc/script/sds_manage_database_user.sh -u dataMiningWarehouse{{ DEPLOYMENT_ID }} -d {{ db_name }} -o drop -k config/application/tenants/{{ DEPLOYMENT_ID }}/sas.datamining.warehouse'
+      become: yes
+      become_user: 'sas'
+      run_once: yes
+...

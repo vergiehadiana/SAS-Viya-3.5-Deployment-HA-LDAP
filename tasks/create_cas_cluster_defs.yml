@@ -1,0 +1,25 @@
+---
+###########################################################################
+# If the pre 17w47 style of CAS configuration is being used
+# convert it to the new style
+- block:
+  - name: Create CAS cluster definition file
+    template:
+      src: "{{ orchestration_root }}/roles/casserver-config/templates/cluster_defn_vars.yml.j2"
+      dest: "{{ orchestration_root }}/cluster_defn_vars.yml"
+      mode: 0644
+    delegate_to: 127.0.0.1
+  - name: include {{ orchestration_root }}/cluster_defn_vars.yml
+    include_vars: "{{ orchestration_root }}/cluster_defn_vars.yml"
+  when: not ansible_check_mode and CLUSTER_DEFINITIONS is not defined
+
+- name: If CLUSTER_DEFINITIONS.cas is not empty, copy contents
+  set_fact:
+    CLUSTER_DEFINITIONS_cas: "{{ CLUSTER_DEFINITIONS.cas }}"
+  when: not ansible_check_mode and CLUSTER_DEFINITIONS.cas is defined and CLUSTER_DEFINITIONS.cas | string != 'None'
+
+- name: Make sure CLUSTER_DEFINITIONS_cas is defined
+  set_fact:
+    CLUSTER_DEFINITIONS_cas: {}
+  when: CLUSTER_DEFINITIONS_cas is not defined
+###########################################################################

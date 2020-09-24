@@ -1,0 +1,8 @@
+{
+    "version": 1,
+    "name": "{{ lifecycle_validate_name }}",
+    "uri": "{{ REPOSITORY_WAREHOUSE }}",
+    "certificate": "{{ entitlement_certificate.replace("\n", "\\n")  }}",
+    "caCertificate": "{{ ca_certificate.replace("\n", "\\n") }}",
+    "tags": []
+}

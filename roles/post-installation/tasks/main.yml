@@ -1,0 +1,37 @@
+---
+- name: Verify the presence of post-installation-actions
+  become: yes
+  become_user: "{{ INSTALL_USER }}"
+  stat:
+    path: "{{ SASHOME }}/libexec/deployment/post-installation-actions"
+  register: post_installation
+
+- name: Run post-installation-actions
+  become: yes
+  become_user: root
+  command: "{{ SASHOME }}/libexec/deployment/post-installation-actions"
+  when: post_installation.stat.exists | default(false)
+
+- name: Run the remove-obsolete script
+  when: not (post_installation.stat.exists | default(false))
+  block:
+  - name: Verify the presence of the remove-obsolete script
+    become: yes
+    become_user: "{{ INSTALL_USER }}"
+    stat:
+      path: "{{ SASHOME }}/libexec/deployment/removals.sh"
+    register: remove_obsolete
+
+  - name: Verify the presence of the remove data
+    become: yes
+    become_user: "{{ INSTALL_USER }}"
+    stat:
+      path: "{{ SASHOME }}/libexec/deployment/removes.txt"
+    register: remove_data
+
+  - name: Run the remove-obsolete script
+    become: yes
+    become_user: root
+    shell: "{{ SASHOME }}/libexec/deployment/removals.sh {{ SASHOME }}/libexec/deployment/removes.txt"
+    when: remove_obsolete.stat.exists | default(false) and remove_data.stat.exists | default(false)
+...

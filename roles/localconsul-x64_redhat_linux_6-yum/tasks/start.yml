@@ -1,0 +1,57 @@
+---
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+CONSUL_BIND_EXTERNAL\s*=" line="export CONSUL_BIND_EXTERNAL='{{ consul_bind_adapter | default('') }}'"
+  register: config_change_0
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+CONSUL_DATACENTER_NAME\s*=" line="export CONSUL_DATACENTER_NAME='{{ DEPLOYMENT_LABEL }}'"
+  register: config_change_1
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+CONSUL_SERVER_LIST\s*=" line="export CONSUL_SERVER_LIST='{{ hostvars | to_fqdn_list(groups, 'consul') | join(', ') }}'"
+  register: config_change_2
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+DISABLE_CONSUL_HTTP_PORT\s*=" line="export DISABLE_CONSUL_HTTP_PORT='{{ DISABLE_CONSUL_HTTP_PORT }}'"
+  register: config_change_3
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+SECURE_CONSUL\s*=" line="export SECURE_CONSUL='{{ SECURE_CONSUL }}'"
+  register: config_change_4
+  when: not ansible_check_mode
+
+- name: Execute create vault certificate
+  become: 'yes'
+  become_user: root
+  command: bash -c '{{SASHOME}}/bin/localconsul_generate_vault_cert.sh'
+
+- name: Ensure sas-{{ DEPLOYMENT_ID }}-consul-{{ INSTANCE_ID }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name=sas-{{ DEPLOYMENT_ID }}-consul-{{ INSTANCE_ID }} state=started
+
+- name: Restart service if necessary.
+  become: 'yes'
+  become_user: root
+  service: name=sas-{{ DEPLOYMENT_ID }}-consul-{{ INSTANCE_ID }} state=restarted
+  when: not service_start.changed and (config_change_0.changed or config_change_1.changed or config_change_2.changed or config_change_3.changed or config_change_4.changed)
+
+- name: Execute sleep 30
+  become: 'yes'
+  command: sleep 30
+

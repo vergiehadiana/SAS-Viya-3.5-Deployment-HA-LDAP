@@ -1,0 +1,15 @@
+---
+- name: Get stats for {{ sasenv_license }}
+  local_action: stat path="{{ sasenv_license }}"
+  register: copy_file_1
+
+- name: Confirm {{ sasenv_license }} exists
+  fail: msg="File '{{ sasenv_license }}' not found"
+  failed_when: copy_file_1.stat.exists == false
+
+- name: Copy from {{ sasenv_license }} to {{ SASHOME }}/SASEventStreamProcessingEngine/6.2/etc/license/license.txt
+  become: 'yes'
+  become_user: root
+  copy: src="{{ sasenv_license }}" dest="{{ SASHOME }}/SASEventStreamProcessingEngine/6.2/etc/license/license.txt" owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode="0644"
+  when: copy_file_1.stat.exists == true
+

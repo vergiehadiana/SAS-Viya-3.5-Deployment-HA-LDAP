@@ -1,0 +1,9 @@
+---
+SERVICE_APP_NAME: httpproxy
+SERVICE_FACET: httpproxy
+SERVICE_INSTANCES_COUNT: '{{ play_hosts | length }}'
+SERVICE_NAME: '{{ SERVICE_NAME_DEFAULT }}'
+SERVICE_PRODUCT_NAME: httpproxy
+SERVICE_SYSCONFIG_PATH: /etc/sysconfig/sas/{{ SERVICE_NAME }}
+SERVICE_YUM_PACKAGE: sas-httpproxy
+consumer_items: {}

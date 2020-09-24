@@ -1,0 +1,20 @@
+---
+# configure-and-start tasks file for httpd-x64_redhat_linux_6-yum
+- name: Fill in {{ sas_httpd_conf }}
+  template:
+    src: proxy.conf.j2
+    dest: "{{ sas_httpd_conf }}"
+    mode: "0644"
+    backup: "yes"
+  become: yes
+  become_user: root
+  notify:
+    - restart httpd
+
+- name: Start httpd service
+  service:
+    name: httpd
+    enabled: yes
+    state: started
+  become: yes
+  become_user: root

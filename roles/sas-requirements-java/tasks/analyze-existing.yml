@@ -1,0 +1,76 @@
+---
+# analyze-existing tasks file for sas-requirements-java
+- block:
+  ## User defined
+  - name: Verify the version of the user-supplied Java
+    shell: "{{sasenv_java_home }}/bin/java -version 2>&1 | awk -F '\"' '/version/ {print $2}'"
+    changed_when: False
+    when: sasenv_java_home is defined and sasenv_java_home
+    register: usrjavacheck
+
+  - block:
+    - name: Set Java to use the user-supplied Java
+      set_fact:
+        sas_java_home: "{{ sasenv_java_home }}"
+
+    - name: Set expectation to use the user-supplied Java
+      set_fact:
+        sas_expected_java: "{{ sasenv_java_home }}/bin/java"
+    when: "sasenv_java_home is defined and sasenv_java_home and (usrjavacheck.stdout is defined and usrjavacheck.stdout != '' and usrjavacheck.stdout is version(sas_minimum_java_version, '>='))"
+
+  ## environment JAVA_HOME
+  - name: get remote JAVA_HOME
+    shell: "echo $JAVA_HOME"
+    register: remote_java_home
+
+  - name: Verify that JAVA_HOME is set
+    set_fact:
+      env_java_home: "{{ remote_java_home.stdout }}"
+    when: sas_install_java | bool == false and sas_java_home is not defined
+    register: envjavahome
+
+  - name: Verify that the JAVA_HOME version is {{ sas_minimum_java_version }} or later
+    shell: "{{ remote_java_home.stdout }}/bin/java -version 2>&1 | awk -F '\"' '/version/ {print $2}'"
+    changed_when: False
+    when: "sas_install_java | bool == false and sas_java_home is not defined and env_java_home != ''"
+    register: envjavasys
+
+  - name: Set expectation to use the JAVA_HOME Java
+    set_fact:
+      sas_expected_java: "{{ remote_java_home.stdout }}/bin/java"
+    when: "sas_install_java | bool == false and sas_java_home is not defined and (envjavasys.stdout is defined and envjavasys.stdout != '' and envjavasys.stdout is version(sas_minimum_java_version, '>='))"
+
+  ## System Java
+  - name: Run 'which java' to find the Java that the system has registered
+    shell: "dirname $(readlink -f `which java`)"
+    changed_when: no
+    ignore_errors: yes
+    when: "sas_install_java | bool == false and sas_java_home is not defined and (envjavasys.stdout is not defined or (envjavasys.stdout is defined and envjavasys.stdout != '' and envjavasys.stdout is version(sas_minimum_java_version, '<')))"
+    register: javasys
+
+  - name: Verify that the system Java version is {{ sas_minimum_java_version }} or later
+    shell: "{{ javasys.stdout }}/java -version 2>&1 | awk -F '\"' '/version/ {print $2}'"
+    when: "sas_install_java | bool == false and sas_java_home is not defined and (envjavasys.stdout is not defined or (envjavasys.stdout is defined and envjavasys.stdout != '' and envjavasys.stdout is version(sas_minimum_java_version, '<'))) and javasys.stdout != ''"
+    register: javasyscheck
+
+  - name: Expect to use the system Java
+    set_fact:
+      sas_expected_java: "{{ javasys.stdout }}/java"
+    when: "sas_install_java | bool == false and sas_java_home is not defined and (envjavasys.stdout is not defined or (envjavasys.stdout is defined and envjavasys.stdout is version(sas_minimum_java_version, '<'))) and (javasyscheck.stdout is defined and javasyscheck.stdout != '' and javasyscheck.stdout is version(sas_minimum_java_version, '>='))"
+
+  - name: Set expectation to use the OpenJDK Java
+    set_fact:
+      sas_expected_java: "{{ sas_default_jre_path }}/bin/java"
+    when: sas_expected_java is not defined
+
+  - name: Check if the expected Java exists
+    stat:
+      path: "{{ sas_expected_java }}"
+    register: stat_expected_java
+
+  - name: Validate expected Java
+    script: "{{ orchestration_root }}/scripts/validate_java.sh '{{ sas_expected_java }}'"
+    changed_when: False
+    when: stat_expected_java.stat.exists | default(false)
+  when: not ansible_check_mode
+...

@@ -1,0 +1,156 @@
+---
+- block:
+  - name: determine if sas.repo exists
+    stat:
+      path: /etc/yum.repos.d/sas.repo
+    register: sas_repo_file_exists
+    when: (METAREPO_INSTALL | bool == false)
+    become: yes
+    become_user: root
+
+  - name: version sas.repo if needed
+    copy:
+      src: /etc/yum.repos.d/sas.repo
+      dest: "/etc/yum.repos.d/sas_{{ ansible_date_time.epoch }}.repo.bak"
+      mode: "u=rw,g=rw,o=r"
+      remote_src: "yes"
+    when: (METAREPO_INSTALL | bool == false) and (sas_repo_file_exists.stat.exists | bool == true)
+    become: yes
+    become_user: root
+
+  - name: Add repository information
+    template:
+      src: "{{ item.file }}"
+      dest: "{{ item.loc }}"
+      mode: "u=rw,g=rw,o=r"
+    with_items:
+      - { file: sas.repo.j2, loc: "/etc/yum.repos.d/sas.repo" }
+    when: (METAREPO_INSTALL | bool == false)
+    become: yes
+    become_user: root
+
+  - name: Verify that certificates are already installed
+    stat:
+      path: "{{ METAREPO_CERT_HOME }}/{{ METAREPO_CERT_CLIENT }}"
+    register: certs_already_installed
+    become: yes
+    become_user: root
+    when: ( METAREPO_INSTALL | bool ) == true
+
+  - name: Determine if certificates should be installed
+    set_fact:
+      run_certificate_installation: "{{ ((certs_already_installed is defined and certs_already_installed.stat is defined and certs_already_installed.stat.exists is defined and certs_already_installed.stat.exists | bool == false) or METAREPO_FORCE_CERTS | bool == true) and ( METAREPO_INSTALL | bool ) == true }}"
+
+  - name: Get epoch and use that as our id
+    local_action: set_fact tmpcertloc="{{ '/tmp/tmp.' + ansible_date_time.epoch }}"
+    when: run_certificate_installation
+    run_once: yes
+
+  - name: Create temporary directory on remote machine
+    file:
+      path: "{{ tmpcertloc }}"
+      state: directory
+    when: run_certificate_installation
+
+  - name: Set the location of the temp directory
+    set_fact:
+      METAREPO_CERT_DIR: "{{ tmpcertloc }}"
+    when: run_certificate_installation
+
+  - name: Set METAREPO_CERT_SOURCE
+    set_fact:
+      METAREPO_CERT_SOURCE: ".."
+
+  - name: Copy certificates to remote machine
+    copy:
+      src: "{{ METAREPO_CERT_SOURCE + '/' + item }}"
+      dest: "{{ METAREPO_CERT_DIR + '/' + item }}"
+    with_items:
+      - "{{ METAREPO_CERT_CLIENT }}"
+      - "{{ METAREPO_CERT_CA }}"
+    when: run_certificate_installation
+
+  - block:
+    - name: Curl to get SAS meta-repository rpm
+      shell: curl -Lvw "Response Code %{http_code}" --cert {{ METAREPO_CERT_DIR }}/{{ METAREPO_CERT_CLIENT }} --cacert {{ METAREPO_CERT_DIR }}/{{ METAREPO_CERT_CA }} {{ METAREPO_URL }}{{ METAREPO_RPM }} -o {{ METAREPO_CERT_DIR }}/{{ METAREPO_RPM }}
+      args:
+        warn: False
+      when: run_certificate_installation
+      register: curl_cmd
+
+    - name: "Verify the successful download of metarepo file {{ METAREPO_RPM }}"
+      stat:
+        path: "{{ METAREPO_CERT_DIR }}/{{ METAREPO_RPM }}"
+      register: metarepo_file
+
+    - name: "Log unsuccessful download of metarepo file {{ METAREPO_RPM }}"
+      fail:
+        msg: "Unable to retrieve {{ METAREPO_RPM }}. {{ curl_cmd.stdout }}"
+      when: curl_cmd.stdout is defined and (metarepo_file.stat.exists is defined and (metarepo_file.stat.exists | bool == false))
+
+    - name: Read in delivered metarepo text file in the case of a non-200 response
+      shell: cat {{ METAREPO_CERT_DIR }}/{{ METAREPO_RPM }}
+      when: curl_cmd.stdout is defined and ('Response Code 200' not in curl_cmd.stdout)
+      changed_when: no
+      register: metarepo_text_file
+
+    - name: Log reason for the non-200 response
+      fail:
+        msg: "{{ metarepo_text_file.stdout }}"
+      when: metarepo_text_file.stdout is defined
+
+    - name: Install SAS meta-repository rpm
+      yum:
+        name: "{{ METAREPO_CERT_DIR + '/' + METAREPO_RPM }}"
+        state: present
+      become: yes
+      become_user: root
+
+    when: (METAREPO_INSTALL | bool) == true
+
+  - name: Copy client certificate into place
+    shell: cp {{ METAREPO_CERT_DIR }}/{{ METAREPO_CERT_CLIENT }} {{ METAREPO_CERT_HOME }}/{{ METAREPO_CERT_CLIENT }}
+    when: run_certificate_installation
+    become: yes
+    become_user: root
+
+  - name: Determine currently installed SAS repository definition packages
+    shell: rpm -qf --qf '::%{group}::%{name}\n' /etc/yum.repos.d/*.repo | sed -e '/^::SAS::/!d' -e 's/^::SAS:://' | sort -u
+    args:
+      warn: no
+    become_user: root
+    become: yes
+    changed_when: False
+    register: current_sas_repo_packages
+
+  - name: Determine desired SAS repository definition packages
+    set_fact:
+      desired_sas_repo_packages: "{{ METAREPO_SOE_ORDERABLE.split('\"') | union(['sas-meta-repo']) }}"
+
+  - name: Calculate undesired SAS repository definition packages
+    set_fact:
+      discard_sas_repo_packages: "{{ current_sas_repo_packages.stdout_lines | difference(desired_sas_repo_packages) }}"
+
+  - name: Remove undesired SAS repository definition packages
+    command: 'yum remove -y {{ discard_sas_repo_packages | join(" ") }}'
+    args:
+      warn: no
+    become_user: root
+    become: yes
+    when: discard_sas_repo_packages | length > 0
+
+  - name: Install repository definition RPMs for orderables
+    yum:
+      name: "{{ item|trim  }}"
+      state: latest
+    with_items: "{{ METAREPO_SOE_ORDERABLE.split('\"') }}"
+    when: item|trim != '' and ( METAREPO_INSTALL | bool ) == true
+    become: yes
+    become_user: root
+
+  - name: Clean up
+    file:
+      path: "{{ METAREPO_CERT_DIR }}"
+      state: absent
+    when: METAREPO_CERT_DIR is defined and ( METAREPO_INSTALL | bool ) == true
+  when: not ansible_check_mode

@@ -1,0 +1,34 @@
+---
+- name: Look for any currently installed SAS packages
+  shell: rpm -qg SAS --qf '%{NAME}\n' | grep -vi "not contain"
+  args:
+    warn: no
+  become: yes
+  become_user: root
+  register: installed_packages
+
+- name: Update existing SAS packages
+  command: 'yum install -y {{ installed_packages.stdout_lines | join(" ") }}'
+  args:
+    warn: no
+  become: true
+  when: installed_packages.stdout_lines | default([]) | length > 0
+
+- name: Aggregate SAS host group packages and yum groups to install
+  set_fact:
+    packages_to_install: "{{ sas_vars['install_packages'] }}"
+    groups_to_install: "{{ sas_vars['install_groups'] }}"
+
+- name: Install SAS packages
+  command: 'yum install -y {{ packages_to_install | join(" ") }}'
+  args:
+    warn: no
+  become: true
+  when: packages_to_install | default([]) | length > 0
+
+- name: Update and install SAS groups
+  command: 'yum install -y "@{{ groups_to_install | join(''" "@'') }}"'
+  args:
+    warn: no
+  become: true
+  when: groups_to_install | default([]) | length > 0

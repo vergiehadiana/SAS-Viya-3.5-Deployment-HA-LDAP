@@ -1,0 +1,13 @@
+provider_data:
+  APPNAME: mbagent
+  COMMAND: |
+    if [ -f {{ SAS_CONFIG_ROOT }}/etc/licenses/default ]; then
+      {{ SASHOME }}/bin/sas-mbagent license setinit > {{ SAS_CONFIG_ROOT }}/etc/licenses/setinit.txt;
+      chmod 600 {{ SAS_CONFIG_ROOT }}/etc/licenses/setinit.txt;
+    elif [ -f {{ SAS_CONFIG_ROOT }}/etc/licenses/setinit.txt ]; then
+      echo true;
+    else
+      exit 1 ;
+    fi
+  OUTPUT_PATH: '{{ SAS_CONFIG_ROOT }}/etc/licenses/setinit.txt'
+  PROVIDING_GROUP: '{{ groups[''Operations''] }}'

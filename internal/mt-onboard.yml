@@ -1,0 +1,61 @@
+---
+# file: mt-onboard.yml
+
+# This tells the mid-tier to onboard the tenant
+
+# This is running on the CommandLine host but for this script to work it will need
+# the Consul client token as well as the postgres libs available as well.
+
+- name: "Onboard tenant"
+  hosts: CommandLine
+  any_errors_fatal: true
+  gather_facts: false
+  become: true
+  become_user: root
+  run_once: true
+
+  vars:
+    tenant_onboard_conf: "{{ SASROOT }}/viya/config/tenant_onboard_{{ DEPLOYMENT_ID }}.conf"
+    sas_provider_endpoint_scheme: "{{ provider_endpoint_scheme | default('http') }}"
+    sas_provider_endpoint_port: "{{ provider_endpoint_port | default('80') }}"
+    sas_skip_ldap_config: "{{ skip_ldap_config | default('false') | bool | string | lower }}"
+    sas_enable_tenant: "{{ enable_tenant | default('true') | bool | string | lower }}"
+    sas_authorize_provider_admin: "{{ authorize_provider_admin | default('true')  | bool | string | lower }}"
+
+  tasks:
+    - name: Create file
+      file:
+        path: "{{ tenant_onboard_conf }}"
+        state: touch
+        mode: "0664"
+        owner: "{{ tenant_admin }}"
+        group: "{{ tenant_admin_group }}"
+
+    - name: Force sas_enable_tenant to false when sas_skip_ldap_config is true
+      set_fact:
+        sas_enable_tenant: 'false'
+      when: sas_skip_ldap_config == 'true'
+
+    - name: Add environment variables
+      lineinfile:
+        dest: "{{ tenant_onboard_conf }}"
+        regexp: "{{ item.regex }}"
+        line: "{{ item.line}}"
+      with_items:
+        - { regex: "^\\s*export\\s+SASROOT\\s*=",                   line: "export SASROOT='{{ SASROOT }}'" }
+        - { regex: "^\\s*export\\s+SASTENANT\\s*=",                 line: "export SASTENANT='{{ sas_tenant }}'" }
+        - { regex: "^\\s*export\\s+SASPROVIDERADMIN\\s*=",          line: "export SASPROVIDERADMIN='{{ provider_admin }}'" }
+        - { regex: "^\\s*export\\s+SASTENANTADMIN\\s*=",            line: "export SASTENANTADMIN='{{ tenant_admin }}'" }
+        - { regex: "^\\s*export\\s+SASSKIPLDAPCONFIG\\s*=",         line: "export SASSKIPLDAPCONFIG='{{ sas_skip_ldap_config }}'" }
+        - { regex: "^\\s*export\\s+SASENABLETENANT\\s*=",           line: "export SASENABLETENANT='{{ sas_enable_tenant }}'" }
+        - { regex: "^\\s*export\\s+SASAUTHORIZEPROVIDERADMIN\\s*=", line: "export SASAUTHORIZEPROVIDERADMIN='{{ sas_authorize_provider_admin }}'" }
+        - { regex: "^\\s*export\\s+PROVIDERENDPOINTSCHEME\\s*=",    line: "export PROVIDERENDPOINTSCHEME='{{ sas_provider_endpoint_scheme }}'" }
+        - { regex: "^\\s*export\\s+PROVIDERENDPOINTHOST\\s*=",      line: "export PROVIDERENDPOINTHOST='{{ hostvars[groups['httpproxy'][0]]['sas_vars']['hostname_fqdn'] }}'" }
+        - { regex: "^\\s*export\\s+PROVIDERENDPOINTPORT\\s*=",      line: "export PROVIDERENDPOINTPORT='{{ sas_provider_endpoint_port }}'" }
+
+    - name: Run the onboarding script
+      command: "{{ SASROOT }}/viya/home/bin/tenant_onboard.sh --file {{ tenant_onboard_conf }}"
+      environment:
+        SAS_PROVIDER_ADMIN_PWD: '{{ provider_admin_pwd }}'
+        SAS_PROVIDER_TENANT_PWD: '{{ tenant_provider_pwd | default("") }}'
+...

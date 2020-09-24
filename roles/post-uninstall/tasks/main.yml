@@ -1,0 +1,42 @@
+---
+- name: Make sure SPRE_DEPLOYMENT_ROOT exists
+  become: true
+  stat:
+    path: "{{ SPRE_DEPLOYMENT_ROOT }}"
+  register: sprerootdirdepl
+
+- name: Move SPRE_DEPLOYMENT_ROOT
+  shell: mv {{ SPRE_DEPLOYMENT_ROOT }} {{ SPRE_DEPLOYMENT_ROOT }}_{{ ansible_date_time.epoch }}
+  become: true
+  when: sprerootdirdepl.stat.exists is defined and sprerootdirdepl.stat.exists | bool == true
+
+- name: Make sure SAS_DEPLOYMENT_ROOT exists
+  become: true
+  stat:
+    path: "{{ SAS_DEPLOYMENT_ROOT }}"
+  register: sasrootdirdepl
+
+- name: Move SAS_DEPLOYMENT_ROOT
+  shell: mv {{ SAS_DEPLOYMENT_ROOT }} {{ SAS_DEPLOYMENT_ROOT }}_{{ ansible_date_time.epoch }}
+  become: true
+  when: sasrootdirdepl.stat.exists is defined and sasrootdirdepl.stat.exists | bool == true
+
+- name: Find all backed up sas.repo definitions
+  find:
+    paths: /etc/yum.repos.d
+    patterns: "sas_*.repo.bak"
+  register: file_glob
+
+- name: Remove backed up sas.repo definitions
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items:
+    - "{{ file_glob.files }}"
+
+- include: "{{ orchestration_root }}/tasks/set_license_file.yml"
+
+- name: Clean yum repos
+  shell: yum clean all
+  become: true
+  when: license_file is defined and license_file is search(".*SASViya.*_09.*_Linux_x86-64") and inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([])

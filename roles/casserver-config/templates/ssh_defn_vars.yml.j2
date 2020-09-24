@@ -1,0 +1,26 @@
+SSH_DEFINITIONS:
+{% if CLUSTER_DEFINITIONS_cas is defined and CLUSTER_DEFINITIONS_cas %}
+{%   for key, value in CLUSTER_DEFINITIONS_cas.items() %}
+  {{ key }}:
+    hosts:
+{%     if value.primary_host is defined and value.primary_host %}
+    - {{ value.primary_host }}
+{%     else %}
+    - {{ groups['sas_casserver_primary'][0] }}
+{%     endif %}
+{%     if value.secondary_host is defined and value.secondary_host %}
+    - {{ value.secondary_host }}
+{%     endif %}
+{%     if value.worker_hosts is defined and value.worker_hosts %}
+{%       set workers = value.worker_hosts.split(',') | difference(['''']) %}
+{%       for worker in workers %}
+    - {{ worker }}
+{%       endfor %}
+{%     endif %}
+{%     if value.casenv_user is defined %}
+    user: {{ value.casenv_user | default('cas') }}
+{%     else %}
+    user: cas
+{%     endif %}
+{%   endfor %}
+{% endif %}

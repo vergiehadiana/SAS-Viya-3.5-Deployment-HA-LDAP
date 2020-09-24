@@ -1,0 +1,19 @@
+---
+- any_errors_fatal: true
+  hosts: sas_all
+  tasks:
+  - set_fact:
+      orchestration_root: '{{ playbook_dir }}'
+
+- include: internal/gather-host-facts.yml
+
+- include: internal/create-snapshot.yml
+
+- include: internal/espbase-x64_redhat_linux_6-yum.yml sas_task=apply-license
+
+- include: internal/mbagent-x64_redhat_linux_6-yum.yml sas_task=apply-license
+
+
+- include: "{{ 'internal/apply-foundation-license.yml' }}"
+
+- include: "{{ 'internal/apply-cas-license.yml' }}"

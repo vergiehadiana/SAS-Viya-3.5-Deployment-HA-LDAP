@@ -1,0 +1,12 @@
+---
+- include: "{{ playbook_dir }}/../internal/gather-host-facts.yml"
+
+- name: Rebuild SAS trust stores
+  hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - include: "{{ playbook_dir }}/../tasks/rebuild-trust-stores.yml"
+    vars:
+      COMBINED_GROUP: '{{ groups[''consul''] }}'
+  vars_files:
+  - ../vars.yml

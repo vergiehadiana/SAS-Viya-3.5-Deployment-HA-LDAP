@@ -1,0 +1,91 @@
+---
+- name: Gather additional host facts
+  hosts: sas_all
+  any_errors_fatal: true
+  vars_files:
+  - ../vars.yml
+
+  tasks:
+    - name: Enforce trailing slash on repository warehouse variable
+      set_fact:
+        REPOSITORY_WAREHOUSE: "{{ REPOSITORY_WAREHOUSE + '/' }}"
+      when: REPOSITORY_WAREHOUSE is defined and not REPOSITORY_WAREHOUSE is match('^.*/$') and REPOSITORY_WAREHOUSE != "none"
+
+    - name: Calling add_repository_build_type
+      add_repository_build_type:
+        host_variables: "{{ hostvars[inventory_hostname] }}"
+
+    - name: Create host groups according to the repository build type
+      group_by: key=sas-hosts-{{ sas_vars.repository_build_type }}
+
+    - name: Calling gather_additional_host_facts
+      gather_additional_host_facts:
+        host_variables: "{{ hostvars[inventory_hostname] }}"
+
+    - name: Set internal_deployment_ipv4_override into sas_vars when not defined or empty string
+      set_fact:
+        sas_vars: "{{ sas_vars | default({}) | combine({'internal_deployment_ipv4_override': ''}) }}"
+      when: internal_deployment_ipv4_override is undefined or internal_deployment_ipv4_override is none or internal_deployment_ipv4_override | trim == ''
+
+    - name: Set internal_deployment_ipv4_override into sas_vars when defined
+      set_fact:
+        sas_vars: "{{ sas_vars | combine({'internal_deployment_ipv4_override': internal_deployment_ipv4_override}) }}"
+      when: not (internal_deployment_ipv4_override is undefined or internal_deployment_ipv4_override is none or internal_deployment_ipv4_override | trim == '')
+
+    - name: Set internal_deployment_ipv4 into sas_vars when the override is not defined
+      set_fact:
+        sas_vars: "{{ sas_vars | combine({'internal_deployment_ipv4': ansible_default_ipv4.address}) }}"
+      when: sas_vars.internal_deployment_ipv4_override | trim == ''
+
+    - name: Set internal_deployment_ipv4 into sas_vars when the override is defined
+      set_fact:
+        sas_vars: "{{ sas_vars | combine({'internal_deployment_ipv4': sas_vars.internal_deployment_ipv4_override}) }}"
+      when: sas_vars.internal_deployment_ipv4_override | trim != ''
+
+    - name: Set self_deployment_ipv4_override into sas_vars when not defined or empty string
+      set_fact:
+        sas_vars: "{{ sas_vars | combine({'self_deployment_ipv4_override': ''}) }}"
+      when: self_deployment_ipv4_override is undefined or self_deployment_ipv4_override is none or self_deployment_ipv4_override | trim == ''
+
+    - name: Set self_deployment_ipv4_override into sas_vars when defined
+      set_fact:
+        sas_vars: "{{ sas_vars | combine({'self_deployment_ipv4_override': self_deployment_ipv4_override}) }}"
+      when: not (self_deployment_ipv4_override is undefined or self_deployment_ipv4_override is none or self_deployment_ipv4_override | trim == '')
+
+    - name: Set self_deployment_ipv4 into sas_vars when the override is not defined
+      set_fact:
+        sas_vars: "{{ sas_vars | combine({'self_deployment_ipv4': sas_vars.internal_deployment_ipv4}) }}"
+      when: sas_vars.self_deployment_ipv4_override | trim == ''
+
+    - name: Set self_deployment_ipv4 into sas_vars when the override is defined
+      set_fact:
+        sas_vars: "{{ sas_vars | combine({'self_deployment_ipv4': sas_vars.self_deployment_ipv4_override}) }}"
+      when: sas_vars.self_deployment_ipv4_override | trim != ''
+
+    - name: Get host-contextual consul URL
+      get_consul_url:
+        install_packages: "{{ sas_vars['install_packages'] }}"
+        consul_address: "{{ hostvars[groups['consul'][0]]['sas_vars']['hostname_fqdn'] }}"
+        consul_secured: "{{ SECURE_CONSUL }}"
+      register: consul_url
+      when: groups['consul'] is defined and groups['consul'] | length > 0
+
+    - name: Add consul URL to sas_vars dictionary
+      set_fact:
+        sas_vars: "{{ sas_vars | combine({'consul_url': consul_url.url}) }}"
+      when: consul_url.url is defined
+
+    - name: Collect hosts that have sas_vars dictionary defined
+      set_fact:
+        available_hosts: '{{ available_hosts | default([]) }} + [ ''{{ item }}'' ]'
+      when: hostvars[item].get('sas_vars') != None
+      with_items: "{{ play_hosts }}"
+
+    - name: Determine if any host participating in the deployment is missing the required sas_vars dictionary
+      set_fact:
+        erred_hosts: "{{ ( play_hosts | difference(available_hosts) ) }}"
+
+    - name: Report if a host participating in the deployment is missing the sas_vars dictionary
+      fail:
+        msg: "The following host(s) are missing the required sas_vars dictionary: {{ erred_hosts }}. See deployment.log for details."
+      failed_when: "erred_hosts | length > 0"

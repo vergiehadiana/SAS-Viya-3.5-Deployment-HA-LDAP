@@ -1,0 +1,26 @@
+---
+# defaults file for ecosystem-users
+
+# When set to true, enables extra logging during the deployment
+sas_deploy_debug: false
+
+# When set to true will try and create any user in the sas_users group below.
+# This will also create and setup ssh keys for that user across all hosts
+# default is true
+setup_sas_users: false
+
+# Define the users so they can be created
+# To assign a password, here is a way to create the password. 
+# This will require the passlib library to be installed: sudo yum install python-passlib
+#   At a command line prompt run:
+#     python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.encrypt(getpass.getpass())"
+#   Take the value that is returned and paste it inbetween the single quotes below. Example:
+#     password: 'secret'
+# If setup_home is set to true, will use the values of shell and home when creating the user
+sas_users:
+  cas:
+    group: sas
+    password: ''
+    setup_home: false
+    shell: 
+    home: 

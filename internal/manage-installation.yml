@@ -1,0 +1,5 @@
+---
+- include: stop-all.yml
+- include: install-packages.yml
+- include: post-installation.yml
+- include: safety-stop.yml

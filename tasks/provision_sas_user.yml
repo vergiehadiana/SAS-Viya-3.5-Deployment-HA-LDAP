@@ -1,0 +1,25 @@
+---
+- include: provision_user_ssh.yml
+  vars:
+    USER: "{{ INSTALL_USER }}"
+    GROUP: "{{ INSTALL_GROUP }}"
+
+- name: Determine whether the installation user shell requires adjustment
+  script: "../scripts/check_account.sh {{ INSTALL_USER }}"
+  become: yes
+  changed_when: False
+  failed_when: false
+  ignore_errors: true
+  register: check_account_1
+
+- name: Adjust the shell for the installation user
+  user: name={{ INSTALL_USER }} shell=/bin/bash
+  become: yes
+  become_user: root
+  when: "(check_account_1.rc is defined and check_account_1.rc == 3)"
+
+- name: Verify the installation user can log on
+  script: "../scripts/check_account.sh {{ INSTALL_USER }}"
+  become: yes
+  register: check_account_2
+  changed_when: check_account_2.rc != 0

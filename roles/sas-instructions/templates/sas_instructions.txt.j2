@@ -1,0 +1,14 @@
+
+SAS Viya
+--------
+
+{{ snapshotloc }}
+
+{% if groups['httpproxy'] | length > 0 %}
+SAS Studio http://{{ hostvars[groups['httpproxy'][0]].sas_vars.hostname_fqdn }}/SASStudio
+{%   if CLUSTER_DEFINITIONS.cas is defined %}
+{%     for key,value in CLUSTER_DEFINITIONS.cas.items() %}
+CAS Admin http://{{ hostvars[groups['httpproxy'][0]].sas_vars.hostname_fqdn }}/cas-{% if value.tenant is defined and value.tenant %}{{value.tenant | default('shared') }}{% else %}shared{% endif %}-{{ key }}-http
+{%     endfor %}
+{%   endif %}
+{% endif %}

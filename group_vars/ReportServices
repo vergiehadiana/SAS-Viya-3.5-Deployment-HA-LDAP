@@ -1,0 +1,83 @@
+---
+sas_host_group_variables_ReportServices:
+  installables-x64_redhat_linux_6-yum:
+    bootstrap-config:
+      SERVICE_APP_NAME: bootstrapcfg
+      SERVICE_MEMORY_NEEDED: 3
+      SERVICE_PRODUCT_NAME: bootstrap-config
+      SERVICE_YUM_PACKAGE: sas-bootstrap-config
+    certframe:
+      SERVICE_APP_NAME: certframe
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: certframe
+      SERVICE_YUM_PACKAGE: sas-certframe
+    cleanutils:
+      SERVICE_APP_NAME: cleanutils
+      SERVICE_MEMORY_NEEDED: 32
+      SERVICE_PRODUCT_NAME: cleanutils
+      SERVICE_YUM_PACKAGE: sas-cleanutils
+    csq:
+      SERVICE_APP_NAME: csq
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: csq
+      SERVICE_YUM_PACKAGE: sas-csq
+    envesntl:
+      SERVICE_APP_NAME: envesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: envesntl
+      SERVICE_YUM_PACKAGE: sas-envesntl
+    evmcltsvcs:
+      SERVICE_APP_NAME: evmcltsvcs
+      SERVICE_MEMORY_NEEDED: 64
+      SERVICE_PRODUCT_NAME: evmcltsvcs
+      SERVICE_YUM_PACKAGE: sas-evmcltsvcs
+    evmcollect:
+      SERVICE_APP_NAME: evmcollect
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: evmcollect
+      SERVICE_YUM_PACKAGE: sas-evmcollect
+    graph-templates:
+      SERVICE_APP_NAME: graphtemplates
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: graph-templates
+      SERVICE_YUM_PACKAGE: sas-graph-templates
+    javaesntl:
+      SERVICE_APP_NAME: javaesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: javaesntl
+      SERVICE_YUM_PACKAGE: sas-javaesntl
+    links:
+      SERVICE_APP_NAME: links
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: links
+      SERVICE_YUM_PACKAGE: sas-links
+    localconsul:
+      SERVICE_APP_NAME: localconsul
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: localconsul
+      SERVICE_YUM_PACKAGE: sas-localconsul
+    maps:
+      SERVICE_APP_NAME: maps
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: maps
+      SERVICE_YUM_PACKAGE: sas-maps
+    reportdistribution:
+      SERVICE_APP_NAME: reportdistribution
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: reportdistribution
+      SERVICE_YUM_PACKAGE: sas-reportdistribution
+    reportservicesgroup:
+      SERVICE_APP_NAME: reportservicesgroup
+      SERVICE_MEMORY_NEEDED: 1536
+      SERVICE_PRODUCT_NAME: reportservicesgroup
+      SERVICE_YUM_PACKAGE: sas-reportservicesgroup
+    runjavasvc:
+      SERVICE_APP_NAME: runjavasvc
+      SERVICE_MEMORY_NEEDED: 1
+      SERVICE_PRODUCT_NAME: runjavasvc
+      SERVICE_YUM_PACKAGE: sas-runjavasvc
+    sasvisualanalytics:
+      SERVICE_APP_NAME: vanalytics
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: sasvisualanalytics
+      SERVICE_YUM_PACKAGE: sas-sasvisualanalytics

@@ -1,0 +1,6 @@
+---
+network_conf:
+  SAS_HOSTNAME: intviya01.race.sas.com
+  SAS_BIND_ADDR: 192.168.1.1
+  SAS_EXTERNAL_HOSTNAME: sasviya01.race.sas.com
+  SAS_EXTERNAL_BIND_ADDR_IF: "eth0"

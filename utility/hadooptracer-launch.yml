@@ -1,0 +1,3 @@
+- include: hadooptracer-download.yml
+- include: hadooptracer-runtracer.yml
+- include: hadooptracer-tiernodes.yml

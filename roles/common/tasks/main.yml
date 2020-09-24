@@ -1,0 +1,12 @@
+---
+- name: Create SASHOME folder
+  file: path={{ SASHOME }} state=directory owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode=0755 follow=yes
+  become: yes
+  become_user: root
+
+- name: Get sas package data
+  list_sas_packages:
+    sas_vars: "{{ sas_vars }}"
+  become: yes
+  become_user: root
+  register: sas_packages

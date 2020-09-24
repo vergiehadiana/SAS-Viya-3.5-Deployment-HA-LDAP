@@ -1,0 +1,14 @@
+---
+# file: deploy-cascerts.yml
+
+- name: Deploy CAS TLS certs across all hosts
+  hosts: sas_all
+  any_errors_fatal: true
+  become: no
+
+  vars_files:
+    - ../vars.yml
+
+  roles:
+    - { role: tls_password_ecosystem, COMBINED_GROUP: '{{ groups[''sas_casserver_primary''] + groups[''sas_casserver_secondary''] + groups[''sas_casserver_worker''] }}' }
+...

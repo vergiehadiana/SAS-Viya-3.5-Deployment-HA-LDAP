@@ -1,0 +1,31 @@
+---
+- name: Verify that the stop service script is installed
+  become: 'yes'
+  become_user: root
+  stat:
+    path: '{{ SASHOME }}/libexec/cas/cas_stop_service.sh'
+  register: cas_services_to_stop
+
+- name: If CAS is started and is in the list, stop all running processes
+  become: 'yes'
+  become_user: root
+  command: '{{ SASHOME }}/libexec/cas/cas_stop_service.sh -r {{ SASROOT }} -d {{ DEPLOYMENT_ID }} -i {{ item.key }}'
+  when: cas_services_to_stop.stat.exists == true
+  with_dict: "{{ CLUSTER_DEFINITIONS_cas }}"
+
+- name: Verify that the stop service is installed
+  become: 'yes'
+  become_user: root
+  stat:
+    path: /etc/init.d/sas-viya-cascontroller-default
+  register: cas_initd_to_stop
+  when: cas_services_to_stop.stat.exists == false
+
+  # The following should only be executed for a pre 17w47 deployment.
+  # It is meant to handle the update case.
+- name: If CAS is started and is in the list, stop all running processes
+  become: 'yes'
+  become_user: root
+  service: name=sas-viya-cascontroller-default state=stopped
+  when: cas_services_to_stop.stat.exists == false and cas_initd_to_stop.stat.exists == true
+...

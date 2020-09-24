@@ -1,0 +1,4 @@
+- include: "{{ orchestration_root }}/roles/framework/tasks/main.yml"
+  loop_control:
+    loop_var: consumer_data
+  with_dict: '{{ consumer_items | default({}) }}'

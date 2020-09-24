@@ -1,0 +1,12 @@
+---
+# file: create-snapshot.yml
+
+#################
+- name: Get a snapshot of the environment
+  hosts: sas_all
+  any_errors_fatal: true
+  become: no
+
+  roles:
+    - { role: create-snapshot, when: "snapshot_of_run is not defined and sasenv_collect_snapshot | bool == true" }
+...

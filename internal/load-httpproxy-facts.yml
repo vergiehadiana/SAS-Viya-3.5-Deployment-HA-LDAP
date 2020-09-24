@@ -1,0 +1,17 @@
+---
+# file: load-httpproxy-facts.yml
+
+#################
+# The hosts for httpproxy could be a different set or are not in the set of hosts
+# that we are running the playbook against.  In that case, we want this to run to
+# make sure we get system information about those hosts as this is used for
+# setting the servicesbaseurl in the casconfig.lua.
+- name: Load facts for httpproxy
+  hosts: httpproxy
+  any_errors_fatal: true
+
+  tasks:
+    - name: Name of httpproxy host
+      debug:
+        msg: "httpd is on {{ hostvars[groups['httpproxy'][0]].sas_vars.hostname_fqdn }}"
+...

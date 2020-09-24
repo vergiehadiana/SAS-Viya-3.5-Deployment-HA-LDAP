@@ -1,0 +1,26 @@
+---
+# tasks file for computeserver
+
+###### START - Compute Server configuration #########
+# Check that compsrv config dir is present
+- name: Verify that SAS Compute Server config directory exists
+  stat:
+    path: "{{ SAS_CONFIG_ROOT + '/etc/compsrv/' + INSTANCE_ID | string }}"
+  register: compsrv_config_dir
+
+# Call template to create *_deployment files
+- name: Create deployment files for Compute Server in {{ SAS_CONFIG_ROOT + '/etc/compsrv/' + INSTANCE_ID | string }}
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: "{{ item.mode }}"
+  become: yes
+  become_user: root
+  with_items:
+    - { src: "sasenv_deployment.j2", dest: "{{ SAS_CONFIG_ROOT + '/etc/compsrv/' + INSTANCE_ID | string + '/sasenv_deployment' }}", mode: "0755" }
+    - { src: "sasv9_deployment.cfg.j2", dest: "{{ SAS_CONFIG_ROOT + '/etc/compsrv/' + INSTANCE_ID | string + '/sasv9_deployment.cfg' }}", mode: "0644" }
+  when: compsrv_config_dir.stat.exists
+###### END - Copmute Server configuration #########
+...

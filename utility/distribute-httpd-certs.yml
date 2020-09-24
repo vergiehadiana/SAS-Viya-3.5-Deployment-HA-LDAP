@@ -1,0 +1,23 @@
+---
+- include: "{{ playbook_dir }}/../internal/gather-host-facts.yml"
+
+- name: Distribute HTTPD Certificates
+  hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - include: "{{ playbook_dir }}/../tasks/distribute-certificate.yml"
+    vars:
+      CERT_IDENTIFIER: httpproxy
+      CERT_PATH: '{{ HTTPD_CERT_PATH }}'
+      COMBINED_GROUP: '{{ groups[''httpproxy''] }}'
+  vars_files:
+  - ../vars.yml
+
+- name: Rebuild SAS trust stores
+  hosts: sas_all
+  tasks:
+  - include: "{{ playbook_dir }}/../tasks/rebuild-trust-stores.yml"
+    vars:
+      COMBINED_GROUP: '{{ groups[''httpproxy''] }}'
+  vars_files:
+  - ../vars.yml

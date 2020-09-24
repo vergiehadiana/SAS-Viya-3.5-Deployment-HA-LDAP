@@ -1,0 +1,26 @@
+---
+# file: utility/apply-cas-tenant-license.yml
+# example: ansible-playbook -i inventory.ini -e "@tenant1_vars.yml" utility/apply-cas-tenant-license.yml
+- hosts: sas_casserver*
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      orchestration_root: '{{ playbook_dir }}/..'
+
+# Set the variables to be specific for the tenant.
+- hosts: sas_casserver*
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      INSTALL_USER: '{{ tenant_admin }}'
+  - set_fact:
+      INSTALL_GROUP: '{{ tenant_admin_group }}'
+  - set_fact:
+      DEPLOYMENT_ID: '{{ sas_tenant }}'
+  - set_fact:
+      SASHOME: '{{ SASROOT }}/{{ DEPLOYMENT_ID }}/home'
+  - set_fact:
+      SAS_CONFIG_ROOT: '{{ SASROOT }}/{{ DEPLOYMENT_ID }}/config'
+
+- include: "{{ playbook_dir }}/../internal/apply-cas-license.yml"
+...

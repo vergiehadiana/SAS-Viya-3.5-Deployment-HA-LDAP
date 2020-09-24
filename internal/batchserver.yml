@@ -1,0 +1,11 @@
+---
+- name: batchserver
+  become_user: '{{ INSTALL_USER }}'
+  hosts: programming
+  any_errors_fatal: true
+  roles:
+  - batchserver
+  vars_files:
+  - ../vars.yml
+
+...

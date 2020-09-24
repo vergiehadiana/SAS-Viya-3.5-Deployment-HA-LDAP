@@ -1,0 +1,47 @@
+---
+- name: Verify third-party requirements
+  hosts: localhost
+  any_errors_fatal: true
+  vars_files:
+   - ../vars.yml
+
+  vars:
+    #jinjatest:
+    #  - pass_test: true
+    third_party_assessment_results: []
+    required_ansible_min_version: "2.7"
+    recommended_ansible_max_version_full: "{{ MAXIMUM_RECOMMENDED_ANSIBLE_VERSION | string }}"
+    recommended_ansible_max_version_major: "{{ recommended_ansible_max_version_full.split('.')[0] }}"
+    recommended_ansible_max_version_minor: "{{ recommended_ansible_max_version_full.split('.')[1] }}"
+    required_python_min_version: "2.6"
+    #required_jinja_min_version: "2.7"
+
+  tasks:
+  - name: Verify that a valid Ansible version is installed
+    set_fact:
+      third_party_assessment_results: '{{ third_party_assessment_results }} + [ ''The Ansible version check failed. Deployment requires Ansible, version {{ required_ansible_min_version }} or later. SAS recommends version {{ recommended_ansible_max_version_full }} or earlier.'' ]'
+    when: ansible_version.full is version_compare(required_ansible_min_version, '<') or ansible_version.major|int > recommended_ansible_max_version_major|int or (ansible_version.major|int == recommended_ansible_max_version_major|int and ansible_version.minor|int > recommended_ansible_max_version_minor|int)
+
+  - name: Verify that a valid Python version is installed
+    set_fact:
+      third_party_assessment_results: '{{ third_party_assessment_results }} +  [ ''The Python version check failed. Deployment requires Python, version {{ required_python_min_version }} or later.'' ]'
+    when: ansible_python_version is version_compare(required_python_min_version, '<')
+
+  ##- name: Verify that a valid Jinja2 version is installed
+  #- block:
+  #    - set_fact:
+  #        valid_jinja2_version: "{{ jinjatest | map(attribute='pass_test') | list }}"
+
+  #  rescue:
+  #   - set_fact:
+  #        third_party_assessment_results: '{{ third_party_assessment_results }} +  [ ''The Jinja2 version check failed. Deployment requires Jinja2, version {{ required_jinja_min_version }} or later.'' ]'
+
+  - name: Halt execution on any third-party assessment check failures
+    fail:
+      msg: 'At least one third-party assessment check failed: {{ '' ''.join(third_party_assessment_results) }}'
+    failed_when: third_party_assessment_results | length > 0
+
+  - name: Verify we are not running check mode
+    fail:
+      msg: 'Check mode is not supported at this time'
+    failed_when: (ansible_check_mode | default(false)) and not (allow_check_mode | default(false))

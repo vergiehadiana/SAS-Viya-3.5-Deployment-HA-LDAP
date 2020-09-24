@@ -1,0 +1,12 @@
+---
+# Set assessment machine facts
+
+- name: Set assessment machine facts
+  hosts: sas_all, localhost
+
+  become_user: "{{ INSTALL_USER }}"
+
+  tasks:
+    - name: Set VERIFY_DEPLOYENT fact
+      set_fact:
+         VERIFY_DEPLOYMENT: true

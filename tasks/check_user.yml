@@ -1,0 +1,26 @@
+---
+- block:
+  - name: "Verify that {{ USER_TO_CHECK }} user exists"
+    shell: id -u {{ USER_TO_CHECK }}
+    register: user_exists
+    changed_when: False
+    failed_when: user_exists.rc != 0 and user_exists.rc != 1
+
+  - name: "Verify that {{ USER_TO_CHECK }} user exists"
+    fail: msg="The {{ USER_TO_CHECK }} user does not exist"
+    when: 'FAIL_ON_USER_CHECK == True'
+    failed_when: user_exists.rc != 0
+
+  - name: "Verify that {{ USER_TO_CHECK }} user is a member of the group {{ GROUP_TO_CHECK }}"
+    shell: id -Gn {{ USER_TO_CHECK }} | grep -q '\b{{ GROUP_TO_CHECK }}\b'
+    when: user_exists.rc == 0
+    register: user_exists_in_group
+    changed_when: False
+    failed_when: user_exists_in_group.rc != 0 and user_exists_in_group.rc != 1
+
+  - name: "Verify that {{ USER_TO_CHECK }} user is a member of the group {{ GROUP_TO_CHECK }}"
+    fail: msg="The {{ USER_TO_CHECK }} user is required to be a member of the group {{ GROUP_TO_CHECK }}"
+    when: user_exists.rc == 0
+    failed_when: user_exists.rc == 0 and user_exists_in_group.rc != 0
+
+  when: not ansible_check_mode

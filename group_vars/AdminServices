@@ -1,0 +1,98 @@
+---
+sas_host_group_variables_AdminServices:
+  installables-x64_redhat_linux_6-yum:
+    backupmanager:
+      SERVICE_APP_NAME: backupmgr
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: backupmanager
+      SERVICE_YUM_PACKAGE: sas-backupmanager
+    bootstrap-config:
+      SERVICE_APP_NAME: bootstrapcfg
+      SERVICE_MEMORY_NEEDED: 3
+      SERVICE_PRODUCT_NAME: bootstrap-config
+      SERVICE_YUM_PACKAGE: sas-bootstrap-config
+    cas-access-management:
+      SERVICE_APP_NAME: casacl
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: cas-access-management
+      SERVICE_YUM_PACKAGE: sas-cas-access-management
+    cas-license:
+      SERVICE_APP_NAME: caslicense
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: cas-license
+      SERVICE_YUM_PACKAGE: sas-cas-license
+    certframe:
+      SERVICE_APP_NAME: certframe
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: certframe
+      SERVICE_YUM_PACKAGE: sas-certframe
+    cleanutils:
+      SERVICE_APP_NAME: cleanutils
+      SERVICE_MEMORY_NEEDED: 32
+      SERVICE_PRODUCT_NAME: cleanutils
+      SERVICE_YUM_PACKAGE: sas-cleanutils
+    csq:
+      SERVICE_APP_NAME: csq
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: csq
+      SERVICE_YUM_PACKAGE: sas-csq
+    deploymentBackup:
+      SERVICE_APP_NAME: backup
+      SERVICE_MEMORY_NEEDED: 196
+      SERVICE_PRODUCT_NAME: deploymentBackup
+      SERVICE_YUM_PACKAGE: sas-deploymentBackup
+    device-management:
+      SERVICE_APP_NAME: deviceManagement
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: device-management
+      SERVICE_YUM_PACKAGE: sas-device-management
+    envesntl:
+      SERVICE_APP_NAME: envesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: envesntl
+      SERVICE_YUM_PACKAGE: sas-envesntl
+    environmentmanager:
+      SERVICE_APP_NAME: envmgr-app
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: environmentmanager
+      SERVICE_YUM_PACKAGE: sas-environmentmanager
+    evmcltsvcs:
+      SERVICE_APP_NAME: evmcltsvcs
+      SERVICE_MEMORY_NEEDED: 64
+      SERVICE_PRODUCT_NAME: evmcltsvcs
+      SERVICE_YUM_PACKAGE: sas-evmcltsvcs
+    evmcollect:
+      SERVICE_APP_NAME: evmcollect
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: evmcollect
+      SERVICE_YUM_PACKAGE: sas-evmcollect
+    import9:
+      SERVICE_APP_NAME: import9
+      SERVICE_MEMORY_NEEDED: 196
+      SERVICE_PRODUCT_NAME: import9
+      SERVICE_YUM_PACKAGE: sas-import9
+    javaesntl:
+      SERVICE_APP_NAME: javaesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: javaesntl
+      SERVICE_YUM_PACKAGE: sas-javaesntl
+    localconsul:
+      SERVICE_APP_NAME: localconsul
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: localconsul
+      SERVICE_YUM_PACKAGE: sas-localconsul
+    monitoring:
+      SERVICE_APP_NAME: monitoring
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: monitoring
+      SERVICE_YUM_PACKAGE: sas-monitoring
+    runjavasvc:
+      SERVICE_APP_NAME: runjavasvc
+      SERVICE_MEMORY_NEEDED: 1
+      SERVICE_PRODUCT_NAME: runjavasvc
+      SERVICE_YUM_PACKAGE: sas-runjavasvc
+    transfer:
+      SERVICE_APP_NAME: transfer
+      SERVICE_MEMORY_NEEDED: 196
+      SERVICE_PRODUCT_NAME: transfer
+      SERVICE_YUM_PACKAGE: sas-transfer

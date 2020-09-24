@@ -1,0 +1,24 @@
+- name: Determine certificate framework installations
+  become: 'yes'
+  become_user: root
+  stat:
+    path: "{{ item }}"
+  register: certframe_install_paths
+  when: COMBINED_GROUP is defined and COMBINED_GROUP
+  with_items:
+    - "{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}"
+    - "{{ SPRE_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}"
+
+- name: Update {{ SASHOME }} trust stores
+  become: 'yes'
+  become_user: '{{ INSTALL_USER }}'
+  shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-merge-certificates.sh {{ SASHOME }} {{ SAS_CONFIG_ROOT }} consul:{{ sas_vars.consul_url }}/cacerts'
+  when: COMBINED_GROUP is defined and COMBINED_GROUP and item.item == SAS_CONFIG_ROOT + '/' + CERTFRAME_REL_CONFIG_PATH and item.stat.exists | default(false)
+  with_items: "{{ certframe_install_paths.results }}"
+
+- name: Update {{ SPREHOME }} trust stores
+  become: 'yes'
+  become_user: '{{ INSTALL_USER }}'
+  shell: '{{ SPREHOME }}/SASSecurityCertificateFramework/bin/sas-merge-certificates.sh {{ SPREHOME }} {{ SPRE_CONFIG_ROOT }} consul:{{ sas_vars.consul_url }}/cacerts'
+  when: COMBINED_GROUP is defined and COMBINED_GROUP and item.item == SPRE_CONFIG_ROOT + '/' + CERTFRAME_REL_CONFIG_PATH and item.stat.exists | default(false)
+  with_items: "{{ certframe_install_paths.results }}"

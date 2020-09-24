@@ -1,0 +1,135 @@
+---
+# tasks file for sas-requirements-java
+- block:
+  - name: "Write section header to {{ snapshotloc }}/system_requirement.rpt"
+    local_action: shell echo -e "\\nJava System Check\\n-----------------\\n" >> {{ snapshotloc }}/system_requirement.rpt
+    run_once: yes
+
+  ###### START - Manage Java configuration #########
+  ## User defined
+  - name: Log the value of sasenv_java_home on each host
+    local_action: shell echo "- On {{ sas_vars.hostname_fqdn }} the Java version for user-supplied location of {{ sasenv_java_home }} is '{{ usrjavacheck.stdout | string }}' and needs to be {{ sas_minimum_java_version }} or later" >> {{ snapshotloc }}/system_requirement.rpt
+    when: "sasenv_java_home is defined and sasenv_java_home and (usrjavacheck.stdout is defined and usrjavacheck.stdout is version(sas_minimum_java_version, '<'))"
+
+  - name: "Log the sasenv_java_home value of {{ sasenv_java_home }} on each host"
+    local_action: shell echo "- On {{ sas_vars.hostname_fqdn }} the Java version for {{ sasenv_java_home }} is '{{ usrjavacheck.stdout | string }}' and meets requirement of Java {{ sas_minimum_java_version }} or later" >> {{ snapshotloc }}/system_requirement.rpt
+    when: "sasenv_java_home is defined and sasenv_java_home and (usrjavacheck.stdout is defined and usrjavacheck.stdout is version(sas_minimum_java_version, '>='))"
+
+  ## environment JAVA_HOME
+  - name: Log a message that JAVA_HOME is set and is {{ sas_minimum_java_version }} or later
+    local_action: shell echo "- On {{ sas_vars.hostname_fqdn }} JAVA_HOME is set to {{ env_java_home }} and meets requirement of Java {{ sas_minimum_java_version }} or later" >> {{ snapshotloc }}/system_requirement.rpt
+    when: "sas_install_java | bool == false and sas_java_home is not defined and (envjavasys.stdout is defined and envjavasys.stdout is version(sas_minimum_java_version, '>='))"
+
+  ## System Java
+  - name: Log a message that system Java is available and is {{ sas_minimum_java_version }} or later
+    local_action: shell echo "- On {{ sas_vars.hostname_fqdn }} the system java is set to {{ javasys.stdout }} and meets requirement of Java {{ sas_minimum_java_version }} or later" >> {{ snapshotloc }}/system_requirement.rpt
+    when: "sas_install_java | bool == false and sas_java_home is not defined and (envjavasys.stdout is not defined or (envjavasys.stdout is defined and envjavasys.stdout is version(sas_minimum_java_version, '<'))) and (javasyscheck.stdout is defined and javasyscheck.stdout is version(sas_minimum_java_version, '>='))"
+
+  ## SAS Default
+  - name: "Install {{ sas_default_java }}"
+    yum:
+      name: "{{ sas_default_java }}"
+      state: "{{ sas_install_java_action }}"
+    become: yes
+    become_user: root
+    when:
+      - sas_install_java | bool == true
+      - sasenv_java_home is not defined or (sasenv_java_home is defined and not sasenv_java_home)
+      - ansible_os_family == 'RedHat'
+
+  ## SAS Default
+  - name: "Install {{ sas_default_java }}"
+    zypper:
+      name: "{{ sas_default_java }}"
+      state: "{{ sas_install_java_action }}"
+      disable_gpg_check: yes
+    become: yes
+    become_user: root
+    when:
+      - sas_install_java | bool == true
+      - sasenv_java_home is not defined or (sasenv_java_home is defined and not sasenv_java_home)
+      - ansible_os_family == 'Suse'
+
+  - name: Validate OpenJDK Java
+    script: "{{ orchestration_root }}/scripts/validate_java.sh '{{ sas_default_jre_path }}/bin/java'"
+    changed_when: False
+    when:
+      - sas_install_java | bool == true
+      - sasenv_java_home is not defined or (sasenv_java_home is defined and not sasenv_java_home)
+
+  - name: Verify that OpenJDK Java version is {{ sas_minimum_java_version }} or later
+    shell: "{{ sas_default_jre_path }}/bin/java -version 2>&1 | awk -F '\"' '/version/ {print $2}'"
+    changed_when: False
+    when:
+      - sas_install_java | bool == true
+      - sas_java_home is not defined
+      - sasenv_java_home is not defined or (sasenv_java_home is defined and not sasenv_java_home)
+    register: java18syscheck
+
+  - name: Set Java to use Java {{ sas_minimum_java_version }} when it is not the default Java on the system
+    set_fact:
+      sas_java_home: "{{ sas_default_jre_path }}"
+    when:
+      - sasenv_java_home is not defined or (sasenv_java_home is defined and not sasenv_java_home)
+      - sas_install_java | bool == true
+      - sas_java_home is not defined
+      - java18syscheck.stdout is version(sas_minimum_java_version, '>')
+    no_log: yes
+
+  - name: If Java not found on host, display an error
+    set_fact:
+      sas_sysreq_error: true
+    when: "sas_java_home is not defined and (envjavasys.stdout is not defined or (envjavasys.stdout is defined and envjavasys.stdout is version(sas_minimum_java_version, '<'))) and (javasyscheck.stdout is not defined or (javasyscheck.stdout is defined and javasyscheck.stdout is version(sas_minimum_java_version, '<')))"
+
+  - name: Log a message 'Java was not found' on the host
+    local_action: shell echo "- On {{ sas_vars.hostname_fqdn }} Java was not found" >> {{ snapshotloc }}/system_requirement.rpt
+    when: sas_sysreq_error is defined and sas_sysreq_error | bool == true
+
+  - name: Log the SAS_JAVA_HOME setting on each host
+    local_action: shell echo "- On {{ sas_vars.hostname_fqdn }} setting SAS_JAVA_HOME to {{ sas_java_home }}" >> {{ snapshotloc }}/system_requirement.rpt
+    when: "sas_java_home is defined"
+
+  - name: Install the SAS Java configuration
+    yum:
+      name: sas-javaesntl
+      state: latest
+    become: true
+    become_user: root
+    when: ansible_os_family == 'RedHat'
+
+  - name: Install the SAS Java configuration
+    zypper:
+      name: sas-javaesntl
+      state: latest
+      disable_gpg_check: yes
+    become: true
+    become_user: root
+    when: ansible_os_family == 'Suse'
+
+  - name: Set SAS_JAVA_HOME
+    lineinfile:
+      dest: "{{ SAS_CONFIG_ROOT }}/etc/sysconfig/sas-javaesntl/sas-java"
+      create: no
+      line: "{{ 'SAS_JAVA_HOME=\"' + sas_java_home + '\"' }}"
+      regexp: "^(#)*SAS_JAVA_HOME\\s*=\\s*(.+)*$"
+      state: present
+      owner: "{{ INSTALL_USER }}"
+      group: "{{ INSTALL_GROUP }}"
+    when: sas_java_home is defined
+    become: true
+    become_user: "{{ INSTALL_USER }}"
+
+  - name: Comment out SAS_JAVA_HOME
+    lineinfile:
+      dest: "{{ SAS_CONFIG_ROOT }}/etc/sysconfig/sas-javaesntl/sas-java"
+      line: "#SAS_JAVA_HOME="
+      regexp: "^(#)*SAS_JAVA_HOME\\s*=\\s*(.+)*$"
+      owner: "{{ INSTALL_USER }}"
+      group: "{{ INSTALL_GROUP }}"
+      state: present
+    when: sas_java_home is not defined
+    become: true
+    become_user: "{{ INSTALL_USER }}"
+  ###### END - Manage Java configuration #########
+  when: not ansible_check_mode
+...

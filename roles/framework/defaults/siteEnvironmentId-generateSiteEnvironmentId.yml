@@ -1,0 +1,5 @@
+provider_data:
+  APPNAME: mbagent
+  COMMAND: '{{ SASHOME }}/bin/sas-mbagent deployment environment'
+  OUTPUT_PATH: '{{ SAS_CONFIG_ROOT }}/etc/deployment/environment-id'
+  PROVIDING_GROUP: '{{ groups[''Operations''] }}'

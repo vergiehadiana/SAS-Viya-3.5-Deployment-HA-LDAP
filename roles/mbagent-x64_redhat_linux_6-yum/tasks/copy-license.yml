@@ -1,0 +1,31 @@
+---
+- name: Get stats for {{ sasenv_license }}
+  local_action: stat path="{{ sasenv_license }}"
+  register: copy_file_1
+
+- name: Copy from {{ sasenv_license }} to {{ SAS_CONFIG_ROOT }}/etc/licenses/setinit.txt
+  become: 'yes'
+  become_user: root
+  copy: src="{{ sasenv_license }}" dest="{{ SAS_CONFIG_ROOT }}/etc/licenses/setinit.txt" owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode="0600"
+  when: copy_file_1.stat.exists == true
+
+- name: Get stats for {{ sasenv_composite_license }}
+  local_action: stat path="{{ sasenv_composite_license }}"
+  register: copy_file_2
+
+- name: Copy from {{ sasenv_composite_license }} to {{ SAS_CONFIG_ROOT }}/etc/licenses/default
+  become: 'yes'
+  become_user: root
+  copy: src="{{ sasenv_composite_license }}" dest="{{ SAS_CONFIG_ROOT }}/etc/licenses/default" owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode="0600"
+  when: copy_file_2.stat.exists == true
+
+- name: Get stats for {{ sasenv_composite_license }}
+  local_action: stat path="{{ sasenv_composite_license }}"
+  register: copy_file_3
+
+- name: Copy from {{ sasenv_composite_license }} to {{ SAS_CONFIG_ROOT }}/etc/licenses/license.jwt
+  become: 'yes'
+  become_user: root
+  copy: src="{{ sasenv_composite_license }}" dest="{{ SAS_CONFIG_ROOT }}/etc/licenses/license.jwt" owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode="0600"
+  when: copy_file_3.stat.exists == true
+

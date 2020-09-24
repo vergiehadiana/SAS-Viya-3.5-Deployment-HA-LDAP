@@ -1,0 +1,24 @@
+---
+# file: mt-services-stop.yml
+
+- name: Stop all services that are owned by the tenant
+  hosts: ComputeServer:sas_casserver_*:programming
+  any_errors_fatal: true
+  gather_facts: false
+  become: false
+  vars:
+    sas_stop_services: "{{ stop_services | default('true') }}"
+
+  tasks:
+    - name: Verify that the sas-{{ DEPLOYMENT_ID }}-all-services script is installed
+      register: register_var
+      stat:
+        path: /etc/init.d/sas-{{ DEPLOYMENT_ID }}-all-services
+
+    - name: Stop all tenant services with running the sas-{{ DEPLOYMENT_ID }}-all-services script
+      shell: '/etc/init.d/sas-{{ DEPLOYMENT_ID }}-all-services stop'
+      become: 'yes'
+      become_user: root
+      when: register_var.stat.exists is defined and
+            register_var.stat.exists and
+            (sas_stop_services|lower == 'true')

@@ -1,0 +1,45 @@
+---
+# Verify third party requirements
+- include: third-party-assessment.yml
+
+# Gather additional host facts to store in hostvars
+- include: gather-host-facts.yml
+
+# Validate that the system is ready for the deployment
+- include: validate.yml
+
+# Validate PostgreSQL user-modifiable entries
+- include: validate-postgres-rules.yml
+
+# Validate CPS-PostgreSQL user-modifiable entries
+- include: validate-cps-postgres-rules.yml
+
+# Analyze existing Java
+- include: analyze-existing-java.yml
+
+# Setup the host
+- include: host-setup.yml
+
+# Setup the repositories
+- include: repo-setup.yml
+
+# Ensure the install user
+- include: ensure-install-user.yml
+
+# Get a snapshot of the environment
+- include: create-snapshot.yml
+
+# Validate Java
+- include: validate-java.yml
+
+# Validate the playbook
+- include: lifecycle.yml
+
+# Verify the host
+- include: host-verification.yml
+
+# Setup known-hosts and install any additional packages
+- include: setup-ecosystem.yml
+
+# Need to do this so we can define the repos in the system
+- include: common.yml

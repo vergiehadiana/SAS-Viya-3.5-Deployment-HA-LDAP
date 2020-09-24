@@ -1,0 +1,15 @@
+---
+- include: pre-installation.yml
+
+# Stop SAS Foundation services
+- include: "{{ 'services-foundation.yml' }} service_action=stopped"
+- include: "{{ 'stop-viya-foundation-services.yml' }}"
+- include: foundation-ensure-port-availability.yml
+
+# Stop CAS services
+- include: cas.yml sas_task_file=conditional-stop.yml
+- include: casserver-ensure-port-availability.yml
+
+
+- include: config-stop.yml
+

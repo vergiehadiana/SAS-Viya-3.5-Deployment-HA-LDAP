@@ -1,0 +1,71 @@
+---
+# file: multi-tenancy.yml
+
+- hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      orchestration_root: '{{ playbook_dir }}/..'
+
+- include: "{{ playbook_dir }}/../internal/mt-preinstall.yml"
+
+- include: "{{ playbook_dir }}/../internal/deploy-preinstall.yml"
+
+# Install on the primary CAS host list. For multi-tenancy, this is the only host
+# group that the user can add hosts to.
+- include: "{{ playbook_dir }}/../internal/install-packages.yml install_hosts=sas_casserver_primary"
+
+# This makes sure the sasgpud service is running on the CAS hosts
+- include: "{{ playbook_dir }}/../internal/mt-sasgpud.yml"
+
+# Make sure the backupagent is up and running on any of the primary hosts
+- include: "{{ playbook_dir }}/../internal/mt-backupagent.yml"
+
+# Set the variables to be specific for the tenant.
+- hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      INSTALL_USER: '{{ tenant_admin }}'
+  - set_fact:
+      INSTALL_GROUP: '{{ tenant_admin_group }}'
+  - set_fact:
+      DEPLOYMENT_ID: '{{ sas_tenant }}'
+  - set_fact:
+      SASHOME: '{{ SASROOT }}/{{ DEPLOYMENT_ID }}/home'
+  - set_fact:
+      SAS_CONFIG_ROOT: '{{ SASROOT }}/{{ DEPLOYMENT_ID }}/config'
+
+# Load facts for httpproxy
+# The hosts for httpproxy could be a different set or are not in the set of hosts
+# that we are running the playbook against.  In that case, we want this to run to
+# make sure we get system information about those hosts as this is used for
+# setting the servicesbaseurl in the casconfig.lua.
+- include: "{{ playbook_dir }}/../internal/load-httpproxy-facts.yml"
+
+# This creates directories specific for a given tenant
+- include: "{{ playbook_dir }}/../internal/mt-setup.yml"
+
+# This updates the computer server environment for the given tenant
+# Specifically ths run-launcher and compute server
+- include: "{{ playbook_dir }}/../internal/mt-launcher.yml"
+
+# This updates the programming environment for the given tenant
+# Specifically the object spawner, workspace server and connect spawner
+- include: "{{ playbook_dir }}/../internal/mt-programming.yml"
+
+# This updates the CAS environment for the given tenant
+- include: "{{ playbook_dir }}/../internal/mt-cas.yml"
+
+# This creates a log watcher per tenant on the CAS, programming and launcher hosts
+- include: "{{ playbook_dir }}/../internal/mt-operations.yml"
+
+# This creates a database per tenant if the environment is configures as such
+- include: "{{ playbook_dir }}/../internal/mt-database.yml"
+
+# This tells the mid-tier to onboard the tenant
+- include: "{{ playbook_dir }}/../internal/mt-onboard.yml"
+
+# Collect everything from the run and save it off in a unique spot.
+- include: "{{ playbook_dir }}/../internal/deploy-complete.yml"
+...

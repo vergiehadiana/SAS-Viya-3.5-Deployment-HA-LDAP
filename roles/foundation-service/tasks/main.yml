@@ -1,0 +1,33 @@
+---
+# tasks file for foundation-service
+
+- name: Verify the {{ foundation_service_name }} service is installed
+  stat:
+    path: "{{ '/etc/init.d/' + foundation_service_name }}"
+  register: foundationservice
+
+- debug: var=foundationservice
+  when: "( sas_deploy_debug | bool ) == true"
+
+- name: "Attempting to reach a {{ foundation_service_action }} state for {{ foundation_service_name }} in {{ foundation_service_group }} groups"
+  service:
+    name: "{{ foundation_service_name }}"
+    state: "{{ foundation_service_action }}"
+  become: yes
+  become_user: root
+  when: "foundationservice.stat.exists is defined and foundationservice.stat.exists and groups[foundation_service_group] is defined and inventory_hostname in groups[foundation_service_group]"
+  register: foundationservicecheck
+
+- name: "Setting {{ foundation_service_name }} to start on boot"
+  service:
+    name: "{{ foundation_service_name }}"
+    enabled: "{{ foundation_service_enabled }}"
+  become: yes
+  become_user: root
+  when: "foundationservice.stat.exists is defined and foundationservice.stat.exists and groups[foundation_service_group] is defined and inventory_hostname in groups[foundation_service_group]"
+
+- name: Debug message for {{ foundation_service_name }} attempting to reach a {{ foundation_service_action }} state
+  debug:
+    var: foundationservicecheck
+  when: "( sas_deploy_debug | bool ) == true and foundationservice.stat.exists is defined and foundationservice.stat.exists and groups[foundation_service_group] is defined and inventory_hostname in groups[foundation_service_group]"
+...

@@ -1,0 +1,11 @@
+---
+- name: codedebugservice on x64_redhat_linux_6-yum - configure.yml
+  include_role:
+    name: codedebugservice-x64_redhat_linux_6-yum
+    tasks_from: configure.yml
+
+- name: codedebugservice on x64_redhat_linux_6-yum - start.yml
+  include_role:
+    name: codedebugservice-x64_redhat_linux_6-yum
+    tasks_from: start.yml
+

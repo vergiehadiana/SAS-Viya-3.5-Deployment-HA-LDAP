@@ -1,0 +1,314 @@
+---
+sas_host_group_variables_sas_casserver_primary:
+  installables-x64_redhat_linux_6-yum:
+    ASTORE for EMBSCOREENG:
+      SERVICE_APP_NAME: ygeseastore
+      SERVICE_PRODUCT_NAME: ASTORE for EMBSCOREENG
+      SERVICE_YUM_GROUP: ASTORE for EMBSCOREENG
+    CAS for SAS Visual Analytics:
+      SERVICE_APP_NAME: ygvacas
+      SERVICE_PRODUCT_NAME: CAS for SAS Visual Analytics
+      SERVICE_YUM_GROUP: CAS for SAS Visual Analytics
+    CAS for Viya Common Foundation:
+      SERVICE_APP_NAME: ygvcmfndcas
+      SERVICE_PRODUCT_NAME: CAS for Viya Common Foundation
+      SERVICE_YUM_GROUP: CAS for Viya Common Foundation
+    CUDA Library Support for SAS:
+      SERVICE_APP_NAME: yggpulib
+      SERVICE_PRODUCT_NAME: CUDA Library Support for SAS
+      SERVICE_YUM_GROUP: CUDA Library Support for SAS
+    Data Conn OSS File Fmts:
+      SERVICE_APP_NAME: ygcdfopnsrc
+      SERVICE_PRODUCT_NAME: Data Conn OSS File Fmts
+      SERVICE_YUM_GROUP: Data Conn OSS File Fmts
+    Meta RPM Event Stream CAS Client:
+      SERVICE_APP_NAME: ygespcasvcf
+      SERVICE_PRODUCT_NAME: Meta RPM Event Stream CAS Client
+      SERVICE_YUM_GROUP: Meta RPM Event Stream CAS Client
+    SAS Data Connect Accelerator for Hadoop:
+      SERVICE_APP_NAME: ygcdfephive
+      SERVICE_PRODUCT_NAME: SAS Data Connect Accelerator for Hadoop
+      SERVICE_YUM_GROUP: SAS Data Connect Accelerator for Hadoop
+    SAS Data Connector to Hadoop:
+      SERVICE_APP_NAME: ygcdfhive
+      SERVICE_PRODUCT_NAME: SAS Data Connector to Hadoop
+      SERVICE_YUM_GROUP: SAS Data Connector to Hadoop
+    SAS Text Analytics for English:
+      SERVICE_APP_NAME: ygtxtmineng
+      SERVICE_PRODUCT_NAME: SAS Text Analytics for English
+      SERVICE_YUM_GROUP: SAS Text Analytics for English
+    backup-agent:
+      SERVICE_APP_NAME: backupagent
+      SERVICE_MEMORY_NEEDED: 196
+      SERVICE_PRODUCT_NAME: backup-agent
+      SERVICE_YUM_PACKAGE: sas-backup-agent
+    bootstrap-config:
+      SERVICE_APP_NAME: bootstrapcfg
+      SERVICE_MEMORY_NEEDED: 3
+      SERVICE_PRODUCT_NAME: bootstrap-config
+      SERVICE_YUM_PACKAGE: sas-bootstrap-config
+    casasr:
+      SERVICE_APP_NAME: casasr
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: casasr
+      SERVICE_YUM_PACKAGE: sas-casasr
+    casluaclnt:
+      SERVICE_APP_NAME: casluaclnt
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: casluaclnt
+      SERVICE_YUM_PACKAGE: sas-casluaclnt
+    caspythnclnt:
+      SERVICE_APP_NAME: caspythnclnt
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: caspythnclnt
+      SERVICE_YUM_PACKAGE: sas-caspythnclnt
+    casrclnt:
+      SERVICE_APP_NAME: casrclnt
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: casrclnt
+      SERVICE_YUM_PACKAGE: sas-casrclnt
+    cdfbase:
+      SERVICE_APP_NAME: cdfbase
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: cdfbase
+      SERVICE_YUM_PACKAGE: sas-cdfbase
+    cdfephive:
+      SERVICE_APP_NAME: cdfephive
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: cdfephive
+      SERVICE_YUM_PACKAGE: sas-cdfephive
+    cdfhive:
+      SERVICE_APP_NAME: cdfhive
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: cdfhive
+      SERVICE_YUM_PACKAGE: sas-cdfhive
+    cdfspde:
+      SERVICE_APP_NAME: cdfspde
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: cdfspde
+      SERVICE_YUM_PACKAGE: sas-cdfspde
+    cdfweb:
+      SERVICE_APP_NAME: cdfweb
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: cdfweb
+      SERVICE_YUM_PACKAGE: sas-cdfweb
+    certframe:
+      SERVICE_APP_NAME: certframe
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: certframe
+      SERVICE_YUM_PACKAGE: sas-certframe
+    cleanutils:
+      SERVICE_APP_NAME: cleanutils
+      SERVICE_MEMORY_NEEDED: 32
+      SERVICE_PRODUCT_NAME: cleanutils
+      SERVICE_YUM_PACKAGE: sas-cleanutils
+    crsaggregate:
+      SERVICE_APP_NAME: crsaggregate
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsaggregate
+      SERVICE_YUM_PACKAGE: sas-crsaggregate
+    crsastore:
+      SERVICE_APP_NAME: crsastore
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsastore
+      SERVICE_YUM_PACKAGE: sas-crsastore
+    crsds2:
+      SERVICE_APP_NAME: crsds2
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsds2
+      SERVICE_YUM_PACKAGE: sas-crsds2
+    crsdtree:
+      SERVICE_APP_NAME: crsdtree
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsdtree
+      SERVICE_YUM_PACKAGE: sas-crsdtree
+    crsfcmpact:
+      SERVICE_APP_NAME: crsfcmpact
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsfcmpact
+      SERVICE_YUM_PACKAGE: sas-crsfcmpact
+    crsfedsql:
+      SERVICE_APP_NAME: crsfedsql
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsfedsql
+      SERVICE_YUM_PACKAGE: sas-crsfedsql
+    crsforecast:
+      SERVICE_APP_NAME: crsforecast
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsforecast
+      SERVICE_YUM_PACKAGE: sas-crsforecast
+    crsmlrning:
+      SERVICE_APP_NAME: crsmlrning
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsmlrning
+      SERVICE_YUM_PACKAGE: sas-crsmlrning
+    crsmodelpub:
+      SERVICE_APP_NAME: crsmodelpub
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsmodelpub
+      SERVICE_YUM_PACKAGE: sas-crsmodelpub
+    crsmtpsrvc:
+      SERVICE_APP_NAME: crsmtpsrvc
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsmtpsrvc
+      SERVICE_YUM_PACKAGE: sas-crsmtpsrvc
+    crsparse:
+      SERVICE_APP_NAME: crsparse
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsparse
+      SERVICE_YUM_PACKAGE: sas-crsparse
+    crspseudo:
+      SERVICE_APP_NAME: crspseudo
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crspseudo
+      SERVICE_YUM_PACKAGE: sas-crspseudo
+    crsrecommend:
+      SERVICE_APP_NAME: crsrecommend
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsrecommend
+      SERVICE_YUM_PACKAGE: sas-crsrecommend
+    crsregressn:
+      SERVICE_APP_NAME: crsregressn
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsregressn
+      SERVICE_YUM_PACKAGE: sas-crsregressn
+    crssearch:
+      SERVICE_APP_NAME: crssearch
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crssearch
+      SERVICE_YUM_PACKAGE: sas-crssearch
+    crssentiment:
+      SERVICE_APP_NAME: crssentiment
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crssentiment
+      SERVICE_YUM_PACKAGE: sas-crssentiment
+    crssequence:
+      SERVICE_APP_NAME: crssequence
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crssequence
+      SERVICE_YUM_PACKAGE: sas-crssequence
+    crssgcomp:
+      SERVICE_APP_NAME: crssgcomp
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crssgcomp
+      SERVICE_YUM_PACKAGE: sas-crssgcomp
+    crsstat:
+      SERVICE_APP_NAME: crsstat
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crsstat
+      SERVICE_YUM_PACKAGE: sas-crsstat
+    crstranspose:
+      SERVICE_APP_NAME: crstranspose
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crstranspose
+      SERVICE_YUM_PACKAGE: sas-crstranspose
+    crstxtmining:
+      SERVICE_APP_NAME: crstxtmining
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: crstxtmining
+      SERVICE_YUM_PACKAGE: sas-crstxtmining
+    csq:
+      SERVICE_APP_NAME: csq
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: csq
+      SERVICE_YUM_PACKAGE: sas-csq
+    dmscorecas:
+      SERVICE_APP_NAME: dmscorecas
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: dmscorecas
+      SERVICE_YUM_PACKAGE: sas-dmscorecas
+    docconvjars:
+      SERVICE_APP_NAME: docconvjars
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: docconvjars
+      SERVICE_YUM_PACKAGE: sas-docconvjars
+    embscoreeng:
+      SERVICE_APP_NAME: embscoreeng
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: embscoreeng
+      SERVICE_YUM_PACKAGE: sas-embscoreeng
+    envesntl:
+      SERVICE_APP_NAME: envesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: envesntl
+      SERVICE_YUM_PACKAGE: sas-envesntl
+    espauth:
+      SERVICE_APP_NAME: espauth
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: espauth
+      SERVICE_YUM_PACKAGE: sas-espauth
+    espbase:
+      SERVICE_APP_NAME: espbase
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: espbase
+      SERVICE_YUM_PACKAGE: sas-espbase
+    evmcltsvcs:
+      SERVICE_APP_NAME: evmcltsvcs
+      SERVICE_MEMORY_NEEDED: 64
+      SERVICE_PRODUCT_NAME: evmcltsvcs
+      SERVICE_YUM_PACKAGE: sas-evmcltsvcs
+    evmcollect:
+      SERVICE_APP_NAME: evmcollect
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: evmcollect
+      SERVICE_YUM_PACKAGE: sas-evmcollect
+    hdatplugins:
+      SERVICE_APP_NAME: hdatplugins
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: hdatplugins
+      SERVICE_YUM_PACKAGE: sas-hdatplugins
+    javaesntl:
+      SERVICE_APP_NAME: javaesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: javaesntl
+      SERVICE_YUM_PACKAGE: sas-javaesntl
+    localconsul:
+      SERVICE_APP_NAME: localconsul
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: localconsul
+      SERVICE_YUM_PACKAGE: sas-localconsul
+    mapsvahdat:
+      SERVICE_APP_NAME: mapsvahdat
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: mapsvahdat
+      SERVICE_YUM_PACKAGE: sas-mapsvahdat
+    postgresql-secure-libs-11:
+      SERVICE_APP_NAME: psqllib
+      SERVICE_MEMORY_NEEDED: 0
+      SERVICE_PRODUCT_NAME: postgresql-secure-libs-11
+      SERVICE_YUM_PACKAGE: sas-postgresql-secure-libs-11
+    runjavasvc:
+      SERVICE_APP_NAME: runjavasvc
+      SERVICE_MEMORY_NEEDED: 1
+      SERVICE_PRODUCT_NAME: runjavasvc
+      SERVICE_YUM_PACKAGE: sas-runjavasvc
+    sasgpudcfg:
+      SERVICE_APP_NAME: sasgpudcfg
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: sasgpudcfg
+      SERVICE_YUM_PACKAGE: sas-sasgpudcfg
+    tkcas:
+      SERVICE_APP_NAME: tkcas
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkcas
+      SERVICE_YUM_PACKAGE: sas-tkcas
+    tkesp:
+      SERVICE_APP_NAME: tkesp
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkesp
+      SERVICE_YUM_PACKAGE: sas-tkesp
+    tkets:
+      SERVICE_APP_NAME: tkets
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkets
+      SERVICE_YUM_PACKAGE: sas-tkets
+    tkhps:
+      SERVICE_APP_NAME: tkhps
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkhps
+      SERVICE_YUM_PACKAGE: sas-tkhps
+    txtmineng:
+      SERVICE_APP_NAME: txtmineng
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: txtmineng
+      SERVICE_YUM_PACKAGE: sas-txtmineng

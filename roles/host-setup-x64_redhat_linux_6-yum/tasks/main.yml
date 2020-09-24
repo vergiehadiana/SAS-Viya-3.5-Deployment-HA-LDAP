@@ -1,0 +1,14 @@
+---
+- name: install libselinux python bindings
+  vars:
+    selinux_pkg:  "{% if ansible_python_version is version_compare('3.0.0', '>=')%}python3-libselinux{% else %}libselinux-python{% endif %}"
+  yum:
+    name: '{{ selinux_pkg }}'
+    state: present
+  become: yes
+  become_user: root
+
+- setup:
+    gather_subset:
+    - "!hardware"
+    - network

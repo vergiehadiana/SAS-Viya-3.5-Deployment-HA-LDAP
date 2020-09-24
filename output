@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html class="bg" lang="en" dir="ltr">
+<head>
+    <title>SAS&reg; Logon Manager</title>
+    <link rel="shortcut icon" href="/SASLogon/resources/oss/images/favicon.ico" />
+    <meta charset='utf-8' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" href="/SASLogon/resources/oss/stylesheets/sas.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="content">
+        <div id="nonModal" class="block">
+        <div id="loginbox" role="application">
+
+            <div >
+        <div id="message" aria-live="assertive" aria-atomic="true" role="alert">
+            <div class="errorIcon"></div>
+            
+            
+            
+            
+            <h2 class="primary" id="message_code2">The code that you entered is not valid because it has either expired, has already been used, or the password was changed after the code was generated.</h2>
+        </div>
+    </div>
+
+            <img src="resources/images/transparent.png" class="logo" alt="" />
+
+            <div class="logocontainer" >
+        <img src="/SASLogon/resources/images/saslogo.svg" class="logo" aria-label="SAS logo" alt="SAS logo" />
+    </div>
+
+            <form method="post" id="fm1" class="minimal" novalidate="novalidate" action="/SASLogon/login.do"><input type="hidden" name="X-Uaa-Csrf" value="QlsVi0KTbZSTTwWzCQabhX"/>
+                <span class="userid">
+                    <input id="username" name="username" placeholder="User ID" autofocus="true" type="text" value="" autocomplete="off" aria-labelledby="error message1 message2 message_code message_code2"/>
+                </span>
+
+                <span class="password">
+                    <input id="password" name="password" placeholder="Password" type="password" value="" size="25" autocomplete="off"/>
+                </span>
+
+                <input type="hidden" name="_eventId" value="submit" aria-hidden="true" />
+
+                
+                
+                
+                
+
+                <button type="submit" id="submitBtn" class="btn-submit" title="Sign In" onClick="this.disabled=true;validateForm();return false;">Sign In</button>
+                
+
+                <div class="saml-login">
+                    
+                    
+                    
+                    
+                </div>
+            </form>
+        </div>
+
+        
+
+        <script>
+        /*<![CDATA[*/
+            function validateForm() {
+                var form = document.getElementById("fm1");
+                var emptyUsername = form["username"].value == null || form["username"].value == "";
+                var emptyPassword = form["password"].value == null || form["password"].value == "";
+                if (!emptyUsername && !emptyPassword) {
+                    form.submit();
+                    return;
+                }
+                var message;
+                if (emptyUsername && emptyPassword) {
+                    message = "Please enter a user ID and password.";
+                    document.getElementById("username").focus();
+                } else if (emptyUsername) {
+                    message = "Please enter a user ID.";
+                    var username = document.getElementById("username");
+                    username.focus();
+                    username.setAttribute("aria-labelledby", "message");
+                    document.getElementById("password").removeAttribute("aria-labelledby");
+                } else if (emptyPassword) {
+                    message = "Please enter a password.";
+                    var password = document.getElementById("password");
+                    password.focus();
+                    password.setAttribute("aria-labelledby", "message");
+                    document.getElementById("username").removeAttribute("aria-labelledby");
+                }
+                document.getElementById("message").hidden = false;
+                document.getElementById("message").innerHTML = '<div class="errorIcon"></div><h2 class="primary">' + message + '</h2>';
+                document.getElementById("submitBtn").disabled = false;
+                return;
+            }
+        /*]]>*/
+        </script>
+    </div>
+    </div>
+
+    <div class="footer">
+        <div class="copyright">
+            <span dir="ltr">&#x202a;&copy; 2016-2019, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.&#x202c;</span>
+            <a id="aboutLink" href="#openModal" onClick="document.getElementById('openModal').style.display='block'" class="about">About</a>
+        </div>
+    </div>
+
+    <!--~~~~~~~~~~~~~~~~~~~~~ABOUT DIALOG MODAL CONTENT~~~~~~~~~~~~~~~~~-->
+
+    <div id="openModal" class="modalDialog" style="z-index: 9999;"><!--modal container-->
+        <div dir="ltr">
+            <div class="test" dir="auto">
+                <div>&rlm;</div>
+                <div><a id="aboutDoneLink" href="" onClick="document.getElementById('openModal').style.display='none';" class="done">Done</a></div><!--done button-->
+            </div>
+            <!-- about dialog content -->
+            <br />
+            <p class="aboutProductName">Product name: SAS<sup>&reg;</sup> Logon Manager</p>
+            <h2>Legal Notices</h2>
+            <p>&copy; 2016-2019, SAS Institute Inc., Cary, NC, USA. All Rights Reserved.
+                This software is protected by copyright laws and international treaties.</p>
+            <h3>U.S. Government Restricted Rights</h3>
+            <p>Use, duplication or disclosure of this software and related documentation by the United States government is subject to the license terms of the Agreement with SAS Institute Inc. pursuant to, as applicable, FAR 12.212, DFAR 227.7202-1(a), DFAR 227.7202-3(a) and DFAR 227.7202-4 and, to the extent required under United States federal law, the minimum restricted rights as set out in FAR 52.227-19 (DEC 2007).</p>
+            <h3>Third-Party Software Usage</h3>
+            <p>The following is licensed under the Apache License, Version 2.0 (the "License"). You may not use these files except in compliance with the License. You may obtain a copy of the License at <a id="aboutLicenseLink" href="http://www.apache.org/licenses/LICENSE-2.0" style="color:white">http://www.apache.org/licenses/LICENSE-2.0</a>. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.</p>
+            <h4>User Account and Authentication (UAA) Server</h4>
+            <p>Copyright &copy; 2015-Present CloudFoundry.org Foundation, Inc. All Rights Reserved.</p>
+            <p>This project may include a number of subcomponents with separate copyright notices and license terms. Your use of these subcomponents is subject to the terms and conditions of the subcomponent's license, as noted in the LICENSE file.</p>
+        </div>
+    </div>
+
+    <div class="radiance"></div>
+
+    <script>
+        /*<![CDATA[*/
+        function modality() {
+            // Disable/enable certain elements from the user based on whether the About information is
+            // present; Also toggle the ability for the user to tab to certain elements
+            switch(location.hash) {
+                case "#openModal" :
+                    var inputs = document.getElementById("nonModal").getElementsByTagName("input");
+                    for (var i = 0; i < inputs.length; i++) {
+                        inputs[i].setAttribute("disabled", "true");
+                    }
+                    var buttons = document.getElementById("nonModal").getElementsByTagName("button");
+                    for (var j = 0; j < buttons.length; j++) {
+                        buttons[j].setAttribute("disabled", "true");
+                    }
+                    document.getElementById("nonModal").setAttribute("aria-hidden", "true");
+                    document.getElementById("openModal").setAttribute("aria-hidden", "false");
+                    document.getElementById("aboutLink").setAttribute("tabindex", "-1");
+                    document.getElementById("aboutDoneLink").setAttribute("tabindex", "0");
+                    document.getElementById("aboutLicenseLink").setAttribute("tabindex", "0");
+                    break;
+                default :
+                    var inputs = document.getElementById("nonModal").getElementsByTagName("input");
+                    for (var i = 0; i < inputs.length; i++) {
+                        inputs[i].removeAttribute("disabled");
+                    }
+                    var buttons = document.getElementById("nonModal").getElementsByTagName("button");
+                    for (var j = 0; j < buttons.length; j++) {
+                        buttons[j].removeAttribute("disabled");
+                    }
+                    document.getElementById("nonModal").setAttribute("aria-hidden", "false");
+                    document.getElementById("openModal").setAttribute("aria-hidden", "true");
+                    document.getElementById("aboutLink").setAttribute("tabindex", "0");
+                    document.getElementById("aboutDoneLink").setAttribute("tabindex", "-1");
+                    document.getElementById("aboutLicenseLink").setAttribute("tabindex", "-1");
+                    break;
+            }
+        }
+        window.onhashchange = modality;
+        modality();
+
+        document.onkeydown = function(e) {
+            if (e.keyCode === 27) {
+                var modalOpen = document.getElementById("openModal").style.display !== '';
+                if (modalOpen) {
+                    document.getElementById("openModal").style.display = 'none';
+                    document.location.href = '';
+                    return false;
+                }
+            }
+        };
+        /*]]>*/
+    </script>
+</body>
+</html>

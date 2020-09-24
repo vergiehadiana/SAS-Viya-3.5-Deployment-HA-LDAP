@@ -1,0 +1,7 @@
+---
+- name: Ensure {{ SERVICE_NAME }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name={{ SERVICE_NAME }} state=started
+

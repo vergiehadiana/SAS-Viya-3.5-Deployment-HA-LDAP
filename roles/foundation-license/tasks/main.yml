@@ -1,0 +1,30 @@
+---
+# tasks file for foundation-license
+
+###### START - Manage license #########
+- include: "{{ orchestration_root }}/tasks/set_license_file.yml"
+
+- name: Copy license files
+  copy:
+    src: "{{ license_file | trim }}"
+    dest: "{{ sas_install_dir + '/license' }}"
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: 0664
+    force: yes
+  become: true
+  register: sas_license_copy
+
+- name: Verify that apply_license action is installed
+  wait_for:
+    path: "{{ sas_install_dir + '/utilities/bin/apply_license' }}"
+    timeout: 5
+
+- name: Set license
+  command: "{{ sas_install_dir + '/utilities/bin/apply_license ' + sas_install_dir + '/license' }}"
+  become: true
+  become_user: "{{ INSTALL_USER }}"
+  register: sas_sid
+  when: (sas_license_copy.changed is defined and sas_license_copy.changed) or sas_license_force | bool == true
+###### END - Manage license #########
+...

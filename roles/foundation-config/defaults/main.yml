@@ -1,0 +1,16 @@
+---
+# defaults file for foundation-config
+
+sas_install_dir: "{{ SASROOT + '/' + SPRE_DEPLOYMENT_ID + '/home/SASFoundation' }}"
+
+consumer_items:
+  certificateAuthority-generateTokenForSecretsAndCertificates:
+    APPNAME: programming
+    DESTINATION_DIRECTORY: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/programming/{{ INSTANCE_ID }}'
+    DESTINATION_FILENAME: vault.token
+    DESTINATION_GROUP: '{{ INSTALL_GROUP }}'
+    DESTINATION_MODE: '0600'
+    DESTINATION_OWNER: '{{ INSTALL_USER }}'
+    DESTINATION_app.name: programming
+    DESTINATION_destination.file.name: vault.token
+...

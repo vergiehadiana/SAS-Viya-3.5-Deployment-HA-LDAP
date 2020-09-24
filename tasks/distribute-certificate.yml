@@ -1,0 +1,50 @@
+- block:
+  - name: Create temporary directory on Ansible machine
+    local_action: shell mktemp -d
+    run_once: yes
+    register: tmpdir
+
+  - name: Verify the presence of the provided certificate
+    become: 'yes'
+    become_user: root
+    register: cert
+    stat:
+      path: '{{ CERT_PATH }}'
+    when: inventory_hostname in COMBINED_GROUP
+
+  - name: Fetch certificate
+    become: 'yes'
+    become_user: root
+    fetch:
+      src: "{{ CERT_PATH }}"
+      dest: "{{ tmpdir.stdout }}/{{ CERT_IDENTIFIER }}-{{ inventory_hostname }}-ca.crt"
+      flat: yes
+      fail_on_missing: yes
+    when: cert.stat is defined and cert.stat.exists is defined and cert.stat.exists == true
+
+  - name: Determine certificate framework installations
+    become: 'yes'
+    become_user: root
+    stat:
+      path: "{{ item }}"
+    register: certframe_install_paths
+    with_items:
+      - "{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}"
+      - "{{ SPRE_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}"
+
+  - name: Distribute certificates
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    copy:
+      src: "{{ tmpdir.stdout }}/"
+      dest: "{{ item.item }}/cacerts/"
+    when: item.stat.exists | default(false)
+    with_items: "{{ certframe_install_paths.results }}"
+
+  - name: Clean up temp folder on local machine
+    delegate_to: 127.0.0.1
+    file:
+      path: "{{ tmpdir.stdout }}"
+      state: absent
+    run_once: true
+  when: COMBINED_GROUP | length > 0

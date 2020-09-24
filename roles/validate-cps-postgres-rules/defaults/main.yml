@@ -1,0 +1,21 @@
+---
+# This play validates the entries of the CPS Viya PostgreSQL Infrastructure Data Server in inventory.ini and vars.yml
+pg_required_third_party_assessment_results: []
+pg_required_ansible_min_version: "2.8"
+pg_required_jinja_min_version: "2.7.2"
+ha_cluster_list: []
+postgres_pool_numbers: []
+cps_postgres_pool_numbers: []
+cpsha_cluster_list: []
+cpsdatasvrc_hostname_unmatched: "Host names for cpsdatasvrc do not match between the inventory file and vars.yml"
+cps_postgres_port_numbers: []
+cps_ha_pgpool_watchdog_port: []
+cps_ha_pgpool_watch_port_numbers: []
+cps_ha_pgpool_virtual_ips: []
+cps_ha_pgpool_virtual_ip: []
+cpspgpoolc_hostname_unmatched: "Host names for cpspgpoolc do not match between the inventory file and vars.yml"
+cpsdatasvrc_node_number_instances: []
+cpspgpoolc_pool_number_instances: []
+cpspgpoolc_pool_numbers_by_servicename: []
+valid_hostgroups: "sasdatasvrc pgpoolc cpsdatasvrc cpspgpoolc"
+invalid_hostgroup_found: "Hostgroup(s) that are defined in vars.yml is(are) invalid"

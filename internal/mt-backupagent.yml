@@ -1,0 +1,35 @@
+---
+# file: mt-backupagent.yml
+
+- name: "Make sure the backupagent is started"
+  hosts: sas_casserver_primary
+  any_errors_fatal: true
+  gather_facts: false
+  become: false
+
+  vars:
+    ba_initd_script: "{{ SASROOT }}/viya/config/etc/init.d/sas-backup-agent"
+
+  tasks:
+    - name: Check and see if the backup agent init.d script is deployed
+      register: ba_var
+      stat:
+        path: "{{ ba_initd_script }}"
+
+    - block:
+
+      - include_role:
+          name: backupagent-x64_redhat_linux_6-yum
+        when: inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([])
+      - include_role:
+          name: backupagent-x64_suse_linux_12-yum
+        when: inventory_hostname in groups['sas-hosts-x64_suse_linux_12-yum'] | default([])
+      - include_role:
+          name: backupagent-ppc64le_redhat_linux_7-yum
+        when: inventory_hostname in groups['sas-hosts-ppc64le_redhat_linux_7-yum'] | default([])
+      - include_role:
+          name: backupagent-ppc64le_suse_linux_12-yum
+        when: inventory_hostname in groups['sas-hosts-ppc64le_suse_linux_12-yum'] | default([])
+
+      when: ba_var.stat.exists is defined and ba_var.stat.exists
+...

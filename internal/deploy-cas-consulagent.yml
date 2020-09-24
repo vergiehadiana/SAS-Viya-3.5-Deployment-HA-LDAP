@@ -1,0 +1,114 @@
+---
+- name: deploy-cas-consulagent
+  become_user: '{{ INSTALL_USER }}'
+  hosts: sas_casserver_primary:sas_casserver_secondary:sas_casserver_worker:!consul
+  any_errors_fatal: true
+  pre_tasks:
+    - name: Install sas-consul
+      yum:
+        name: sas-consul
+        state: latest
+      become: yes
+      become_user: root
+      when: consul_on_sas_hosts | bool == true and inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([]) or
+            consul_on_sas_hosts | bool == true and inventory_hostname in groups['sas-hosts-ppc64le_redhat_linux_7-yum'] | default([])
+
+    - name: Install sas-consul
+      command: 'zypper --non-interactive --no-gpg-checks install sas-consul'
+      args:
+        warn: no
+      become: yes
+      become_user: root
+      when: consul_on_sas_hosts | bool == true and inventory_hostname in groups['sas-hosts-x64_suse_linux_12-yum'] | default([]) or
+            consul_on_sas_hosts | bool == true and inventory_hostname in groups['sas-hosts-ppc64le_suse_linux_12-yum'] | default([])
+
+    - name: Install sas-bootstrap-config
+      yum:
+        name: sas-bootstrap-config
+        state: latest
+      become: yes
+      become_user: root
+      when: consul_on_sas_hosts | bool == false and inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([]) or
+            consul_on_sas_hosts | bool == false and inventory_hostname in groups['sas-hosts-ppc64le_redhat_linux_7-yum'] | default([])
+
+    - name: Install sas-bootstrap-config
+      command: 'zypper --non-interactive --no-gpg-checks install sas-bootstrap-config'
+      args:
+        warn: no
+      become: yes
+      become_user: root
+      when: consul_on_sas_hosts | bool == false and inventory_hostname in groups['sas-hosts-x64_suse_linux_12-yum'] | default([]) or
+            consul_on_sas_hosts | bool == false and inventory_hostname in groups['sas-hosts-ppc64le_suse_linux_12-yum'] | default([])
+
+    - name: Try and install consul-template
+      yum:
+        name: sas-consul-template
+        state: latest
+      become: yes
+      become_user: root
+      when: inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([]) or
+            inventory_hostname in groups['sas-hosts-ppc64le_redhat_linux_7-yum'] | default([])
+
+    - name: Try and install consul-template
+      command: 'zypper --non-interactive --no-gpg-checks install sas-consul-template'
+      args:
+        warn: no
+      become: yes
+      become_user: root
+      when: inventory_hostname in groups['sas-hosts-x64_suse_linux_12-yum'] | default([]) or
+            inventory_hostname in groups['sas-hosts-ppc64le_suse_linux_12-yum'] | default([])
+
+  vars_files:
+  - ../vars.yml
+  tasks:
+  - debug: var=consul_on_sas_hosts
+
+- name: Configure localconsul on CAS hosts
+  become_user: '{{ INSTALL_USER }}'
+  hosts: sas_casserver_primary:sas_casserver_secondary:sas_casserver_worker:!consul
+  any_errors_fatal: true
+  pre_tasks:
+  - name: include soe.yml
+    include_vars: '{{ item }}'
+    with_first_found:
+    - "{{ orchestration_root }}/soe.yml"
+    - "{{ orchestration_root }}/internal/soe_defaults.yml"
+  tasks:
+  - include_role:
+      name: localconsul-x64_redhat_linux_6-yum
+    when: consul_on_sas_hosts | bool == true and inventory_hostname in groups['sas-hosts-x64_redhat_linux_6-yum'] | default([])
+  - include_role:
+      name: localconsul-x64_suse_linux_12-yum
+    when: consul_on_sas_hosts | bool == true and inventory_hostname in groups['sas-hosts-x64_suse_linux_12-yum'] | default([])
+  - include_role:
+      name: localconsul-ppc64le_redhat_linux_7-yum
+    when: consul_on_sas_hosts | bool == true and inventory_hostname in groups['sas-hosts-ppc64le_redhat_linux_7-yum'] | default([])
+  - include_role:
+      name: localconsul-ppc64le_suse_linux_12-yum
+    when: consul_on_sas_hosts | bool == true and inventory_hostname in groups['sas-hosts-ppc64le_suse_linux_12-yum'] | default([])
+  vars_files:
+  - ../vars.yml
+
+- name: Set the consul url on cas hosts to point to localhost
+  become_user: '{{ INSTALL_USER }}'
+  hosts: sas_casserver_primary:sas_casserver_secondary:sas_casserver_worker
+  any_errors_fatal: true
+  vars_files:
+  - ../vars.yml
+  tasks:
+  - name: Create consul.conf environment file
+    become: yes
+    blockinfile:
+      create: yes
+      block: |
+        export CONSUL_HTTP_ADDR={{ hostvars[groups['consul'][0]].sas_vars.consul_url }}
+        export SSL_CERT_FILE={{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
+        export CONSUL_CACERT=$SSL_CERT_FILE
+        export VAULT_CACERT=$SSL_CERT_FILE
+      marker: "# {mark} Ansible managed Consul client connection options"
+      dest: "{{ SAS_CONFIG_ROOT }}/consul.conf"
+      owner: "{{ INSTALL_USER }}"
+      group: "{{ INSTALL_GROUP }}"
+      mode: 0644
+    when: not ansible_check_mode and consul_on_sas_hosts | bool == true and groups['consul'] and groups['consul'] | length > 0
+...

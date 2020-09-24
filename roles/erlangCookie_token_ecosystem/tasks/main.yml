@@ -1,0 +1,63 @@
+---
+- block:
+  - name: Determine certificate framework installations
+    become: 'yes'
+    become_user: root
+    stat:
+      path: "{{ item }}"
+    register: certframe_install_paths
+    when: inventory_hostname in SCOPE_GROUP
+    with_items:
+      - "{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}"
+
+  - name: Verify that output directory exists
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    file: path="{{ item.item }}/tokens/{{ APP_NAME }}/{{ INSTANCE_ID }}" state=directory owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode="u=rwx,g=rx,o=rx"
+    when: inventory_hostname in SCOPE_GROUP and item.stat.exists | default(false)
+    with_items: "{{ certframe_install_paths.results }}"
+
+  - name: "Verify the presence of {{ TOKEN_NAME }}"
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    register: token
+    stat: path="{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/tokens/{{ APP_NAME }}/{{ INSTANCE_ID }}/{{ TOKEN_NAME }}"
+    when: COMBINED_GROUP[0] == inventory_hostname
+
+  - name: "Create erlangCookie token {{ TOKEN_NAME }}"
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-crypto-management
+      uuid --no-dashes --out-file {{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/tokens/{{ APP_NAME
+      }}/{{ INSTANCE_ID }}/{{ TOKEN_NAME }}'
+    when: (COMBINED_GROUP[0] == inventory_hostname) and (token.stat.exists is defined and token.stat.exists == false)
+
+  - name: "Set correct permissions on {{ TOKEN_NAME }}"
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    file: path="{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/tokens/{{ APP_NAME }}/{{ INSTANCE_ID }}/{{ TOKEN_NAME }}" owner="{{ INSTALL_USER }}" group="{{ INSTALL_GROUP }}" mode="{{ MODE }}"
+    when: COMBINED_GROUP[0] == inventory_hostname
+
+  - name: Create temporary directory on Ansible machine
+    local_action: shell mktemp -d
+    run_once: yes
+    register: tmpdir
+
+  - name: "Fetch {{ TOKEN_NAME }}"
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    fetch: src="{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/tokens/{{ APP_NAME }}/{{ INSTANCE_ID }}/{{ TOKEN_NAME }}" dest="{{ tmpdir.stdout }}/" flat=yes  fail_on_missing=yes
+    when: COMBINED_GROUP[0] == inventory_hostname
+
+  - name: "Distribute {{ TOKEN_NAME }}"
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    copy: src="{{ tmpdir.stdout }}/{{ TOKEN_NAME }}" dest="{{ item.item }}/tokens/{{ APP_NAME }}/{{ INSTANCE_ID }}/" owner="{{ INSTALL_USER }}" group="{{ INSTALL_GROUP }}" mode="{{ MODE }}"
+    when: inventory_hostname in SCOPE_GROUP and item.stat.exists | default(false)
+    with_items: "{{ certframe_install_paths.results }}"
+
+  - name: Clean up temp folder on local machine
+    delegate_to: 127.0.0.1
+    file: path="{{ tmpdir.stdout }}" state=absent
+    run_once: true
+  when: not ansible_check_mode and COMBINED_GROUP | length > 0

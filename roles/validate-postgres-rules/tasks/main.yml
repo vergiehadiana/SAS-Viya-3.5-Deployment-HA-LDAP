@@ -1,0 +1,432 @@
+---
+- block:
+  - name: Verify that a required Ansible version is installed first
+    set_fact:
+      pg_required_third_party_assessment_results: '{{ pg_required_third_party_assessment_results }} + [ ''The Ansible version check failed. The Postgres playbook validation task requires Ansible, version {{ pg_required_ansible_min_version }} or later.'' ]'
+    when: ansible_version.full is version_compare(pg_required_ansible_min_version, '<')
+
+  - action: jinja_version
+    register: installed_jinja_test
+
+  - name: Verify that a required Jinja version is installed first
+    set_fact:
+       pg_required_third_party_assessment_results: '{{ pg_required_third_party_assessment_results }} +  [ ''The Jinja2 version check failed. The Postgres playbook validation task requires Jinja2, version {{ pg_required_jinja_min_version }} or later.'' ]'
+    when: installed_jinja_test.msg is version_compare(pg_required_jinja_min_version, '<')
+
+  - name: Skip execution on any third-party assessment check failures
+    debug:
+      msg: 'At least one third-party assessment check failed: {{ '' ''.join(pg_required_third_party_assessment_results) }}. The Postgres playbook validation task will be skipped.'
+    when: pg_required_third_party_assessment_results | length > 0
+    run_once: yes
+    ignore_errors: true
+    failed_when: false
+
+  - meta: end_play
+    when: pg_required_third_party_assessment_results | length > 0
+  delegate_to: localhost
+  run_once: yes
+
+- name: Check if the specified hostgroups in vars.yml are valid
+  assert:
+    that: item in valid_hostgroups
+    msg: "{{ invalid_hostgroup_found }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname] }}"
+
+- name: Compare the specified hostgroup sasdatasvrc in vars.yml match with ones in the inventory file
+  assert:
+    that: item.key in groups['sasdatasvrc']
+    msg: "{{ sasdatasvrc_hostname_unmatched }}"
+  when: "'sasdatasvrc' in item.value"
+  with_dict: "{{ INVOCATION_VARIABLES }}"
+  run_once: yes
+
+- name: Compare the specified hostgroup pgpoolc in vars.yml match with ones in the inventory file
+  assert:
+    that: item.key in groups['pgpoolc']
+    msg: "{{ pgpoolc_hostname_unmatched }}"
+  when: "'pgpoolc' in item.value"
+  with_dict: "{{ INVOCATION_VARIABLES }}"
+  run_once: yes
+
+- set_fact:
+    sasdatasvrc_definition: "{{ item.value.sasdatasvrc | default([]) }}"
+  loop_control:
+      label: "{{ item.key }}"
+  loop: "{{ INVOCATION_VARIABLES | dict2items }}"
+  register: sasdatasvrc_definition_results
+  run_once: yes
+
+- set_fact:
+    sasdatasvrc_definitions: "{{ sasdatasvrc_definition_results.results | map(attribute='ansible_facts.sasdatasvrc_definition') | list | flatten(levels=1) }}"
+  run_once: yes
+
+- set_fact:
+    pgpoolc_definition: "{{ item.value.pgpoolc | default([]) }}"
+  loop_control:
+      label: "{{ item.key }}"
+  loop: "{{ INVOCATION_VARIABLES | dict2items }}"
+  register: pgpoolc_definition_results
+  run_once: yes
+
+- set_fact:
+    cpspgpoolc_definition: "{{ item.value.cpspgpoolc | default([]) }}"
+  loop_control:
+      label: "{{ item.key }}"
+  loop: "{{ INVOCATION_VARIABLES | dict2items }}"
+  register: cpspgpoolc_definition_results
+  run_once: yes
+
+- set_fact: 
+    hostgroups_by_host: []
+
+- set_fact:
+    hostgroups_by_host: "{{ hostgroups_by_host + [ item ] }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname] }}"
+
+- name: Retrieve PG_PORT port number defined for sasdatasvrc from vars.yml
+  set_fact:
+    postgres_port_numbers: "{{ postgres_port_numbers + [ item.PG_PORT ] }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname][ 'sasdatasvrc' ] }}"
+  when: "'sasdatasvrc' in hostgroups_by_host"
+  run_once: yes
+
+- name: Retrieve PG_PORT port number defined for cpsdatasvrc from vars.yml
+  set_fact:
+    postgres_port_numbers: "{{ postgres_port_numbers + [ item.PG_PORT ] }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname][ 'cpsdatasvrc' ] }}"
+  when: "'cpsdatasvrc' in hostgroups_by_host"
+  run_once: yes
+
+- name: Retrieve PCP_PORT port number defined for pgpoolc from vars.yml
+  set_fact:
+    postgres_port_numbers: "{{ postgres_port_numbers + [ item.PCP_PORT ] }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname][ 'pgpoolc' ] }}"
+  when: "'pgpoolc' in hostgroups_by_host"
+  run_once: yes
+
+- name: Retrieve PCP_PORT port number defined for cpspgpoolc from vars.yml
+  set_fact:
+    postgres_port_numbers: "{{ postgres_port_numbers + [ item.PCP_PORT ] }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname][ 'cpspgpoolc' ] }}"
+  when: "'cpspgpoolc' in hostgroups_by_host"
+  run_once: yes
+
+- name: Retrieve PGPOOL_PORT port number defined for pgpoolc from vars.yml
+  set_fact:
+    postgres_port_numbers: "{{ postgres_port_numbers + [ item.PGPOOL_PORT ] }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname][ 'pgpoolc' ] }}"
+  when: "'pgpoolc' in hostgroups_by_host"
+  run_once: yes
+
+- name: Retrieve PGPOOL_PORT port number defined for cpspgpoolc from vars.yml
+  set_fact:
+    postgres_port_numbers: "{{ postgres_port_numbers + [ item.PGPOOL_PORT ] }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname][ 'cpspgpoolc' ] }}"
+  when: "'cpspgpoolc' in hostgroups_by_host"
+  run_once: yes
+
+- name: Retrieve HA_PGPOOL_WATCHDOG_PORT port number defined for pgpoolc from vars.yml
+  set_fact:
+    postgres_port_numbers: "{{ postgres_port_numbers + [ item.HA_PGPOOL_WATCHDOG_PORT ] }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname][ 'pgpoolc' ] }}"
+  when: "'pgpoolc' in hostgroups_by_host and item.HA_PGPOOL_WATCHDOG_PORT is defined and item.HA_PGPOOL_WATCHDOG_PORT |int !=0"
+  run_once: yes
+
+- name: Retrieve HA_PGPOOL_WATCHDOG_PORTT port number defined for cpspgpoolc from vars.yml
+  set_fact:
+    postgres_port_numbers: "{{ postgres_port_numbers + [ item.HA_PGPOOL_WATCHDOG_PORT ] }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname][ 'cpspgpoolc' ] }}"
+  when: "'cpspgpoolc' in hostgroups_by_host and item.HA_PGPOOL_WATCHDOG_PORT is defined and item.HA_PGPOOL_WATCHDOG_PORT |int !=0"
+  run_once: yes
+
+- set_fact:
+    pgpoolc_definitions: "{{ pgpoolc_definition_results.results | map(attribute='ansible_facts.pgpoolc_definition') | list | flatten(levels=1) }}"
+  run_once: yes
+
+- set_fact:
+    cpspgpoolc_definitions: "{{ cpspgpoolc_definition_results.results | map(attribute='ansible_facts.cpspgpoolc_definition') | list | flatten(levels=1) }}"
+  run_once: yes
+  when: "'cpspgpoolc' in hostgroups_by_host"
+
+- name: Retrieve the pgpoolc host name from the inventory file
+  set_fact:
+    pgpoolc_host: "{{ groups['pgpoolc'] }}"
+  run_once: yes
+
+- name: Set a boolean variable indicating if a multi pgpoolc service entries are found
+  set_fact:
+    multi_pgpoolc_entries: yes
+  run_once: yes
+  when: pgpoolc_host | length > 1
+
+- set_fact:
+    sasdatasvrc_service_names_list: "{{ sasdatasvrc_definitions | map(attribute='SERVICE_NAME') | list }}"
+  run_once: yes
+
+- set_fact:
+    sasdatasvrc_service_names: "{{ sasdatasvrc_service_names_list | sort | unique }}"
+  run_once: yes
+
+- set_fact:
+    pgpoolc_service_names_list: "{{ pgpoolc_definitions | map(attribute='SERVICE_NAME') | list }}"
+  run_once: yes
+
+- set_fact:
+    pgpoolc_service_names: "{{ pgpoolc_service_names_list | sort | unique }}"
+  run_once: yes
+
+- set_fact:
+    cpspgpoolc_service_names_list: "{{ cpspgpoolc_definitions | map(attribute='SERVICE_NAME') | list }}"
+  when: "'cpspgpoolc' in hostgroups_by_host"
+  run_once: yes
+
+- set_fact:
+    cpspgpoolc_service_names: "{{ cpspgpoolc_service_names_list | sort | unique }}"
+  when: "'cpspgpoolc' in hostgroups_by_host"
+  run_once: yes
+
+- set_fact:
+    postgres_pool_numbers: "{{ pgpoolc_definitions | map(attribute='POOL_NUMBER') }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname][ 'pgpoolc' ] }}"
+  when: "'pgpoolc' in hostgroups_by_host"
+  run_once: yes
+
+- set_fact:
+    cps_postgres_pool_numbers: "{{ cpspgpoolc_definitions | map(attribute='POOL_NUMBER')  }}"
+  with_items: "{{ INVOCATION_VARIABLES[inventory_hostname][ 'cpspgpoolc' ] }}"
+  when: "'cpspgpoolc' in hostgroups_by_host"
+  run_once: yes
+
+- name: Retrieve pgpoolc pool numbers by it's service name
+  set_fact:
+    pgpoolc_pool_numbers_by_servicename: "{{ pgpoolc_pool_numbers_by_servicename | default([]) + [dict(poolnumber=item[0], servicename=item[1])] }}"
+  loop: "{{ postgres_pool_numbers | list | zip(pgpoolc_definitions | map(attribute='SERVICE_NAME' ) | list) | list }}"
+  when: "postgres_pool_numbers | list | count > 0"
+  run_once: yes
+
+- name: Retrieve cpspgpoolc pool numbers by it's service name
+  set_fact:
+    cpspgpoolc_pool_numbers_by_servicename: "{{ cpspgpoolc_pool_numbers_by_servicename | default([]) + [dict(poolnumber=item[0], servicename=item[1])] }}"
+  loop: "{{ cps_postgres_pool_numbers | list | zip(pgpoolc_definitions | map(attribute='SERVICE_NAME' ) | list) | list }}"
+  when: "'cpspgpoolc' in hostgroups_by_host and cps_postgres_pool_numbers | list | count > 0"
+  run_once: yes
+
+- name: Check if the postgres service name is a HA cluster
+  set_fact:
+    ha_cluster_list: "{{ ha_cluster_list | default([]) + [ item ] }}"
+  when: "postgres_pool_numbers | list | count > 0 and pgpoolc_pool_numbers_by_servicename | selectattr('servicename', 'contains', item) | map(attribute='servicename') | list | count > 1"
+  with_items: "{{ pgpoolc_service_names }}"
+  run_once: yes
+
+- name: Check if the cps service name is a HA cluster
+  set_fact:
+    cpsha_cluster_list: "{{ cpsha_cluster_list | default([]) + [ item ] }}"
+  when: "cps_postgres_pool_numbers | list | count > 0 and 'cpspgpoolc' in hostgroups_by_host and cpspgpoolc_pool_numbers_by_servicename | selectattr('servicename', 'contains', item) | map(attribute='servicename') | list | count > 1"
+  with_items: "{{ cpspgpoolc_service_names }}"
+  run_once: yes
+
+- name: Verify that the port number is unique
+  assert:
+    that:
+      - postgres_port_numbers == postgres_port_numbers | unique
+    msg: "All port numbers defined in vars.yml must be unique."
+  run_once: yes
+
+- name: Verify that all SERVICE_NAME values defined for pgpoolc are unique on a host
+  assert:
+    that:
+      - INVOCATION_VARIABLES[ item ]['pgpoolc']| map(attribute='SERVICE_NAME') | list | sort | count == INVOCATION_VARIABLES[ item ]['pgpoolc'] | map(attribute='SERVICE_NAME') | list | sort | unique | count
+    msg: "Each pgpool for a service name must be deployed on a different host."
+  with_items: "{{ pgpoolc_host }}"
+  run_once: yes
+
+- name: Retrieve sasdatasvrc node numbers by it's service name
+  set_fact:
+    sasdatasvrc_node_numbers_by_servicename: "{{ sasdatasvrc_node_numbers_by_servicename | default([]) + [dict(nodenumber=item[0], servicename=item[1])] }}"
+  loop: "{{ sasdatasvrc_definitions | map(attribute='NODE_NUMBER') | list | zip(sasdatasvrc_definitions | map(attribute='SERVICE_NAME' ) | list) | list }}"
+  run_once: yes
+
+- name: Verify that the SERVICE_NAME has at least one pgpoolc and sasdatasvrc
+  assert:
+    that:
+      - pgpoolc_service_names == sasdatasvrc_service_names
+    msg: "The service_name item.SERVICE_NAME defined in vars.yml must have at least one sasdatasvrc entry and one pgpoolc entry."
+  run_once: yes
+
+- name: Run query to calculate the NODE_NUMBER of sasdatasvrc
+  set_fact:
+    node_numbers_found: "{{ sasdatasvrc_node_numbers_by_servicename | selectattr('servicename', 'contains', item) | map(attribute='nodenumber') | list | unique | count }}"
+    node_number_list: "{{ sasdatasvrc_node_numbers_by_servicename | selectattr('servicename', 'contains', item) | map(attribute='nodenumber') | list | min }}"
+    node_numbers_expected: "{{ sasdatasvrc_node_numbers_by_servicename | selectattr('servicename', 'contains', item) | map(attribute='nodenumber') | list | count }}"
+  with_items: "{{ sasdatasvrc_service_names }}"
+  register: node_number_query
+  run_once: yes
+
+- name: Verify that no duplicated NODE_NUMBER found
+  assert:
+    that:
+      - item.ansible_facts.node_numbers_found == item.ansible_facts.node_numbers_expected
+    msg: "The node numbers must be unique per service name. Numbering cannot include duplicates."
+  with_items: "{{ node_number_query.results }}"
+  run_once: yes
+
+- name: Verify that no negative NODE_NUMBER found
+  assert:
+    that:
+      - item.ansible_facts.node_number_list | int >= 0
+    msg: "Negative node number was found. Numbering cannot include negative numbers."
+  with_items: "{{ node_number_query.results }}"
+  run_once: yes
+
+- name: Retrieve the POOL_NUMBER of pgpoolc
+  set_fact:
+    pgpoolc_pool_numbers: "{{ pgpoolc_definitions | map(attribute='POOL_NUMBER') | list }}"
+  run_once: yes
+
+- name: Verify that the pgpoolc is set as HA mode
+  set_fact:
+    is_ha_environment: true
+  when: multi_pgpoolc_entries is defined and multi_pgpoolc_entries | bool == true and ha_cluster_list | length > 0
+  run_once: yes
+
+- set_fact:
+    highest_pool_number: "{{ pgpoolc_pool_numbers | max }}"
+  when: pgpoolc_pool_numbers is defined
+  run_once: yes
+
+- block:
+  - debug:
+      msg: "is_ha_environment is {{ is_ha_environment }}"
+
+  when: is_ha_environment is defined and highest_pool_number != '0'
+  run_once: yes
+
+- block:
+  - name: "Ends the play"
+    debug:
+      msg: "Postgres playbook validation for a non High Availability environment SAS Viya PostgreSQl Infrastructure Data Server ends successfully."
+  - meta: end_play
+  when: is_ha_environment is undefined or highest_pool_number == '0'
+  run_once: yes
+
+- name: Set the pgpoolc properties in HA environment
+  block:
+  - set_fact:
+      pool_numbers_found: "{{ pgpoolc_pool_numbers_by_servicename | selectattr('servicename', 'contains', item) | map(attribute='poolnumber') | list | unique | count }}"
+      pool_number_list: "{{ pgpoolc_pool_numbers_by_servicename | selectattr('servicename', 'contains', item) | map(attribute='poolnumber') | list | min }}"
+      pool_numbers_expected: "{{ pgpoolc_pool_numbers_by_servicename | selectattr('servicename', 'contains', item) | map(attribute='poolnumber') | list | count }}"
+      pool_check_required: true
+    when: item in ha_cluster_list
+    with_items: "{{ pgpoolc_service_names }}"
+    register: pool_number_query
+
+  - set_fact:
+      ha_pgpool_virtual_ip: "{{ pgpoolc_definitions | selectattr('SERVICE_NAME', 'contains', item) | map(attribute='HA_PGPOOL_VIRTUAL_IP') | list | sort | unique }}"
+    when: item in ha_cluster_list and highest_pool_number != '0'
+    with_items: "{{ pgpoolc_service_names }}"
+
+  - set_fact:
+      ha_pgpool_watchdog_port: "{{ pgpoolc_definitions | selectattr('SERVICE_NAME', 'contains', item) | map(attribute='HA_PGPOOL_WATCHDOG_PORT') | list | sort | unique }}"
+    when: item in ha_cluster_list and multi_pgpoolc_entries is defined and multi_pgpoolc_entries | bool == true and highest_pool_number != '0'
+    with_items: "{{ pgpoolc_service_names }}"
+
+  - set_fact:
+      ha_pgpool_virtual_ips: "{{ ha_pgpool_virtual_ips + [ item.HA_PGPOOL_VIRTUAL_IP ] }}"
+    when: "'pgpoolc' in hostgroups_by_host and item.HA_PGPOOL_VIRTUAL_IP |int !=0"
+    with_items: "{{ INVOCATION_VARIABLES[inventory_hostname]['pgpoolc'] }}"
+
+  - set_fact:
+      ha_pgpool_virtual_ips: "{{ ha_pgpool_virtual_ips + [ item.HA_PGPOOL_VIRTUAL_IP ] }}"
+    when: "'cpspgpoolc' in hostgroups_by_host and item.HA_PGPOOL_VIRTUAL_IP |int !=0"
+    with_items: "{{ INVOCATION_VARIABLES[inventory_hostname]['cpspgpoolc'] }}"
+
+  - set_fact:
+      ha_pgpool_watch_port_numbers: "{{  ha_pgpool_watch_port_numbers + [ pgpoolc_definitions | selectattr('SERVICE_NAME', 'contains', item) | map(attribute='HA_PGPOOL_WATCHDOG_PORT') | list ] }}"
+    when: item in ha_cluster_list and multi_pgpoolc_entries is defined and multi_pgpoolc_entries | bool == true and highest_pool_number != '0'
+    with_items: "{{ pgpoolc_service_names }}"
+
+  - set_fact:
+      ha_pgpool_watch_port_numbers: "{{  ha_pgpool_watch_port_numbers + [ cpspgpoolc_definitions | selectattr('SERVICE_NAME', 'contains', item) | map(attribute='HA_PGPOOL_WATCHDOG_PORT') | list] }}"
+    when: "'cpspgpoolc' in hostgroups_by_host and item in cpsha_cluster_list and multi_cpsgpoolc_entries is defined and multi_clspgpoolc_entries | bool == true and highest_pool_number != '0'"
+    with_items: "{{ cpspgpoolc_service_names }}"
+
+  when: is_ha_environment is defined and highest_pool_number != '0'
+  run_once: yes
+
+- name: Verify the pgpoolc properties
+  block:
+  - name: Make sure HA_PGPOOL_VIRTUAL_IP value is numerical
+    assert:
+      that:
+        - item is search("^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$")
+      msg: "The format of an IP address field should be written as four segments of numbers separated by periods and the field should not be blank."
+    with_items: "{{ ha_pgpool_virtual_ip }}"
+
+  - name: Make sure HA_PGPOOL_WATCHDOG_PORT value is not empty
+    assert:
+      that:
+        - item | int !=0
+      msg: "The HA_PGPOOL_WATCHDOG_PORT should not be blank."
+    with_items: "{{ ha_pgpool_watchdog_port }}"
+
+  - block:
+    - name: Verify that no duplicated POOL_NUMBER found
+      assert:
+        that:
+          - item.ansible_facts.pool_numbers_found == item.ansible_facts.pool_numbers_expected
+        msg: "The pool numbers must be unique per service name. Numbering cannot include duplicates."
+      when: item.ansible_facts.pool_numbers_found is defined and item.ansible_facts.pool_numbers_expected is defined
+      with_items: "{{ pool_number_query.results }}"
+
+    - name: Verify that no negative POOL_NUMBER found
+      assert:
+        that:
+          - item.ansible_facts.pool_number_list | int >= 0
+        msg: "Negative pool number was found. Numbering cannot include negative numbers."
+      when: item.ansible_facts.pool_number_list is defined 
+      with_items: "{{ pool_number_query.results }}"
+    when: pool_number_query is defined and pool_check_required | bool == true
+
+  - name: Verify that the HA_PGPOOL_VIRTUAL_IP number is unique
+    assert:
+      that:
+        - ha_pgpool_virtual_ips == ha_pgpool_virtual_ips | unique
+      msg: "HA_PGPOOL_VIRTUAL_IP must be different for each servicename."
+
+  - name: Verify that the HA_PGPOOL_WATCHDOG_PORT number is unique
+    assert:
+      that:
+        - ha_pgpool_watch_port_numbers | unique | count == ha_cluster_list | length
+      msg: "HA_PGPOOL_WATCHDOG_PORT must be different for each servicename."
+
+  - name: Verify that HA_PGPOOL_VIRTUAL_IP must have a value and that value must be the same for all PGPool nodes per servicename
+    assert:
+      that:
+        - pgpoolc_definitions | selectattr('SERVICE_NAME', 'match', item) | map(attribute='HA_PGPOOL_VIRTUAL_IP') | list | unique | length == 1
+      msg: "The same HA_PGPOOL_VIRTUAL_IP must be used for all pgpool nodes per service name."
+    when: item in ha_cluster_list
+    with_items: "{{ pgpoolc_service_names }}"
+
+  - name: Verify that HA_PGPOOL_VIRTUAL_IP must be different for each servicename
+    assert:
+      that:
+        - ha_pgpool_virtual_ip | length == ha_cluster_list | length
+      msg: "The HA_PGPOOL_VIRTUAL_IP must be different for each service name."
+
+  - name: Verify that HA_PGPOOL_WATCHDOG_PORT must be the same value for all PGPool nodes per servicename
+    assert:
+      that:
+        - ha_pgpool_watchdog_port | length == ha_cluster_list | length
+      msg: "The same HA_PGPOOL_WATCHDOG_PORT must be used for all pgpool nodes for a service."
+
+  - name: Verify that the same pgpoolc HA_PGPOOL_WATCHDOG_PORT is not used for multiple pgpoolc service names
+    assert:
+      that:
+        - pgpoolc_definitions | selectattr('SERVICE_NAME', 'match', item) | map(attribute='HA_PGPOOL_WATCHDOG_PORT') | list | unique | length == 1
+      msg: "The HA_PGPOOL_WATCHDOG_PORT must be different each service name."
+    when: item in ha_cluster_list
+    with_items: "{{ pgpoolc_service_names }}"
+
+  when: is_ha_environment is defined and highest_pool_number != '0'
+  run_once: yes
+...

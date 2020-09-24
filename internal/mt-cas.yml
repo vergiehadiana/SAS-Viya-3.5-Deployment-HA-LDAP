@@ -1,0 +1,119 @@
+# file: mt-cas.yml
+
+- name: "CAS setup for tenant"
+  hosts: sas_casserver*
+  any_errors_fatal: true
+  gather_facts: false
+  become: false
+
+  # This is present to support copying the license.
+  vars_files:
+    - ../vars.yml
+
+  pre_tasks:
+    - name: Get tenant admin home directory
+      getent:
+        database: passwd
+        key: "{{ tenant_admin }}"
+        split: ":"
+
+    - name: Define variable for home directory
+      set_fact:
+        sas_ta_home: "{{ getent_passwd[tenant_admin][4] }}"
+
+    - name: See if user home directory exists
+      stat:
+        path:  "{{ sas_ta_home }}"
+      register: ta_home
+
+    - name: Create tenant admin home directory
+      file:
+        path: "{{ sas_ta_home }}"
+        state: directory
+        owner: "{{ tenant_admin }}"
+        group: "{{ tenant_admin_group }}"
+        mode: "0700"
+      become: yes
+      become_user: root
+      when: ta_home.stat.exists is defined and ta_home.stat.exists | bool == false
+
+    - name: If CLUSTER_DEFINITIONS.cas is not empty, copy contents
+      run_once: true
+      set_fact:
+        CLUSTER_DEFINITIONS_cas: "{{ CLUSTER_DEFINITIONS.cas }}"
+      when: CLUSTER_DEFINITIONS.cas is defined and CLUSTER_DEFINITIONS.cas | string != 'None'
+
+    - name: Stop services on the CAS hosts
+      include_role:
+        name: casserver-config
+      vars:
+        sas_task_file: conditional-stop.yml
+
+    - name: Create CAS SSH vars file
+      template:
+        src: "../roles/casserver-config/templates/ssh_defn_vars.yml.j2"
+        dest: "{{ playbook_dir }}/../ssh_defn_vars.yml"
+        mode: 0644
+      delegate_to: 127.0.0.1
+
+    - name: include {{ playbook_dir }}/../ssh_defn_vars.yml
+      include_vars: "{{ playbook_dir }}/../ssh_defn_vars.yml"
+
+    - name: Setup ssh for the CAS cluster
+      include: "{{ orchestration_root }}/roles/ssh_ecosystem/tasks/main.yml"
+      vars:
+        KEYNAME: 'id_rsa'
+        COMBINED_GROUP: "{{ casloopvar.value.hosts }}"
+        USERS: '[ ''{{ casloopvar.value.user }}'' ]'
+      with_dict: '{{ SSH_DEFINITIONS }}'
+      loop_control:
+        loop_var: casloopvar
+
+  roles:
+    - casserver-license
+
+- hosts: sas_casserver*
+  any_errors_fatal: true
+  gather_facts: false
+  become: false
+  pre_tasks:
+  - set_fact:
+      tenant_deployment_id: '{{ DEPLOYMENT_ID }}'
+  - set_fact:
+      tenant_install_user: '{{ INSTALL_USER }}'
+  - set_fact:
+      tenant_install_group: '{{ INSTALL_GROUP }}'
+  - set_fact:
+      tenant_home: '{{ SASHOME }}'
+  - set_fact:
+      tenant_config_root: '{{ SAS_CONFIG_ROOT }}'
+  - set_fact:
+      DEPLOYMENT_ID: 'viya'
+  - set_fact:
+      INSTALL_USER: 'sas'
+  - set_fact:
+      INSTALL_GROUP: 'sas'
+  - set_fact:
+      SASHOME: '{{ SASROOT }}/viya/home'
+  - set_fact:
+      SAS_CONFIG_ROOT: '{{ SASROOT }}/viya/config'
+  roles:
+  - { role: casserver-config, sas_task_file: framework.yml }
+  post_tasks:
+  - set_fact:
+      INSTALL_USER: '{{ tenant_install_user }}'
+  - set_fact:
+      INSTALL_GROUP: '{{ tenant_install_group }}'
+  - set_fact:
+      DEPLOYMENT_ID: '{{ tenant_deployment_id }}'
+  - set_fact:
+      SASHOME: '{{ tenant_home }}'
+  - set_fact:
+      SAS_CONFIG_ROOT: '{{ tenant_config_root }}'
+
+- hosts: sas_casserver*
+  any_errors_fatal: true
+  gather_facts: false
+  become: false
+  roles:
+    - { role: casserver-config, sas_task_file: start.yml }

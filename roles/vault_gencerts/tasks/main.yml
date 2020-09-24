@@ -1,0 +1,13 @@
+---
+- name: Verify the presence of a machine certificate
+  become: 'yes'
+  become_user: '{{ INSTALL_USER }}'
+  register: cert
+  stat:
+    path: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/private/sas.jks'
+
+- name: Create machine certificate
+  become: 'yes'
+  become_user: '{{ INSTALL_USER }}'
+  shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-crypto-management req-vault-cert --common-name {{ sas_vars.hostname_fqdn }} --out-form jks --out-key {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/private/sas.jks --san-ip 127.0.0.1 --san-ip {{ sas_vars.internal_deployment_ipv4 }} --vault-addr https://{{ hostvars[groups[''consul''][0]][''sas_vars''][''hostname_fqdn''] }}:8200 --vault-token {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/staticcerts/default/vault.token --vault-cafile {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem'
+  when: cert.stat.exists is defined and cert.stat.exists == false

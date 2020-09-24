@@ -1,0 +1,37 @@
+---
+# file: stop-viya-foundation-services.yml
+
+###############################################################################
+# Take action on the Viya Foundation services
+- name: Stop the SAS Viya Foundation services - programming hosts
+  hosts: programming
+  any_errors_fatal: true
+  gather_facts: no
+  become: false
+
+  vars:
+    - service_action: "stopped"
+    - sas_consul_service: "{{ 'sas-' + DEPLOYMENT_ID | string + '-consul-' + INSTANCE_ID | string }}"
+
+  vars_files:
+    - ../vars.yml
+
+  pre_tasks:
+  - include_vars: "{{ item }}"
+    with_first_found:
+      - "{{ orchestration_root }}/soe.yml"
+      - "{{ orchestration_root }}/internal/soe_defaults.yml"
+
+  roles:
+    - foundation_service_action: "{{ service_action }}"
+      foundation_service_name: "{{ sas_consul_service }}"
+      foundation_service_group: programming
+      role: foundation-service
+      when:
+        - inventory_hostname not in groups['consul']
+###############################################################################
+
+- include: sasstudio.yml sas_task_file=conditional-stop.yml
+- include: spawner.yml sas_task_file=conditional-stop.yml
+- include: connect.yml sas_task_file=conditional-stop.yml
+...

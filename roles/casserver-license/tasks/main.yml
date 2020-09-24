@@ -1,0 +1,41 @@
+---
+# tasks file for casserver-license
+
+###### START - Manage license change in the config file #########
+- include: "{{ orchestration_root }}/tasks/set_license_file.yml"
+
+- name: "Create directory {{ SAS_CONFIG_ROOT }}/etc/cas/<cas-instance>"
+  become: 'yes'
+  become_user: root
+  file:
+    path: "{{ SAS_CONFIG_ROOT }}/etc/cas/{{ item.key }}"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: 0755
+  with_dict: '{{ CLUSTER_DEFINITIONS_cas }}'
+
+- name: Copy license files
+  copy:
+    src: "{{ license_file | trim }}"
+    dest: "{{ SAS_CONFIG_ROOT }}/etc/cas/{{ item.key | string }}/{{ license_file | basename | trim }}"
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: "0664"
+    force: yes
+  become: 'yes'
+  become_user: root
+  with_dict: '{{ CLUSTER_DEFINITIONS_cas }}'
+
+- name: Set up symlink for license file
+  file:
+    src: "{{ SAS_CONFIG_ROOT }}/etc/cas/{{ item.key | string }}/{{ license_file | basename | trim }}"
+    dest: "{{ SAS_CONFIG_ROOT }}/etc/cas/{{ item.key | string }}/sas_license.txt"
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: "0664"
+    state: link
+  become: true
+  with_dict: "{{ CLUSTER_DEFINITIONS_cas }}"
+###### END - Manage license change in the config file #########
+...

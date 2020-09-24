@@ -1,0 +1,74 @@
+---
+# file: services-cas.yml
+
+###############################################################################
+# Take action on the CAS services
+- name: Manage the CAS services
+  hosts: sas_casserver*
+  any_errors_fatal: true
+  gather_facts: no
+  become: false
+
+  vars:
+    cas_instance: "{{ casenv_instance | default('default') }}"
+    cas_mode: smp
+    cas_controller_service: "{{ 'sas-' + DEPLOYMENT_ID | string + '-cascontroller-' + cas_instance | string }}"
+    # cas_worker_service: "{{ 'sas-' + DEPLOYMENT_ID | string + '-casworker-' + cas_instance | string }}"
+
+  vars_files:
+    - ../vars.yml
+
+  pre_tasks:
+    - name: include soe.yml
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "{{ orchestration_root }}/soe.yml"
+        - "{{ orchestration_root }}/internal/soe_defaults.yml"
+
+    - name: Set mode to mpp if hosts are defined for the sas_casserver_worker group
+      set_fact:
+        cas_mode: mpp
+      when:
+        - "groups['sas_casserver_worker'] | length > 0"
+
+    - name: Set mode to the user-defined value
+      set_fact:
+        cas_mode: "{{ CAS_CONFIGURATION.cfg.mode }}"
+      when:
+        - CAS_CONFIGURATION.cfg is defined and CAS_CONFIGURATION.cfg | string != 'None' and CAS_CONFIGURATION.cfg.mode is defined and CAS_CONFIGURATION.cfg.mode
+
+  roles:
+    # Will only set the service to be enable on boot if in smp mode
+    - foundation_service_action: "{{ service_action }}"
+      foundation_service_enabled: no
+      foundation_service_name: "{{ cas_controller_service }}"
+      foundation_service_group: sas_casserver_primary
+      role: foundation-service
+      when: "cas_mode == 'mpp'"
+    - foundation_service_action: "{{ service_action }}"
+      foundation_service_enabled: yes
+      foundation_service_name: "{{ cas_controller_service }}"
+      foundation_service_group: sas_casserver_primary
+      role: foundation-service
+      when: "cas_mode == 'smp'"
+    # - foundation_service_action: "{{ service_action }}"
+      # foundation_service_enabled: yes
+      # foundation_service_name: "{{ cas_worker_service }}"
+      # foundation_service_group: sas_casserver_worker
+      # role: foundation-service
+    - foundation_service_action: "{{ service_action }}"
+      foundation_service_name: "sas-{{ DEPLOYMENT_ID }}-consul-{{ INSTANCE_ID }}"
+      foundation_service_group: sas_casserver_worker
+      role: foundation-service
+      when:
+        - sas_consul_on_cas_hosts | bool == true
+        - inventory_hostname not in groups['consul']
+    - foundation_service_action: "{{ service_action }}"
+      foundation_service_name: "sas-{{ DEPLOYMENT_ID }}-consul-{{ INSTANCE_ID }}"
+      foundation_service_group: sas_casserver_primary
+      role: foundation-service
+      when:
+        - sas_consul_on_cas_hosts | bool == true
+        - inventory_hostname not in groups['consul']
+###############################################################################
+...

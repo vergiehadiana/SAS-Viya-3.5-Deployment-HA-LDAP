@@ -1,0 +1,12 @@
+---
+- name: Ensure {{ SERVICE_NAME }} service is started
+  become: 'yes'
+  become_user: root
+  register: service_start
+  service: name={{ SERVICE_NAME }} state=started
+
+- name: Execute geode_consul_cleanup
+  become: 'yes'
+  become_user: root
+  command: '{{ SASHOME }}/libexec/sas-cachelocator_consul_cleanup.sh'
+

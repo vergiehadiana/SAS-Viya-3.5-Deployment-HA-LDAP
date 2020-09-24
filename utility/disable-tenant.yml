@@ -1,0 +1,26 @@
+---
+# file: disable-tenant.yml
+# Set the variables to be specific for the tenant.
+- hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      INSTALL_USER: '{{ tenant_admin }}'
+  - set_fact:
+      INSTALL_GROUP: '{{ tenant_admin_group }}'
+  - set_fact:
+      DEPLOYMENT_ID: '{{ sas_tenant }}'
+  - set_fact:
+      SASHOME: '{{ SASROOT }}/{{ DEPLOYMENT_ID }}/home'
+  - set_fact:
+      SAS_CONFIG_ROOT: '{{ SASROOT }}/{{ DEPLOYMENT_ID }}/config'
+
+# Get host information
+- include: "{{ playbook_dir }}/../internal/gather-host-facts.yml"
+
+# This stops the services that are owned by the specified tenant
+- include: "{{ playbook_dir }}/../internal/mt-services-stop.yml"
+
+# This runs the sas-admin CLI to disable the specified tenant
+- include: "{{ playbook_dir }}/../internal/mt-cli-disable.yml"
+...

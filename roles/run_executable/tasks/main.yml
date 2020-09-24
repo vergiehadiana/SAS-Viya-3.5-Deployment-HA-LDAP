@@ -1,0 +1,17 @@
+---
+- block:
+  - name: Verify the presence of {{ executable }}
+    become_user: "{{ BECOME_USER }}"
+    stat:
+      path: "{{ executable }}"
+    register: executable_register
+
+  - name: Run {{ executable }}
+    command: "{{ executable }}"
+    become_user: "{{ BECOME_USER }}"
+    environment:
+      DEBUG: true
+      SASROOT: "{{ SASROOT }}"
+      DEPLOYMENT_ID: "{{ DEPLOYMENT_ID }}"
+    when: executable_register.stat.exists | default(false) == true and executable_register.stat.executable | default(false) == true
+  when: executable is defined

@@ -1,0 +1,40 @@
+---
+- name: Update SPRE Java
+  become_user: '{{ INSTALL_USER }}'
+  hosts: sas_all
+  any_errors_fatal: true
+  vars_files:
+  - ../vars.yml
+  tasks:
+  - name: "Check for existence of {{ SPRE_CONFIG_ROOT }}/etc/sysconfig/sas-javaesntl/sas-java"
+    become: yes
+    stat:
+      path: "{{ SPRE_CONFIG_ROOT }}/etc/sysconfig/sas-javaesntl/sas-java"
+    register: spre_sas_java_stat
+
+  - block:
+    - name: Set SAS_JAVA_HOME
+      lineinfile:
+        dest: "{{ SPRE_CONFIG_ROOT }}/etc/sysconfig/sas-javaesntl/sas-java"
+        create: no
+        line: "{{ 'SAS_JAVA_HOME=\"' + sas_java_home + '\"' }}"
+        regexp: "^(#)*SAS_JAVA_HOME\\s*=\\s*(.+)*$"
+        state: present
+        owner: "{{ INSTALL_USER }}"
+        group: "{{ INSTALL_GROUP }}"
+      when: sas_java_home is defined
+      become: true
+      become_user: "{{ INSTALL_USER }}"
+
+    - name: Comment out SAS_JAVA_HOME
+      lineinfile:
+        dest: "{{ SPRE_CONFIG_ROOT }}/etc/sysconfig/sas-javaesntl/sas-java"
+        line: "#SAS_JAVA_HOME="
+        regexp: "^(#)*SAS_JAVA_HOME\\s*=\\s*(.+)*$"
+        owner: "{{ INSTALL_USER }}"
+        group: "{{ INSTALL_GROUP }}"
+        state: present
+      when: sas_java_home is not defined
+      become: true
+      become_user: "{{ INSTALL_USER }}"
+    when: spre_sas_java_stat.stat.exists | default(false)

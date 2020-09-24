@@ -1,0 +1,40 @@
+---
+- name: vault on x64_redhat_linux_6-yum
+  any_errors_fatal: true
+  become_user: '{{ INSTALL_USER }}'
+  hosts: consul:&sas-hosts-x64_redhat_linux_6-yum
+  pre_tasks:
+  - name: include soe.yml
+    include_vars: '{{ item }}'
+    with_first_found:
+    - '{{ orchestration_root }}/soe.yml'
+    - '{{ orchestration_root }}/internal/soe_defaults.yml'
+  roles:
+  - vault-x64_redhat_linux_6-yum
+  vars_files:
+  - ../vars.yml
+
+- name: Distribute TLS Certificate
+  any_errors_fatal: true
+  hosts: sas_all
+  tasks:
+  - include: ../tasks/distribute-certificate.yml
+    vars:
+      CERT_IDENTIFIER: vault
+      CERT_PATH: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/vault-ca.crt'
+      COMBINED_GROUP: '{{ groups[''consul''] }}'
+    when: not ansible_check_mode and (sas_task | default('start') in ['start', 'start-only'])
+  vars_files:
+  - ../vars.yml
+
+- name: Rebuild SAS trust stores
+  any_errors_fatal: true
+  hosts: sas_all
+  tasks:
+  - include: ../tasks/rebuild-trust-stores.yml
+    vars:
+      COMBINED_GROUP: '{{ groups[''consul''] }}'
+    when: sas_task | default('start') in ['start', 'start-only']
+  vars_files:
+  - ../vars.yml
+

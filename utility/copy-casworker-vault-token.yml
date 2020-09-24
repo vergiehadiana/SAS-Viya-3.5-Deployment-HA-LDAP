@@ -1,0 +1,9 @@
+- name: To check if {{ each_tenant_id}} is installed on worker node {{ inventory_hostname }}
+  stat:
+    path: "{{ SASROOT }}/{{ each_tenant_id }}/config/etc/sysconfig/cas/default/cas_grid_vars"
+  register: tenant_installed
+
+- name: Running cas_setup.sh for {{ each_tenant_id }} on worker node {{ inventory_hostname }}
+  shell: "{{ SASHOME }}/SASFoundation/utilities/bin/cas_setup.sh -r {{ SASROOT }} -d {{ each_tenant_id }} -i default -l {{ SASROOT }}/{{ each_tenant_id }}/config/var/log/cas/default"
+  when: tenant_installed is defined and tenant_installed.stat.exists != False and each_tenant_id != 'viya' and each_tenant_id != 'spre'
+

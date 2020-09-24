@@ -1,0 +1,9 @@
+---
+- set_fact:
+    license_file: "{{ sasenv_composite_license | trim }}"
+  when: (LICENSE_COMPOSITE_FILENAME | default(""))
+
+- set_fact:
+    license_file: "{{ sasenv_license | default('') | trim }}"
+  when: license_file is not defined
+

@@ -1,0 +1,215 @@
+- name: Create a temporary folder on the Hadoop cluster node
+  command: mktemp -d
+  register: mktempresult
+
+- name: Set the temporary folder as {{ mktempresult.stdout }}
+  set_fact:
+    tmp_hdp_dir: "{{ mktempresult.stdout }}"
+
+- name: Upload the hadooptracer script to the Hadoop cluster host
+  copy:
+    src: "/tmp/hadooptracer.py"
+    dest: "{{ tmp_hdp_dir }}/hadooptracer.py"
+    mode: 0744
+
+- name: Check if the hadooptracer version is 18wxx
+  shell: cat {{ tmp_hdp_dir }}/hadooptracer.py | grep 18w
+  register: older_version
+  failed_when: false
+
+- name: Remove the hadooptracer script from the temporary folder
+  file:
+    path: /tmp/hadooptracer.py
+    state: 'absent'
+  delegate_to: localhost
+
+- name: "Verify that the file driver.json exists in /tmp"
+  stat:
+    path: "/tmp/driver.json"
+  register: found_driverjson
+  delegate_to: localhost
+
+- name: Terminate if the driver.json not exists for the data driven hadooptracer
+  fail:
+    msg: |
+      "The file driver.json is missing. This file is required since the 19w21 ship event. Terminating the playbook."
+  when: older_version.rc != 0
+  failed_when: found_driverjson.stat.exists is defined and found_driverjson.stat.exists | bool == false
+
+- name: Upload the driver.json file to the Hadoop cluster host
+  copy:
+    src: "/tmp/driver.json"
+    dest: "{{ tmp_hdp_dir }}/driver.json"
+    mode: 0400
+  when: older_version.rc != 0
+
+- name: Set the {{ driverjson }} value as --jsonfile "{{ tmp_hdp_dir }}"/driver.json
+  set_fact:
+    driverjson:  '--jsonfile "{{ tmp_hdp_dir }}"/driver.json'
+  when: older_version.rc != 0
+
+# Add --skipretry option which reduces the number of executions of the hadooptracer script
+- name: Run the hadooptracer script
+  shell: python "{{ tmp_hdp_dir }}"/hadooptracer.py --file="{{ tmp_hdp_dir }}"/sitexmls/hadooptracer.json --directory="{{ tmp_hdp_dir }}"/jars --logfile=/tmp/hadooptracer_"{{ ansible_date_time.epoch }}".log --conf="{{ tmp_hdp_dir }}"/sitexmls --filterby="{{ filter_by }}" {{ driverjson }} --postprocess "{{ winplatform }}" --skipretry
+  environment:
+    SPARK_MAJOR_VERSION: 2
+  async: "{{ tracer_timeout }}"
+  poll: 10
+  register: tracerout
+
+- debug: var=tracerout.stdout_lines
+  when: tracerout.rc != 0
+
+- name: Create a main lib folder on the local host to place the Hadoop JAR files
+  file:
+    path: "{{ hadoop_scratch_folder }}/lib"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: 0777
+    recurse: yes
+  become: yes
+  become_user: root
+  delegate_to: localhost
+
+- name: Create a sub-folder spark on the local host to place the Spark2 Hadoop JAR files
+  file:
+    path: "{{ hadoop_scratch_folder }}/spark"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: 0777
+    recurse: yes
+  become: yes
+  become_user: root
+  delegate_to: localhost
+
+
+- name: Create a sub-folder hive_warehouse_connector on the local host to place the hive_warehouse_connector Hadoop JAR files
+  file:
+    path: "{{ hadoop_scratch_folder }}/hive_warehouse_connector"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: 0777
+    recurse: yes
+  become: yes
+  become_user: root
+  delegate_to: localhost
+
+- name: Create a temporary conf folder on the local host to place the Hadoop site xml files
+  file:
+    path: "{{ hadoop_scratch_folder }}/conf/"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: 0777
+    recurse: yes
+  become: yes
+  become_user: root
+  delegate_to: localhost
+
+- name: Get a list of the Hadoop JAR file names to copy
+  shell: "ls -Ispark -Ihive_warehouse_connector {{ tmp_hdp_dir }}/jars| xargs -n 1 basename"
+  register: jar_files_to_copy
+
+- find: paths="{{ tmp_hdp_dir }}/jars/spark" file_type=directory patterns="*.jar"
+  register: sparkdir_files
+
+- find: paths="{{ tmp_hdp_dir }}/jars/hive_warehouse_connector" file_type=directory patterns="*.jar"
+  register: warehousedir_files
+
+- name: Get a list of the Spark JAR file names to copy
+  shell: "ls {{ tmp_hdp_dir }}/jars/spark| xargs -n 1 basename"
+  register: spark_jar_files_to_copy
+  when: sparkdir_files.examined|int != 0
+
+- name: Get a list of the hive_warehouse_connector JAR file names to copy
+  shell: "ls {{ tmp_hdp_dir }}/jars/hive_warehouse_connector| xargs -n 1 basename"
+  register: warehouse_jar_files_to_copy
+  when: warehousedir_files.examined|int != 0
+
+- name: Get a list of the configuration file names to copy
+  shell: "ls {{ tmp_hdp_dir }}/sitexmls | xargs -n 1 basename"
+  register: conf_files_to_copy
+
+- name: Copy and paste the Hadoop JAR files to the main folder from the Hadoop cluster
+  fetch:
+    src: "{{ tmp_hdp_dir }}/jars/{{ item }}"
+    dest: "{{ hadoop_scratch_folder }}/lib/{{ item }}"
+    flat: yes
+    fail_on_missing: yes
+  with_items:
+    - "{{ jar_files_to_copy.stdout_lines }}"
+
+- name: Copy and paste the Spark JAR files to the spark folder from the Hadoop cluster
+  fetch:
+    src: "{{ tmp_hdp_dir }}/jars/spark/{{ item }}"
+    dest: "{{ hadoop_scratch_folder }}/spark/{{ item }}"
+    flat: yes
+    fail_on_missing: yes
+  when: sparkdir_files.examined|int != 0
+  with_items:
+    - "{{ spark_jar_files_to_copy.stdout_lines }}"
+
+- name: Copy and paste the hive_warehouse_connector JAR files to the hive_warehouse_connector folder from the Hadoop cluster
+  fetch:
+    src: "{{ tmp_hdp_dir }}/jars/hive_warehouse_connector/{{ item }}"
+    dest: "{{ hadoop_scratch_folder }}/hive_warehouse_connector/{{ item }}"
+    flat: yes
+    fail_on_missing: yes
+  when: warehousedir_files.examined|int != 0
+  with_items:
+    - "{{ warehouse_jar_files_to_copy.stdout_lines }}"
+
+- name: Copy and paste the Hadoop configuration files from the Hadoop cluster
+  fetch:
+    src: "{{ tmp_hdp_dir }}/sitexmls/{{ item }}"
+    dest: "{{ hadoop_scratch_folder }}/conf/{{ item }}"
+    flat: yes
+    fail_on_missing: yes
+  with_items:
+    - "{{ conf_files_to_copy.stdout_lines }}"
+
+# hadoop_exclude_jars is defined in the defaults/main.yml file
+- name: Finding the JAR files to exclude
+  find:
+    paths: "{{ hadoop_scratch_folder }}/lib/"
+    patterns: "{{ item }}*"
+  with_items:
+    - "{{ hadoop_exclude_jars.split(',') }}"
+  register: jars_to_cleanup
+  delegate_to: localhost
+
+- name: Finding the Spark JAR files to exclude
+  find:
+    paths: "{{ hadoop_scratch_folder }}/spark/"
+    patterns: "{{ item }}*"
+  with_items:
+    - "{{ hadoop_exclude_jars.split(',') }}"
+  register: spark_jars_to_cleanup
+  delegate_to: localhost
+  when: sparkdir_files.examined|int != 0
+
+- name: Filtering the JAR files that are excluded when copying and pasting from the temporary Hadoop main folder
+  file:
+     path: "{{ item.files[0].path }}"
+     state: absent
+  when: item.matched == 1
+  with_items:
+    - "{{ jars_to_cleanup.results }}"
+  delegate_to: localhost
+
+- name: Filtering the Spark JAR files that are excluded when copying and pasting from the temporary Hadoop spark folder
+  file:
+     path: "{{ item.files[0].path }}"
+     state: absent
+  when: sparkdir_files.examined|int != 0 and item.matched == 1
+  with_items:
+    - "{{ spark_jars_to_cleanup.results }}"
+  delegate_to: localhost
+
+- name: Remove the temporary folder on the Hadoop cluster node
+  file:
+    path: "{{ tmp_hdp_dir }}"
+    state: absent

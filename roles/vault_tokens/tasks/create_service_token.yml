@@ -1,0 +1,46 @@
+- block:
+  - name: Create temporary directory on Ansible machine
+    local_action: shell mktemp -d
+    run_once: yes
+    register: tmpdir
+
+  - name: Verify that output directory exists
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    file: path="{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/{{ APP_NAME }}/{{ INSTANCE_ID }}" state=directory owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }} mode="u=rwx,g=rx,o=rx"
+    when: inventory_hostname in COMBINED_GROUP
+
+  - name: Verify the presence of {{ APP_NAME }}_token
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    register: apptoken
+    stat: path='{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/{{ APP_NAME }}_token'
+    when: inventory_hostname == groups['consul'][0]
+
+  - name: Create token for {{ APP_NAME }}
+    become: 'yes'
+    shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-crypto-management new-sec-token --appName {{ APP_NAME }} --out-file {{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/{{ APP_NAME }}_token --root-token {{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/root_token --service-root-token {{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/service_root_token --vault-addr https://{{ hostvars[groups[''consul''][0]][''sas_vars''][''hostname_fqdn''] }}:8200 --vault-cafile {{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem'
+    when: (inventory_hostname == groups['consul'][0]) and (apptoken.stat.exists is defined and apptoken.stat.exists == false)
+
+  - name: Fetch service token for {{ APP_NAME }}
+    become: 'yes'
+    fetch:
+      src: "{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/{{ APP_NAME }}_token"
+      dest: "{{ tmpdir.stdout }}/"
+      flat: yes
+      fail_on_missing: yes
+    when: inventory_hostname == groups['consul'][0]
+
+  - name: Distribute service token for {{ APP_NAME }}
+    become: 'yes'
+    copy:
+      src: "{{ tmpdir.stdout }}/{{ APP_NAME }}_token"
+      dest: "{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/{{ APP_NAME }}/{{ INSTANCE_ID }}/vault.token"
+      mode: "0600"
+    when: inventory_hostname in COMBINED_GROUP
+
+  - name: Clean up temp folder on local machine
+    delegate_to: 127.0.0.1
+    file: path="{{ tmpdir.stdout }}" state=absent
+    run_once: true
+  when: not ansible_check_mode and (COMBINED_GROUP | length > 0) and (groups['consul'] |length > 0)

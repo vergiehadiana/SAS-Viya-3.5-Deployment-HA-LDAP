@@ -1,0 +1,4 @@
+---
+hive_username: hive
+hive_server2_port: 10000
+sas_prog_name: checkaccesshdp.sas

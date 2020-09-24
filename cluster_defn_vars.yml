@@ -1,0 +1,14 @@
+CLUSTER_DEFINITIONS:
+  cas:
+    default:
+      primary_host: "sascas01"
+      secondary_host: "sascas02"
+      worker_hosts: "sascas03,"
+      tenant: shared
+      casenv_user: cas
+      casenv_group: sas
+      cas:
+        SERVICESBASEURL: https://sascas03.race.sas.com
+      env:
+        CAS_DISK_CACHE: /sastmp/cascache/d1:/sastmp/cascache/d2
+        CAS_CONTROLLER_TEMP: /sastmp/cascache/d1:/sastmp/cascache/d2

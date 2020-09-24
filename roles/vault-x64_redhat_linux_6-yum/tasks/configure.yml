@@ -1,0 +1,15 @@
+---
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+CONSUL_BOOTSTRAP_EXPECT\s*=" line="export CONSUL_BOOTSTRAP_EXPECT='{{ SERVICE_INSTANCES_COUNT }}'"
+  register: config_change_0
+  when: not ansible_check_mode
+
+- name: Add environment variable from service to sysconfig file
+  become: 'yes'
+  become_user: root
+  lineinfile: dest={{ SERVICE_SYSCONFIG_PATH }} regexp="^\s*export\s+SECURE_CONSUL\s*=" line="export SECURE_CONSUL='{{ SECURE_CONSUL }}'"
+  register: config_change_1
+  when: not ansible_check_mode
+

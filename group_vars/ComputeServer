@@ -1,0 +1,498 @@
+---
+sas_host_group_variables_ComputeServer:
+  installables-x64_redhat_linux_6-yum:
+    Gold Layer YUM Group for SPRE:
+      SERVICE_APP_NAME: yggoldlayer1
+      SERVICE_PRODUCT_NAME: Gold Layer YUM Group for SPRE
+      SERVICE_YUM_GROUP: Gold Layer YUM Group for SPRE
+    SAS Foundation for SAS Econometrics:
+      SERVICE_APP_NAME: ygecon
+      SERVICE_PRODUCT_NAME: SAS Foundation for SAS Econometrics
+      SERVICE_YUM_GROUP: SAS Foundation for SAS Econometrics
+    SAS Foundation for SAS Visual Forecasting:
+      SERVICE_APP_NAME: ygforcast
+      SERVICE_PRODUCT_NAME: SAS Foundation for SAS Visual Forecasting
+      SERVICE_YUM_GROUP: SAS Foundation for SAS Visual Forecasting
+    SAS In-Database Technologies for Hadoop Map Reduce JAR File:
+      SERVICE_APP_NAME: yghadpmrjrs1
+      SERVICE_PRODUCT_NAME: SAS In-Database Technologies for Hadoop Map Reduce JAR File
+      SERVICE_YUM_GROUP: SAS In-Database Technologies for Hadoop Map Reduce JAR File
+    SAS Machine Learning:
+      SERVICE_APP_NAME: ygml
+      SERVICE_PRODUCT_NAME: SAS Machine Learning
+      SERVICE_YUM_GROUP: SAS Machine Learning
+    SAS Open Source File Format Engines:
+      SERVICE_APP_NAME: ygopnsrcfmt1
+      SERVICE_PRODUCT_NAME: SAS Open Source File Format Engines
+      SERVICE_YUM_GROUP: SAS Open Source File Format Engines
+    SAS Program Runtime Environment:
+      SERVICE_APP_NAME: ygspre1
+      SERVICE_PRODUCT_NAME: SAS Program Runtime Environment
+      SERVICE_YUM_GROUP: SAS Program Runtime Environment
+    SAS Statistics:
+      SERVICE_APP_NAME: ygstat
+      SERVICE_PRODUCT_NAME: SAS Statistics
+      SERVICE_YUM_GROUP: SAS Statistics
+    SAS Visual Text Analytics:
+      SERVICE_APP_NAME: ygvta
+      SERVICE_PRODUCT_NAME: SAS Visual Text Analytics
+      SERVICE_YUM_GROUP: SAS Visual Text Analytics
+    SAS/ACCESS Interface to Hadoop (SPRE):
+      SERVICE_APP_NAME: yghadoop1
+      SERVICE_PRODUCT_NAME: SAS/ACCESS Interface to Hadoop (SPRE)
+      SERVICE_YUM_GROUP: SAS/ACCESS Interface to Hadoop (SPRE)
+    aacomp1:
+      SERVICE_APP_NAME: aacomp1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: aacomp1
+      SERVICE_YUM_PACKAGE: sas-aacomp1
+    aastatistcs1:
+      SERVICE_APP_NAME: aastatistcs1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: aastatistcs1
+      SERVICE_YUM_PACKAGE: sas-aastatistcs1
+    accelmva1:
+      SERVICE_APP_NAME: accelmva1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: accelmva1
+      SERVICE_YUM_PACKAGE: sas-accelmva1
+    analyticcmn1:
+      SERVICE_APP_NAME: analyticcmn1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: analyticcmn1
+      SERVICE_YUM_PACKAGE: sas-analyticcmn1
+    base1:
+      SERVICE_APP_NAME: base1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: base1
+      SERVICE_YUM_PACKAGE: sas-base1
+    basecfg1:
+      SERVICE_APP_NAME: basecfg1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: basecfg1
+      SERVICE_YUM_PACKAGE: sas-basecfg1
+    basestat1:
+      SERVICE_APP_NAME: basestat1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: basestat1
+      SERVICE_YUM_PACKAGE: sas-basestat1
+    baseui1:
+      SERVICE_APP_NAME: baseui1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: baseui1
+      SERVICE_YUM_PACKAGE: sas-baseui1
+    bootstrap-config:
+      SERVICE_APP_NAME: bootstrapcfg
+      SERVICE_MEMORY_NEEDED: 3
+      SERVICE_PRODUCT_NAME: bootstrap-config
+      SERVICE_YUM_PACKAGE: sas-bootstrap-config
+    cas1:
+      SERVICE_APP_NAME: cas1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: cas1
+      SERVICE_YUM_PACKAGE: sas-cas1
+    cbase1:
+      SERVICE_APP_NAME: cbase1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: cbase1
+      SERVICE_YUM_PACKAGE: sas-cbase1
+    certframe:
+      SERVICE_APP_NAME: certframe
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: certframe
+      SERVICE_YUM_PACKAGE: sas-certframe
+    cleanutils:
+      SERVICE_APP_NAME: cleanutils
+      SERVICE_MEMORY_NEEDED: 32
+      SERVICE_PRODUCT_NAME: cleanutils
+      SERVICE_YUM_PACKAGE: sas-cleanutils
+    cmp1:
+      SERVICE_APP_NAME: cmp1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: cmp1
+      SERVICE_YUM_PACKAGE: sas-cmp1
+    codegnscrpt1:
+      SERVICE_APP_NAME: codegnscrpt1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: codegnscrpt1
+      SERVICE_YUM_PACKAGE: sas-codegnscrpt1
+    compsrv1:
+      SERVICE_APP_NAME: compsrv1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: compsrv1
+      SERVICE_YUM_PACKAGE: sas-compsrv1
+    csq:
+      SERVICE_APP_NAME: csq
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: csq
+      SERVICE_YUM_PACKAGE: sas-csq
+    dmscore1:
+      SERVICE_APP_NAME: dmscore1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: dmscore1
+      SERVICE_YUM_PACKAGE: sas-dmscore1
+    econometrcs1:
+      SERVICE_APP_NAME: econometrcs1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: econometrcs1
+      SERVICE_YUM_PACKAGE: sas-econometrcs1
+    envesntl:
+      SERVICE_APP_NAME: envesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: envesntl
+      SERVICE_YUM_PACKAGE: sas-envesntl
+    etscomp1:
+      SERVICE_APP_NAME: etscomp1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: etscomp1
+      SERVICE_YUM_PACKAGE: sas-etscomp1
+    evmcltsvcs:
+      SERVICE_APP_NAME: evmcltsvcs
+      SERVICE_MEMORY_NEEDED: 64
+      SERVICE_PRODUCT_NAME: evmcltsvcs
+      SERVICE_YUM_PACKAGE: sas-evmcltsvcs
+    evmcollect:
+      SERVICE_APP_NAME: evmcollect
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: evmcollect
+      SERVICE_YUM_PACKAGE: sas-evmcollect
+    grjavarendr1:
+      SERVICE_APP_NAME: grjavarendr1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: grjavarendr1
+      SERVICE_YUM_PACKAGE: sas-grjavarendr1
+    grodscrendr1:
+      SERVICE_APP_NAME: grodscrendr1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: grodscrendr1
+      SERVICE_YUM_PACKAGE: sas-grodscrendr1
+    hadoop1:
+      SERVICE_APP_NAME: hadoop1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: hadoop1
+      SERVICE_YUM_PACKAGE: sas-hadoop1
+    hadoopbascs1:
+      SERVICE_APP_NAME: hadoopbascs1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: hadoopbascs1
+      SERVICE_YUM_PACKAGE: sas-hadoopbascs1
+    hadoopmrjrs1:
+      SERVICE_APP_NAME: hadoopmrjrs1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: hadoopmrjrs1
+      SERVICE_YUM_PACKAGE: sas-hadoopmrjrs1
+    javaesntl:
+      SERVICE_APP_NAME: javaesntl
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: javaesntl
+      SERVICE_YUM_PACKAGE: sas-javaesntl
+    localconsul:
+      SERVICE_APP_NAME: localconsul
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: localconsul
+      SERVICE_YUM_PACKAGE: sas-localconsul
+    mlearning1:
+      SERVICE_APP_NAME: mlearning1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: mlearning1
+      SERVICE_YUM_PACKAGE: sas-mlearning1
+    mnsrvutl1:
+      SERVICE_APP_NAME: mnsrvutl1
+      SERVICE_MEMORY_NEEDED: 10
+      SERVICE_PRODUCT_NAME: mnsrvutl1
+      SERVICE_YUM_PACKAGE: sas-mnsrvutl1
+    mtrb1:
+      SERVICE_APP_NAME: mtrb1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: mtrb1
+      SERVICE_YUM_PACKAGE: sas-mtrb1
+    mvaeventbus1:
+      SERVICE_APP_NAME: mvaeventbus1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: mvaeventbus1
+      SERVICE_YUM_PACKAGE: sas-mvaeventbus1
+    odstemplate1:
+      SERVICE_APP_NAME: odstemplate1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: odstemplate1
+      SERVICE_YUM_PACKAGE: sas-odstemplate1
+    optimizatin1:
+      SERVICE_APP_NAME: optimizatin1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: optimizatin1
+      SERVICE_YUM_PACKAGE: sas-optimizatin1
+    prochttp1:
+      SERVICE_APP_NAME: prochttp1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: prochttp1
+      SERVICE_YUM_PACKAGE: sas-prochttp1
+    runjavasvc:
+      SERVICE_APP_NAME: runjavasvc
+      SERVICE_MEMORY_NEEDED: 1
+      SERVICE_PRODUCT_NAME: runjavasvc
+      SERVICE_YUM_PACKAGE: sas-runjavasvc
+    runlauncher:
+      SERVICE_APP_NAME: runlauncher
+      SERVICE_MEMORY_NEEDED: 512
+      SERVICE_PRODUCT_NAME: runlauncher
+      SERVICE_YUM_PACKAGE: sas-runlauncher
+    scoreaccel1:
+      SERVICE_APP_NAME: scoreaccel1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: scoreaccel1
+      SERVICE_YUM_PACKAGE: sas-scoreaccel1
+    secureclint1:
+      SERVICE_APP_NAME: secureclint1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: secureclint1
+      SERVICE_YUM_PACKAGE: sas-secureclint1
+    securedom1:
+      SERVICE_APP_NAME: securedom1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: securedom1
+      SERVICE_YUM_PACKAGE: sas-securedom1
+    securelite1:
+      SERVICE_APP_NAME: securelite1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: securelite1
+      SERVICE_YUM_PACKAGE: sas-securelite1
+    spdsclient1:
+      SERVICE_APP_NAME: spdsclient1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: spdsclient1
+      SERVICE_YUM_PACKAGE: sas-spdsclient1
+    statcomp1:
+      SERVICE_APP_NAME: statcomp1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: statcomp1
+      SERVICE_YUM_PACKAGE: sas-statcomp1
+    textmine1:
+      SERVICE_APP_NAME: textmine1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: textmine1
+      SERVICE_YUM_PACKAGE: sas-textmine1
+    tk1:
+      SERVICE_APP_NAME: tk1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tk1
+      SERVICE_YUM_PACKAGE: sas-tk1
+    tkaa1:
+      SERVICE_APP_NAME: tkaa1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkaa1
+      SERVICE_YUM_PACKAGE: sas-tkaa1
+    tkaccess1:
+      SERVICE_APP_NAME: tkaccess1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkaccess1
+      SERVICE_YUM_PACKAGE: sas-tkaccess1
+    tkbasestat1:
+      SERVICE_APP_NAME: tkbasestat1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkbasestat1
+      SERVICE_YUM_PACKAGE: sas-tkbasestat1
+    tkcmp1:
+      SERVICE_APP_NAME: tkcmp1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkcmp1
+      SERVICE_YUM_PACKAGE: sas-tkcmp1
+    tkcore1:
+      SERVICE_APP_NAME: tkcore1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkcore1
+      SERVICE_YUM_PACKAGE: sas-tkcore1
+    tkcs3rdclnt1:
+      SERVICE_APP_NAME: tkcs3rdclnt1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkcs3rdclnt1
+      SERVICE_YUM_PACKAGE: sas-tkcs3rdclnt1
+    tkdmine1:
+      SERVICE_APP_NAME: tkdmine1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkdmine1
+      SERVICE_YUM_PACKAGE: sas-tkdmine1
+    tkets1:
+      SERVICE_APP_NAME: tkets1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkets1
+      SERVICE_YUM_PACKAGE: sas-tkets1
+    tketsutil1:
+      SERVICE_APP_NAME: tketsutil1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tketsutil1
+      SERVICE_YUM_PACKAGE: sas-tketsutil1
+    tkeventbus1:
+      SERVICE_APP_NAME: tkeventbus1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkeventbus1
+      SERVICE_YUM_PACKAGE: sas-tkeventbus1
+    tkfnc1:
+      SERVICE_APP_NAME: tkfnc1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkfnc1
+      SERVICE_YUM_PACKAGE: sas-tkfnc1
+    tkformats1:
+      SERVICE_APP_NAME: tkformats1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkformats1
+      SERVICE_YUM_PACKAGE: sas-tkformats1
+    tkgraph1:
+      SERVICE_APP_NAME: tkgraph1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkgraph1
+      SERVICE_YUM_PACKAGE: sas-tkgraph1
+    tkhadoophiv1:
+      SERVICE_APP_NAME: tkhadoophiv1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkhadoophiv1
+      SERVICE_YUM_PACKAGE: sas-tkhadoophiv1
+    tkhpdmine1:
+      SERVICE_APP_NAME: tkhpdmine1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkhpdmine1
+      SERVICE_YUM_PACKAGE: sas-tkhpdmine1
+    tkhpets1:
+      SERVICE_APP_NAME: tkhpets1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkhpets1
+      SERVICE_YUM_PACKAGE: sas-tkhpets1
+    tkhphpf1:
+      SERVICE_APP_NAME: tkhphpf1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkhphpf1
+      SERVICE_YUM_PACKAGE: sas-tkhphpf1
+    tkhps1:
+      SERVICE_APP_NAME: tkhps1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkhps1
+      SERVICE_YUM_PACKAGE: sas-tkhps1
+    tkhpstat1:
+      SERVICE_APP_NAME: tkhpstat1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkhpstat1
+      SERVICE_YUM_PACKAGE: sas-tkhpstat1
+    tkiml1:
+      SERVICE_APP_NAME: tkiml1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkiml1
+      SERVICE_YUM_PACKAGE: sas-tkiml1
+    tkiog1:
+      SERVICE_APP_NAME: tkiog1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkiog1
+      SERVICE_YUM_PACKAGE: sas-tkiog1
+    tkiom1:
+      SERVICE_APP_NAME: tkiom1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkiom1
+      SERVICE_YUM_PACKAGE: sas-tkiom1
+    tkjava1:
+      SERVICE_APP_NAME: tkjava1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkjava1
+      SERVICE_YUM_PACKAGE: sas-tkjava1
+    tkjavajars1:
+      SERVICE_APP_NAME: tkjavajars1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkjavajars1
+      SERVICE_YUM_PACKAGE: sas-tkjavajars1
+    tkl4sas1:
+      SERVICE_APP_NAME: tkl4sas1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkl4sas1
+      SERVICE_YUM_PACKAGE: sas-tkl4sas1
+    tklauncher1:
+      SERVICE_APP_NAME: tklauncher1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tklauncher1
+      SERVICE_YUM_PACKAGE: sas-tklauncher1
+    tkmpi1:
+      SERVICE_APP_NAME: tkmpi1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkmpi1
+      SERVICE_YUM_PACKAGE: sas-tkmpi1
+    tkmtrb1:
+      SERVICE_APP_NAME: tkmtrb1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkmtrb1
+      SERVICE_YUM_PACKAGE: sas-tkmtrb1
+    tknls1:
+      SERVICE_APP_NAME: tknls1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tknls1
+      SERVICE_YUM_PACKAGE: sas-tknls1
+    tkormp1:
+      SERVICE_APP_NAME: tkormp1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkormp1
+      SERVICE_YUM_PACKAGE: sas-tkormp1
+    tkormpgraph1:
+      SERVICE_APP_NAME: tkormpgraph1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkormpgraph1
+      SERVICE_YUM_PACKAGE: sas-tkormpgraph1
+    tkqc1:
+      SERVICE_APP_NAME: tkqc1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkqc1
+      SERVICE_YUM_PACKAGE: sas-tkqc1
+    tkrabbitmq1:
+      SERVICE_APP_NAME: tkrabbitmq1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkrabbitmq1
+      SERVICE_YUM_PACKAGE: sas-tkrabbitmq1
+    tksecure1:
+      SERVICE_APP_NAME: tksecure1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tksecure1
+      SERVICE_YUM_PACKAGE: sas-tksecure1
+    tksecuressh1:
+      SERVICE_APP_NAME: tksecuressh1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tksecuressh1
+      SERVICE_YUM_PACKAGE: sas-tksecuressh1
+    tkspddrv1:
+      SERVICE_APP_NAME: tkspddrv1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkspddrv1
+      SERVICE_YUM_PACKAGE: sas-tkspddrv1
+    tkspde1:
+      SERVICE_APP_NAME: tkspde1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkspde1
+      SERVICE_YUM_PACKAGE: sas-tkspde1
+    tkspdsdrv1:
+      SERVICE_APP_NAME: tkspdsdrv1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkspdsdrv1
+      SERVICE_YUM_PACKAGE: sas-tkspdsdrv1
+    tkstat1:
+      SERVICE_APP_NAME: tkstat1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tkstat1
+      SERVICE_YUM_PACKAGE: sas-tkstat1
+    tktscore1:
+      SERVICE_APP_NAME: tktscore1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tktscore1
+      SERVICE_YUM_PACKAGE: sas-tktscore1
+    tktxtan1:
+      SERVICE_APP_NAME: tktxtan1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tktxtan1
+      SERVICE_YUM_PACKAGE: sas-tktxtan1
+    tsmodel1:
+      SERVICE_APP_NAME: tsmodel1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tsmodel1
+      SERVICE_YUM_PACKAGE: sas-tsmodel1
+    tsreconcile1:
+      SERVICE_APP_NAME: tsreconcile1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tsreconcile1
+      SERVICE_YUM_PACKAGE: sas-tsreconcile1
+    tstimeinfo1:
+      SERVICE_APP_NAME: tstimeinfo1
+      SERVICE_MEMORY_NEEDED: 12000
+      SERVICE_PRODUCT_NAME: tstimeinfo1
+      SERVICE_YUM_PACKAGE: sas-tstimeinfo1

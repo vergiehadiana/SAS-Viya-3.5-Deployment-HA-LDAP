@@ -1,0 +1,17 @@
+---
+- name: Run post-installation actions
+  hosts: sas_all
+  any_errors_fatal: true
+
+  vars_files:
+    - ../vars.yml
+
+  pre_tasks:
+  - include_vars: "{{ item }}"
+    with_first_found:
+      - "{{ orchestration_root }}/soe.yml"
+      - "{{ orchestration_root }}/internal/soe_defaults.yml"
+
+  roles:
+    - post-installation
+...

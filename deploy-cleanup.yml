@@ -1,0 +1,11 @@
+---
+- hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      orchestration_root: '{{ playbook_dir }}'
+
+- include: internal/gather-host-facts.yml
+# This will stop all services, run pre-uninstall, remove package groups
+# and packages, remove repositories, and then rename the config directory
+- include: internal/uninstall.yml

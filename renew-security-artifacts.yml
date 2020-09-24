@@ -1,0 +1,720 @@
+- hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      orchestration_root: "{{ playbook_dir }}"
+
+- include: "internal/gather-host-facts.yml"
+
+- name: Stop all services
+  hosts: sas_all
+  any_errors_fatal: true
+  vars_files:
+  - vars.yml
+  tasks:
+  - name: Stop all {{ DEPLOYMENT_ID }} services
+    become: yes
+    become_user: root
+    service:
+      name: sas-{{ DEPLOYMENT_ID }}-all-services
+      state: stopped
+
+- name: Restart consul cluster
+  hosts: consul
+  any_errors_fatal: true
+  vars_files:
+  - vars.yml
+  tasks:
+  - name: Start Consul servers
+    become: yes
+    become_user: root
+    service:
+      name: sas-{{ DEPLOYMENT_ID }}-consul-{{ INSTANCE_ID }}
+      state: started
+
+- name: Renew Vault server artifacts
+  hosts: consul
+  any_errors_fatal: true
+  vars_files:
+  - vars.yml
+  tasks:
+  - name: Backup current unseal_key
+    become: yes
+    become_user: '{{ INSTALL_USER }}'
+    shell: cp {{ SAS_CONFIG_ROOT }}/etc/vault/default/unseal_key {{ SAS_CONFIG_ROOT }}/etc/vault/default/unseal_key_orig
+  - name: Execute renewal script on Vault leader
+    become: yes
+    become_user: root
+    shell: '{{ SASHOME }}/bin/renew-vault-keys.sh'
+    when: inventory_hostname == groups['consul'][0]
+  - name: Create temporary directory on Ansible machine
+    local_action: shell mktemp -d
+    run_once: yes
+    register: tmpdir
+  - name: Fetch new unseal_key from Vault leader
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    fetch:
+      src: "{{ SAS_CONFIG_ROOT }}/etc/vault/default/unseal_key"
+      dest: "{{ tmpdir.stdout }}/"
+      flat: yes
+      fail_on_missing: yes
+    when: inventory_hostname == groups['consul'][0]
+  - name: Fetch new root_token from Vault leader
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    fetch:
+      src: "{{ SAS_CONFIG_ROOT }}/etc/vault/default/root_token"
+      dest: "{{ tmpdir.stdout }}/"
+      flat: yes
+      fail_on_missing: yes
+    when: inventory_hostname == groups['consul'][0]
+  - name: Distribute new unseal_key to Vault nodes
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    copy:
+      src: "{{ tmpdir.stdout }}/unseal_key"
+      dest: "{{ SAS_CONFIG_ROOT }}/etc/vault/default/"
+      owner: "{{ INSTALL_USER }}"
+      group: "{{ INSTALL_GROUP }}"
+      mode: "0600"
+    when: inventory_hostname != groups['consul'][0]
+  - name: Distribute new root_token to Vault nodes
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    copy:
+      src: "{{ tmpdir.stdout }}/root_token"
+      dest: "{{ SAS_CONFIG_ROOT }}/etc/vault/default/"
+      owner: "{{ INSTALL_USER }}"
+      group: "{{ INSTALL_GROUP }}"
+      mode: "0600"
+    when: inventory_hostname != groups['consul'][0]
+  - name: Clean up temp folder on local machine
+    delegate_to: 127.0.0.1
+    file: path="{{ tmpdir.stdout }}" state=absent
+    run_once: true
+  - name: Remove existing service_root_token
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/default/service_root_token'
+      state: absent
+
+- name: Remove Consul server artifacts
+  hosts: consul
+  any_errors_fatal: true
+  tasks:
+  - name: Check for existence of consul utility script
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    stat:
+      path: '{{ SASHOME }}/bin/consul-utils.sh'
+    register: consulutils
+  - name: Execute Consul artifact removal
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    shell: 'source {{ SASHOME }}/bin/consul-utils.sh && remove_consul_security_artifacts'
+    when: (consulutils.stat.exists is defined and consulutils.stat.exists == true)
+  - name: Remove existing Consul server Vault token
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/SASSecurityCertificateFramework/tokens/consul/{{ INSTANCE_ID }}/vault.token'
+      state: absent
+
+- name: Stop Consul and Vault
+  hosts: consul
+  any_errors_fatal: true
+  tasks:
+  - name: Stop Vault
+    become: yes
+    become_user: root
+    service:
+      name: sas-{{ DEPLOYMENT_ID }}-vault-{{ INSTANCE_ID }}
+      state: stopped
+  - name: Stop Consul
+    become: yes
+    become_user: root
+    service:
+      name: sas-{{ DEPLOYMENT_ID }}-consul-{{ INSTANCE_ID }}
+      state: stopped
+
+- name: Remove existing vault framework artifacts on x64_redhat_linux_6-yum
+  any_errors_fatal: true
+  hosts: consul:&sas-hosts-x64_redhat_linux_6-yum
+  tasks:
+  - name: Removing vault framework artifact for localconsul
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/localconsul_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for cachelocator
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/cachelocator_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for cacheserver
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/cacheserver_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for rabbitmq
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/rabbitmq_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for evmcltsvcs
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/evmcltsvcs_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for evmsvrops
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/evmsvrops_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for sasdatasvrc
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/sasdatasvrc_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for pgpoolc
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/pgpoolc_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for audit
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/audit_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for authorizatn
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/authorization_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for backup
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/deploymentBackup_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for backupagent
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/backup-agent_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for cas-administration
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/casManagement_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for cas-administration
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/casProxy_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for cas-row-sets
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/casRowSets_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for casacl
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/casAccessManagement_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for casformats
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/casFormats_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for caslicense
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/licenses_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for codedebugservice
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/codeDebugger_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for comments
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/comments_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for configuratn
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/configuration_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for crossdmnprxy
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/crossdomainproxy_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for deviceManagement
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/deviceManagement_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for dmdataservices
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/dataSources_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for dmdataservices
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/dataTables_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for dmdataservices
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/rowSets_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for filesservice
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/files_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for foldersrvc
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/folders_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for fonts
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/fonts_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for geo-enhancement
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/geoEnrichment_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for graphtemplates
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/graphTemplates_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for identities
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/identities_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for credentials
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/credentials_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for import9
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/import9_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for jobexecution
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/jobExecution_value.token'
+      state: absent
+  - name: Removing vault framework artifact for dataplans
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/dataPlans_value.token'
+      state: absent
+  - name: Removing vault framework artifact for dmprofilesvc
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/dataProfiles_value.token'
+      state: absent
+  - name: Removing vault framework artifact for dmtransformservices
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/catalog_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for dmtransformservices
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/dataDiscovery_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for dmtransformservices
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/discoveryTableProvider_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for dmtransformservices
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/transformations_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for launcher
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/launcher_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for compservice
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/compute_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for links
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/links_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for logon
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASLogon_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for mail
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/mail_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for monitoring
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/monitoring_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for appregistry
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/appRegistry_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for naturalLanguageGeneration
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/naturalLanguageGeneration_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for naturalLanguageUnderstanding
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/naturalLanguageUnderstanding_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for notification
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/notifications_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for preferences
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/preferences_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for projects
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/projects_value.token'
+      state: absent
+  - name: Removing vault framework artifact for relationships
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/relationships_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for annotations
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/annotations_value.token'
+      state: absent
+  - name: Removing vault framework artifact for reportViewerNaturalLanguageUnderstanding
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/reportViewerNaturalLanguageUnderstanding_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for runlauncher
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/sas-run-launcher_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for scheduler
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/scheduler_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for jobflowsch
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/jobFlowScheduling_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for searchservice
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/search_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for searchservice
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/searchIndex_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for templates
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/templates_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for tenant
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/tenant_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for themecontent
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/themeContent_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for themes
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/themes_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for thumbnails
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/thumbnails_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for transfer
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/transfer_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for types
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/types_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for backupmgr
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASBackupManager_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for codedebugui
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASCodeDebugger_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for dmdplin
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASLineage_value.token'
+      state: absent
+  - name: Removing vault framework artifact for envmgr-app
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASEnvironmentManager_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for graphbuilder
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASGraphBuilder_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for jobexecapp
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASJobExecution_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for sasstudiov
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASStudioV_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for themedesign
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASThemeDesigner_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for web-data-access
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/webDataAccess_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for dmdatahub
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASDataExplorer_value.token'
+      state: absent
+  - name: Removing vault framework artifact for dmdpstu
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASDataStudio_value.token'
+      state: absent
+  - name: Removing vault framework artifact for drive
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASDrive_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for maps
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/maps_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for reportRenderer
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/reportRenderer_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for reportdata
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/reportData_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for reportdistribution
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/reportDistribution_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for reportpackages
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/reportPackages_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for reportservicesgroup
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/reportAlerts_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for reportservicesgroup
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/reportImages_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for reportservicesgroup
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/reportTemplates_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for reportservicesgroup
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/reportTransforms_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for reportservicesgroup
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/reports_vault.token'
+      state: absent
+  - name: Removing vault framework artifact for vanalytics
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASVisualAnalytics_vault.token'
+      state: absent
+  vars_files:
+  - vars.yml
+
+- name: Remove existing CAS and programming Vault tokens
+  hosts: consul
+  any_errors_fatal: true
+  vars_files:
+  - vars.yml
+  tasks:
+  - name: Remove existing CAS Vault token
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/cas_vault.token'
+      state: absent
+  - name: Remove existing programming Vault token
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/programming_vault.token'
+      state: absent
+  - name: Remove existing SASStudio Vault token
+    become: true
+    become_user: '{{ INSTALL_USER }}'
+    file:
+      path: '{{ SAS_CONFIG_ROOT }}/etc/vault/{{ INSTANCE_ID }}/SASStudio_vault.token'
+      state: absent
+
+- include: "{{ 'internal/deploy-configure.yml' }}"

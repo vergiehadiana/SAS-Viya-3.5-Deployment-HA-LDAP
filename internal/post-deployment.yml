@@ -1,0 +1,21 @@
+---
+# file: post-deployment.yml
+
+- name: Post deployment
+  hosts: sas_all
+  any_errors_fatal: true
+  become: no
+
+  vars_files:
+    - ../vars.yml
+    - ../roles/create-snapshot/defaults/main.yml
+
+  pre_tasks:
+  - include_vars: "{{ item }}"
+    with_first_found:
+      - "{{ orchestration_root }}/soe.yml"
+      - "{{ orchestration_root }}/internal/soe_defaults.yml"
+
+  roles:
+    - sas-instructions
+...

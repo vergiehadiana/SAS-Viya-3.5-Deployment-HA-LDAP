@@ -1,0 +1,21 @@
+---
+# file: update-only.yml
+- hosts: sas_all
+  any_errors_fatal: true
+  tasks:
+  - set_fact:
+      orchestration_root: "{{ playbook_dir }}"
+
+- include: internal/third-party-assessment.yml
+- include: internal/gather-host-facts.yml
+- include: internal/validate.yml
+- include: internal/validate-postgres-rules.yml
+- include: internal/validate-cps-postgres-rules.yml
+- include: internal/host-setup.yml
+- include: internal/create-snapshot.yml
+- include: internal/lifecycle.yml
+- include: internal/host-verification.yml
+- include: internal/common.yml
+- include: internal/deploy-install.yml
+- include: internal/start-all.yml
+- include: internal/post-configuration.yml

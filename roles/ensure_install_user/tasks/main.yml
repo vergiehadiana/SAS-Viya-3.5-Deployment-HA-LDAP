@@ -1,0 +1,11 @@
+---
+- include: "{{ orchestration_root }}/tasks/create_sas_user.yml"
+
+- include: "{{ orchestration_root }}/tasks/check_user.yml"
+  vars:
+    FAIL_ON_USER_CHECK: true
+    GROUP_TO_CHECK: '{{ INSTALL_GROUP }}'
+    USER_TO_CHECK: '{{ INSTALL_USER }}'
+  when: not ansible_check_mode
+
+- include: "{{ orchestration_root }}/tasks/provision_sas_user.yml"

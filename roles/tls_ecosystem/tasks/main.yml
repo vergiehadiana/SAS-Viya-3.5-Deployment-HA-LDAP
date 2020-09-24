@@ -1,0 +1,85 @@
+---
+- block:
+  - name: Verify the presence of a machine certificate
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    register: cert
+    stat: path='{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/private/sas.key'
+
+  - name: Create certificate private keys
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-crypto-management genkey --out-file {{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/private/sas.key --out-form pem'
+    when: (inventory_hostname in COMBINED_GROUP) and (cert.stat.exists is defined and cert.stat.exists == false)
+
+  - name: Grant group access on generated key
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    file: path="{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/private/sas.key" mode=0640
+    when: (inventory_hostname in COMBINED_GROUP) and (cert.stat.exists is defined and cert.stat.exists == false)
+
+  - name: Create certificate CSR files
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-crypto-management gencsr --key {{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/private/sas.key --out-file {{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/cacerts/sas.csr --subject "C=US,O=Self-Signed Certificate,CN={{ hostvars[inventory_hostname].sas_vars.hostname_fqdn }}"'
+    when: (inventory_hostname in COMBINED_GROUP) and (cert.stat.exists is defined and cert.stat.exists == false)
+
+  - name: Create certificates
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-crypto-management selfsign --signing-key {{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/private/sas.key --csr {{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/cacerts/sas.csr --out-file {{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/cacerts/sas.crt'
+    when: (inventory_hostname in COMBINED_GROUP) and (cert.stat.exists is defined and cert.stat.exists == false)
+
+  - name: Create certificate link
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    file: src="{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/cacerts/sas.crt" dest="{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/tls/certs/sas.crt" state=link owner={{ INSTALL_USER }} group={{ INSTALL_GROUP }}
+    when: (inventory_hostname in COMBINED_GROUP) and (cert.stat.exists is defined and cert.stat.exists == false)
+
+  - name: Create temporary directory on Ansible machine
+    local_action: shell mktemp -d
+    run_once: yes
+    register: tmpdir
+
+  - name: Fetch certificates
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    fetch: src="{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}/cacerts/sas.crt" dest="{{ tmpdir.stdout }}/{{ inventory_hostname_short }}-ca.crt" flat=yes fail_on_missing=yes
+    when: (inventory_hostname in COMBINED_GROUP)
+
+  - name: Determine certificate framework installations
+    become: 'yes'
+    become_user: root
+    stat:
+      path: "{{ item }}"
+    register: certframe_install_paths
+    with_items:
+      - "{{ SAS_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}"
+      - "{{ SPRE_CONFIG_ROOT }}/{{ CERTFRAME_REL_CONFIG_PATH }}"
+
+  - name: Distribute certificates
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    copy: src="{{ tmpdir.stdout }}/" dest="{{ item.item }}/cacerts/"
+    when: item.stat.exists | default(false)
+    with_items: "{{ certframe_install_paths.results }}"
+
+  - name: Update {{ SASHOME }} trust stores
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    shell: '{{ SASHOME }}/SASSecurityCertificateFramework/bin/sas-merge-certificates.sh {{ SASHOME }} {{ SAS_CONFIG_ROOT }}'
+    when: item.item == SAS_CONFIG_ROOT + '/' + CERTFRAME_REL_CONFIG_PATH and item.stat.exists | default(false)
+    with_items: "{{ certframe_install_paths.results }}"
+
+  - name: Update {{ SPREHOME }} trust stores
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    shell: '{{ SPREHOME }}/SASSecurityCertificateFramework/bin/sas-merge-certificates.sh {{ SPREHOME }} {{ SPRE_CONFIG_ROOT }}'
+    when: item.item == SPRE_CONFIG_ROOT + '/' + CERTFRAME_REL_CONFIG_PATH and item.stat.exists | default(false)
+    with_items: "{{ certframe_install_paths.results }}"
+
+  - name: Clean up temp folder on local machine
+    delegate_to: 127.0.0.1
+    file: path="{{ tmpdir.stdout }}" state=absent
+    run_once: true
+  when: COMBINED_GROUP | length > 0

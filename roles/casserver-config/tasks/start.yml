@@ -1,0 +1,39 @@
+---
+- name: "Create directory {{ SAS_CONFIG_ROOT }}/etc/sysconfig/cas/<cas-instance>"
+  become: 'yes'
+  become_user: root
+  file:
+    path: "{{ SAS_CONFIG_ROOT }}/etc/sysconfig/cas/{{ item.key }}"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: 0755
+  when: (item.value.primary_host is defined and inventory_hostname == item.value.primary_host) or (item.value.secondary_host is defined and inventory_hostname == item.value.secondary_host) or (item.value.worker_hosts is defined and item.value.worker_hosts and inventory_hostname in item.value.worker_hosts.split(','))
+  with_dict: '{{ CLUSTER_DEFINITIONS_cas }}'
+
+- name: Create cas grids vars file
+  become: 'yes'
+  become_user: root
+  template:
+    src: "cas_grid_vars.j2"
+    dest: "{{ SAS_CONFIG_ROOT }}/etc/sysconfig/cas/{{ item.key }}/cas_grid_vars"
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    mode: 0644
+  when: (item.value.primary_host is defined and inventory_hostname == item.value.primary_host) or (item.value.secondary_host is defined and inventory_hostname == item.value.secondary_host) or (item.value.worker_hosts is defined and item.value.worker_hosts and inventory_hostname in item.value.worker_hosts.split(','))
+  with_dict: '{{ CLUSTER_DEFINITIONS_cas }}'
+
+- name: Execute Node Initialization
+  become: 'yes'
+  become_user: root
+  command: '{{ SASHOME }}/bin/cas_init.sh -r {{ SASROOT }} -d {{ DEPLOYMENT_ID }} -i {{ item.key }}'
+  when: (item.value.primary_host is defined and inventory_hostname == item.value.primary_host) or (item.value.secondary_host is defined and inventory_hostname == item.value.secondary_host) or (item.value.worker_hosts is defined and item.value.worker_hosts and inventory_hostname in item.value.worker_hosts.split(','))
+  with_dict: '{{ CLUSTER_DEFINITIONS_cas }}'
+
+- name: started CAS Service
+  become: 'yes'
+  become_user: root
+  command: '{{ SASHOME }}/libexec/cas/cas_start_service.sh -r {{ SASROOT }} -d {{ DEPLOYMENT_ID }} -i {{ item.key }}'
+  when: (item.value.primary_host is defined and inventory_hostname == item.value.primary_host) or (item.value.secondary_host is defined and inventory_hostname == item.value.secondary_host) or (item.value.worker_hosts is defined and item.value.worker_hosts and inventory_hostname in item.value.worker_hosts.split(','))
+  with_dict: '{{ CLUSTER_DEFINITIONS_cas }}'
+...

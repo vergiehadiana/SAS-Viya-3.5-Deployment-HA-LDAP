@@ -1,0 +1,136 @@
+# Skip rest of the tasks if hadoop_deployment folder is empty at ansible controller host.
+- name: Verify that "{{ hadoop_scratch_folder + '/conf' }}" exists
+  stat:
+    path: "{{ hadoop_scratch_folder + '/conf' }}"
+  register: st
+  delegate_to: localhost
+
+- fail:
+     msg: "hadoop scratch folder does not exist"
+  failed_when: st is defined and st.stat.exists == false
+
+# hadoop_conf_home parent folder containing hadoop configuration folder and hadoop configuration libraries.
+- name: Create the Hadoop configuration home folder
+  file:
+    path: "{{ hadoop_conf_home }}"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    recurse: yes
+  become: yes
+  become_user: root
+
+- name: Create the Hadoop configuration repository folder
+  file:
+    path: "{{ hadoop_conf_home + '/repository/' + hostvars[groups['hadooptracr1'][0]]['ansible_host'] + '_' + ansible_date_time.epoch + '/' + conf_folder_name }}"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    recurse: yes
+  become: yes
+  become_user: root
+
+- name: Create the Hadoop jars repository main folder
+  file:
+    path: "{{ hadoop_conf_home + '/repository/' + hostvars[groups['hadooptracr1'][0]]['ansible_host'] + '_' + ansible_date_time.epoch + '/' + lib_folder_name }}"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    recurse: yes
+  become: yes
+  become_user: root
+
+- name: Create a sub-folder spark in the main Hadoop jars repository folder
+  file:
+    path: "{{ hadoop_conf_home + '/repository/' + hostvars[groups['hadooptracr1'][0]]['ansible_host'] + '_' + ansible_date_time.epoch + '/' + lib_folder_name + '/spark' }}"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    recurse: yes
+  become: yes
+  become_user: root
+
+- name: Create a sub-folder hive_warehouse_connector in the main Hadoop jars repository folder
+  file:
+    path: "{{ hadoop_conf_home + '/repository/' + hostvars[groups['hadooptracr1'][0]]['ansible_host'] + '_' + ansible_date_time.epoch + '/' + lib_folder_name + '/hive_warehouse_connector' }}"
+    state: directory
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    recurse: yes
+  become: yes
+  become_user: root
+
+- name: Upload the Hadoop JAR files to the main folder of the deployTarget host
+  copy:
+    src: "{{ hadoop_scratch_folder + '/lib/' }}"
+    dest: "{{ hadoop_conf_home + '/repository/' + hostvars[groups['hadooptracr1'][0]]['ansible_host'] + '_' + ansible_date_time.epoch + '/' + lib_folder_name }}"
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    directory_mode: yes
+  become: yes
+  become_user: root
+
+- name: Upload the Spark Hadoop JAR files to the deployTarget host
+  copy:
+    src: "{{ hadoop_scratch_folder + '/spark/' }}"
+    dest: "{{ hadoop_conf_home + '/repository/' + hostvars[groups['hadooptracr1'][0]]['ansible_host'] + '_' + ansible_date_time.epoch + '/' + lib_folder_name  + '/spark' }}"
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    directory_mode: yes
+  become: yes
+  become_user: root
+
+- name: Upload the hive_warehouse_connector Hadoop JAR files to the deployTarget host
+  copy:
+    src: "{{ hadoop_scratch_folder + '/hive_warehouse_connector/' }}"
+    dest: "{{ hadoop_conf_home + '/repository/' + hostvars[groups['hadooptracr1'][0]]['ansible_host'] + '_' + ansible_date_time.epoch + '/' + lib_folder_name  + '/hive_warehouse_connector' }}"
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    directory_mode: yes
+  become: yes
+  become_user: root
+
+# become: root is required to change the ownership to {{ INSTALL_USE /INSTALL_GROUP }} with directory_mode set to yes, it copies only files under folder conf.
+- name: Upload the Hadoop configuration files to the deployTarget host
+  copy:
+    src: "{{ hadoop_scratch_folder + '/conf/' }}"
+    dest: "{{ hadoop_conf_home + '/repository/' + hostvars[groups['hadooptracr1'][0]]['ansible_host'] + '_' + ansible_date_time.epoch + '/' + conf_folder_name }}"
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+    directory_mode: yes
+  become: yes
+  become_user: root
+
+- name: Create sym link to the repository folder
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+    force: yes
+    owner: "{{ INSTALL_USER }}"
+    group: "{{ INSTALL_GROUP }}"
+  with_items:
+    - { src: "{{ hadoop_conf_home + '/repository/' + hostvars[groups['hadooptracr1'][0]]['ansible_host'] + '_' + ansible_date_time.epoch + '/' + conf_folder_name + '/' }}", dest: "{{ hadoop_conf_home + '/' + conf_folder_name }}" }
+    - { src: "{{ hadoop_conf_home + '/repository/' + hostvars[groups['hadooptracr1'][0]]['ansible_host'] + '_' + ansible_date_time.epoch + '/' + lib_folder_name + '/' }}", dest: "{{ hadoop_conf_home + '/' + lib_folder_name }}" }
+  become: yes
+  become_user: root
+
+- name: Check if Hive LLAP is enabled
+  command: grep hive.llap "{{ hadoop_conf_home + '/' + conf_folder_name }}/hive-site.xml"
+  register: hive_is_llap_enabled
+  ignore_errors: True
+  failed_when: false
+  no_log: True
+
+- debug:
+    msg: "The Hive service is llap enabled. Make sure that you follow the instructions that are stated in the Deployment Guide to set up the Hive transactional tables support."
+  when: hive_is_llap_enabled.rc == 0
+
+- name: Clean up the scratch folder
+  file:
+    path: "{{ hadoop_scratch_folder }}"
+    state: absent
+  run_once: yes
+  delegate_to: localhost
+  become: yes
+  become_user: root

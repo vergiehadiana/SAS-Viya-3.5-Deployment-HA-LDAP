@@ -1,0 +1,57 @@
+- name: include variables for framework action, "{{ consumer_data.key }}"
+  include_vars:
+    file: "{{ orchestration_root }}/roles/framework/defaults/{{ consumer_data.key | regex_replace('-\\d+\\.\\d+$', '') }}.yml"
+
+- name: On the Ansible controller, create temporary directory
+  local_action: shell mktemp -d
+  run_once: yes
+  register: tmpdir
+
+# Execute the tasks on the first provider host
+- block:
+  - name: Using provider "{{ provider_data['APPNAME'] }}", verify the presence of the desired artifact.
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    register: artifact
+    stat: path='{{ provider_data['OUTPUT_PATH'] }}'
+
+  - name: Using provider "{{ provider_data['APPNAME'] }}", create artifact.
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    shell: "{{ provider_data['COMMAND'] }}"
+    when: (artifact.stat.exists is defined and artifact.stat.exists == false)
+
+  - name: Using provider "{{ provider_data['APPNAME'] }}", copy artifact to controller.
+    become: 'yes'
+    become_user: '{{ INSTALL_USER }}'
+    fetch:
+      src: "{{ provider_data['OUTPUT_PATH'] }}"
+      dest: "{{ tmpdir.stdout }}/{{ consumer_data.value['DESTINATION_FILENAME'] }}"
+      flat: yes
+      fail_on_missing: yes
+  delegate_to: "{{ provider_data['PROVIDING_GROUP'][0] }}"
+  run_once: true
+  when: provider_data is defined and consumer_data.value is defined
+
+# Execute the tasks on the consumer hosts
+- block:
+  - name: Consumer "{{ consumer_data.value['APPNAME'] }}" verifies that output directory.
+    become: 'yes'
+    become_user: 'root'
+    file: path="{{ consumer_data.value['DESTINATION_DIRECTORY'] }}" state=directory owner={{ consumer_data.value['DESTINATION_OWNER'] }} group={{ consumer_data.value['DESTINATION_GROUP'] }} mode="u=rwx,g=rx,o=rx"
+
+  - name: Consumer "{{ consumer_data.value['APPNAME'] }}" copies artifact from controller.
+    become: 'yes'
+    become_user: "{{ consumer_data.value['DESTINATION_OWNER'] }}"
+    copy:
+      src: "{{ tmpdir.stdout }}/{{ consumer_data.value['DESTINATION_FILENAME'] }}"
+      dest: "{{ consumer_data.value['DESTINATION_DIRECTORY'] }}/"
+      owner: "{{ consumer_data.value['DESTINATION_OWNER'] }}"
+      group: "{{ consumer_data.value['DESTINATION_GROUP'] }}"
+      mode: "{{ consumer_data.value['DESTINATION_MODE'] }}"
+  when: consumer_data is defined
+
+- name: On the Ansible controller, clean up temp folder on controller
+  delegate_to: 127.0.0.1
+  file: path="{{ tmpdir.stdout }}" state=absent
+  run_once: true

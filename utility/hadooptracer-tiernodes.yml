@@ -1,0 +1,11 @@
+---
+- name:  Copy and paste the Hadoop client files on the deployTarget hosts
+  hosts: sas_casserver_primary:programming
+  gather_facts: yes
+  any_errors_fatal: true
+  vars_files:
+  - ../vars.yml
+
+  roles:
+    - hadooptracer-uploadclientfiles
+

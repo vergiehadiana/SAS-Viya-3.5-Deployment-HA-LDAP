@@ -1,0 +1,9 @@
+---
+SERVICE_APP_NAME: casmgmtcli
+SERVICE_FACET: sas-casmanagement-cli
+SERVICE_INSTANCES_COUNT: '{{ play_hosts | length }}'
+SERVICE_NAME: '{{ SERVICE_NAME_DEFAULT }}'
+SERVICE_PRODUCT_NAME: casmanagement-cli
+SERVICE_SYSCONFIG_PATH: /etc/sysconfig/sas/{{ SERVICE_NAME }}
+SERVICE_YUM_PACKAGE: sas-casmanagement-cli
+consumer_items: {}

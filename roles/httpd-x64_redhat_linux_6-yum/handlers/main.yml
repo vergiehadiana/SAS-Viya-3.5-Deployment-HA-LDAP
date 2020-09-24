@@ -1,0 +1,9 @@
+---
+# handlers file for httpd-x64_redhat_linux_6-yum
+
+- name: restart httpd
+  service:
+    name: httpd
+    state: restarted
+  become: yes
+  become_user: root

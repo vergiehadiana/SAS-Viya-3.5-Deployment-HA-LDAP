@@ -1,0 +1,9 @@
+---
+- name: cas
+  hosts: sas_casserver*
+  any_errors_fatal: true
+  roles:
+  - casserver-config
+  vars_files:
+  - ../vars.yml
+...

@@ -1,0 +1,5 @@
+provider_data:
+  APPNAME: mbagent
+  COMMAND: echo true
+  OUTPUT_PATH: '{{ SAS_CONFIG_ROOT }}/etc/licenses/default'
+  PROVIDING_GROUP: '{{ groups[''Operations''] }}'

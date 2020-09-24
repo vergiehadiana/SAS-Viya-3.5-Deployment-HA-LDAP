@@ -1,0 +1,63 @@
+---
+# tasks file for create-snapshot
+
+- name: Get epoch and use that as our id
+  local_action: set_fact snapshotloc="{{ sasenv_snapshot_dir + '/' + ansible_date_time.epoch }}"
+  run_once: yes
+
+- name: Print out the snapshot dir
+  local_action: debug msg="Snapshot dir => {{ snapshotloc }}"
+  run_once: yes
+
+- name: Create {{ snapshotloc }}
+  local_action: file dest={{ snapshotloc }} state=directory
+  run_once: yes
+
+- name: Verify that the {{ inventory_file }} is a valid path
+  local_action: stat path={{ inventory_file }}
+  run_once: yes
+  register: invfile
+
+- name: Copy {{inventory_file}} if it contains full path
+  local_action: shell cp '{{ inventory_file }}' '{{ snapshotloc }}/'
+  when: invfile.stat.exists is defined and invfile.stat.exists
+  ignore_errors: yes
+  run_once: yes
+
+- name: Verify that the path {{ inventory_dir }}/{{ inventory_file }} is a valid path
+  local_action: stat path={{ inventory_dir }}/{{ inventory_file }}
+  run_once: yes
+  register: invdirfile
+
+- name: Copy {{ inventory_dir }}/{{ inventory_file }} if the file exists
+  local_action: shell cp '{{ inventory_dir }}/{{ inventory_file }}' '{{ snapshotloc }}/'
+  when: invdirfile.stat.exists is defined and invdirfile.stat.exists
+  run_once: yes
+  ignore_errors: yes
+
+- name: Copy ../vars.yml
+  local_action: shell cp ../vars.yml '{{ snapshotloc }}/'
+  run_once: yes
+
+- name: Verify that the ../soe.yml is a valid path
+  local_action: stat path=../soe.yml
+  run_once: yes
+  register: soeyml
+
+- name: Copy ../soe.yml
+  local_action: shell cp ../soe.yml '{{ snapshotloc }}/'
+  when: soeyml.stat.exists is defined and soeyml.stat.exists
+  run_once: yes
+  ignore_errors: yes
+
+- name: Collect system information
+  copy: content="{{ hostvars[inventory_hostname] }}" dest="{{ '/tmp/' + inventory_hostname + '.out' }}"
+
+- name: Copy system information to the snapshot directory
+  fetch: src="{{ '/tmp/' + inventory_hostname + '.out' }}" dest="{{ snapshotloc + '/' + inventory_hostname + '.out' }}" flat=yes fail_on_missing=yes
+
+- name: Set a fact so that other playbooks do not run the same task
+  set_fact:
+    snapshot_of_run: yes
+  when: snapshot_of_run is not defined
+...

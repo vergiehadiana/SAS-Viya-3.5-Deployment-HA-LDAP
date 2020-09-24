@@ -1,0 +1,22 @@
+---
+- hosts: sas_casserver*
+  become: yes
+  become_user: root
+  gather_facts: false
+  vars_files:
+    - ../vars.yml
+
+  tasks:
+    - name: Stop if no tenant id is passed
+      assert:
+         that:
+             - "tenant_ids | default('') != ''"
+         msg: "Onboarded tenant_ids must be provided as an input to run the playbook. List of comma separated tenant_ids can be provided via input variable tenant_ids=id1 or yaml file containing variable tenant_ids: id,id2"
+
+    - include: copy-casworker-vault-token.yml
+      with_items:
+        - "{{ tenant_ids.split(',') }}"
+      loop_control:
+        loop_var: each_tenant_id
+
+

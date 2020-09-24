@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  any_errors_fatal: true
+  remote_user: root
+  roles:
+    - httpd-x64_redhat_linux_6-yum

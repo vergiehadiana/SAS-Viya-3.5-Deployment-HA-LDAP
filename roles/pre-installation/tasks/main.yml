@@ -1,0 +1,15 @@
+---
+- name: Verify the presence of pre-installation-actions
+  become: yes
+  become_user: root
+  stat:
+    path: "{{ SASHOME }}/libexec/deployment/pre-installation-actions"
+  register: pre_installation
+
+- name: Run pre-installation-actions
+  become: yes
+  become_user: root
+  command: "{{ SASHOME }}/libexec/deployment/pre-installation-actions"
+  when: pre_installation.stat.exists | default(false)
+
+...

@@ -1,0 +1,5 @@
+---
+- name: Execute sas-casmanagement-cli_stop
+  become: 'yes'
+  command: echo "sas-casmanagement-cli is not a microservice, and will only run during deployment"
+

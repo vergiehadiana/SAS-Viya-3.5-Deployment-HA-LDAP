@@ -1,0 +1,18 @@
+---
+- name: Validate the SAS Infrastructure Data Server for Common Planning Services for Viya entries in inventory.ini and vars.yml
+  hosts: sas_all
+  any_errors_fatal: true
+
+  vars_files:
+  - ../vars.yml
+
+  pre_tasks:
+  - include_vars: "{{ item }}"
+    with_first_found:
+      - "{{ orchestration_root }}/soe.yml"
+      - "{{ orchestration_root }}/internal/soe_defaults.yml"
+
+  tasks:
+  - include_role:
+      name: validate-cps-postgres-rules
+    when: ((inventory_hostname in groups['cpsdatasvrc'] | default([])) or (inventory_hostname in groups['cpspgpoolc'] | default([])))

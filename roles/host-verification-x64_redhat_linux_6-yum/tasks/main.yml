@@ -1,0 +1,79 @@
+---
+- block:
+    - set_fact:
+        host_ver_results: []
+      when: host_ver_results is not defined
+
+    - block:
+        - name: Perform SELinux check
+          selinux_check:
+            ansible_selinux: '{{ ansible_selinux }}'
+          register: selinux_check
+          become: true
+          become_user: root
+          ignore_errors: True
+
+        - name: Collect any failure results
+          set_fact:
+            host_ver_results: '{{ host_ver_results }} + [ ''{{ selinux_check.msg }}'' ]'
+          when: selinux_check is defined and selinux_check.failed is defined and selinux_check.failed
+      when: VERIFY_SELINUX | default(true) | bool
+
+    - name: Perform disk space check
+      disk_space_check:
+        sas_vars: "{{ sas_vars }}"
+        path: "{{ SAS_DEPLOYMENT_ROOT }}"
+        hostname: "{{ inventory_hostname }}"
+        group_names: "{{ group_names }}"
+      register: disk_space_result
+      become: true
+      become_user: root
+      ignore_errors: True
+
+    - name: Collect any failure results
+      set_fact:
+        host_ver_results: '{{ host_ver_results }} + [ ''{{ disk_space_result.msg }}'' ]'
+      when: disk_space_result is defined and disk_space_result.failed is defined and disk_space_result.failed
+
+    - name: Perform ulimit check
+      ulimit_check: {}
+      register: ulimit_result
+      become: true
+      become_user: "{{ INSTALL_USER }}"
+      ignore_errors: True
+
+    - name: Collect any failure results
+      set_fact:
+        host_ver_results: '{{ host_ver_results }} + [ ''{{ ulimit_result.msg }}'' ]'
+      when: ulimit_result is defined and ulimit_result.failed is defined and ulimit_result.failed
+
+    - name: Perform init system check
+      init_system_check:
+        systemd_major_min: "{{ SYSTEMD_MAJOR_MIN }}"
+        systemd_minor_min: "{{ SYSTEMD_MINOR_MIN }}"
+      become: yes
+      become_user: root
+      register: init_system_result
+      ignore_errors: True
+
+    - name: Collect any failure results
+      set_fact:
+        host_ver_results: '{{ host_ver_results }} + [ ''{{ init_system_result.msg }}'' ]'
+      when: init_system_result is defined and init_system_result.failed is defined and init_system_result.failed
+
+    - name: Determine if any host has a failure
+      set_fact:
+        failed_host_exists: true
+      with_items: "{{ play_hosts }}"
+      when: hostvars[item]['host_ver_results'] | length > 0
+
+    - name: Identify any host verification check failures
+      fail:
+        msg: 'At least one host verification check failed on {{ inventory_hostname }}: {{ '' ''.join(host_ver_results) }}'
+      failed_when: host_ver_results | length > 0
+
+    - name: Halt execution on any host verification check failures
+      fail:
+        msg: A host verification check failed.
+      failed_when: failed_host_exists | default(false)
+  when: VERIFY_DEPLOYMENT == true
